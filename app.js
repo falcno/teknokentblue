@@ -1,27 +1,104 @@
 /**
- * DIJITALPARK TEKNOKENT CONNECT
- * True Real-Time Hybrid Mesh (BroadcastChannel + LocalStorage EventBus + MQTT WebSockets)
- * Clean Concurrency Session Lock & Tab-Isolated Auth
+ * MARMARA TEKNOKENT CONNECT
+ * Hierarchical Role-Based Architecture:
+ * 1. Root / SuperAdmin: Marmara Teknokent Yönetim A.Ş. (@marmarateknokent)
+ * 2. Company / Startup / Incubator Admins (@neurologic, @cloudscale, @corehub)
+ * 3. Employees / Personnel with Company-Approved Credentials (@erdemcarkit, @aliniyya, @bakugan)
+ * + Real-time Request & Approval Engine + Multi-Layer Real-Time Chat Bus
  */
 
 // Storage Keys
-const STORAGE_KEY = 'dijitalpark_connect_v4';
-const SESSION_USER_KEY = 'dijitalpark_tab_user_v4';
-const SESSION_LOCK_KEY = 'dijitalpark_active_sessions_v4';
-const THEME_KEY = 'dijitalpark_theme';
+const STORAGE_KEY = 'marmara_teknokent_v5';
+const SESSION_USER_KEY = 'marmara_tab_user_v5';
+const SESSION_LOCK_KEY = 'marmara_active_sessions_v5';
+const THEME_KEY = 'marmara_theme';
+const MY_APP_KEY = 'marmara_my_application_v5';
 
-// Registered Default Accounts with Real User Photos
+// -----------------------------------------------------------------------------
+// HIERARCHICAL DEFAULT ACCOUNTS
+// -----------------------------------------------------------------------------
 const DEFAULT_ACCOUNTS = {
-  erdemcarkit: {
-    username: 'erdemcarkit',
+  // 1. DERECE: SÜPER YÖNETİCİ (MARMARA TEKNOKENT)
+  marmarateknokent: {
+    username: 'marmarateknokent',
     password: '31316969',
-    name: 'Enes Erdem Çarkıt',
-    title: 'Kurucu Ortak & Lead AI Engineer',
+    role: 'super_admin',
+    name: 'Marmara Teknokent Yönetim A.Ş.',
+    title: 'Teknoloji Geliştirme Bölgesi İdaresi',
+    company: 'Marmara Teknokent',
+    companyId: 'comp_root',
+    campus: 'Gebze Kampüsü & Dijitalpark Yerleşkeleri',
+    avatar: './assets/logo.jpg',
+    bio: 'Marmara Teknokent Yönetim A.Ş. resmi idari hesabıdır. Ar-Ge ekosistemi, şirket yetkilendirmeleri ve kurumsal inovasyon süreçlerini koordine eder.',
+    skills: ['TGB Yönetimi', 'Ar-Ge Teşvikleri', 'Kuluçka', 'Ekosistem Koordinasyonu'],
+    postsCount: 35,
+    connectionsCount: 1850,
+    profileViews: 9400
+  },
+
+  // 2. DERECE: FİRMA YETKİLİ HESAPLARI (AR-GE & KULUÇKA)
+  neurologic: {
+    username: 'neurologic',
+    password: '31316969',
+    role: 'company_admin',
+    companyId: 'comp_1',
+    name: 'Neurologic AI (Firma Yönetimi)',
+    title: 'Ar-Ge Şirket Yetkilisi & Temsilcisi',
     company: 'Neurologic AI',
     campus: 'Dijitalpark Çekmeköy Yerleşkesi',
     avatar: './assets/avatar_erdem.png',
-    bio: 'Yapay zeka, derin öğrenme ve otonom ajan mimarileri üzerine Ar-Ge yürütüyoruz. Dijitalpark Teknokent Çekmeköy Yerleşkesi 3. Kat B304 ofisindeyiz.',
-    skills: ['Yapay Zeka', 'Python', 'LLM Agents', 'PyTorch', 'Ar-Ge'],
+    bio: 'Neurologic AI kurumsal ve Ar-Ge yönetim hesabıdır. Yapay zeka projelerimiz ve personel yetkilendirmeleri bu hesap üzerinden yürütülmektedir.',
+    skills: ['Yapay Zeka', 'Firma Yönetimi', 'Ar-Ge', 'LLM Sistemleri'],
+    postsCount: 18,
+    connectionsCount: 540,
+    profileViews: 1420
+  },
+  cloudscale: {
+    username: 'cloudscale',
+    password: '31316969',
+    role: 'company_admin',
+    companyId: 'comp_2',
+    name: 'CloudScale Tech (Firma Yönetimi)',
+    title: 'Bulut Teknolojileri Şirket Yetkilisi',
+    company: 'CloudScale Tech',
+    campus: 'Dijitalpark Ataşehir Yerleşkesi',
+    avatar: './assets/avatar_ali.png',
+    bio: 'CloudScale Tech resmi kurumsal hesabıdır. Bulut altyapı projeleri, siber güvenlik iş birlikleri ve personel hesap onayları bu hesapça yönetilir.',
+    skills: ['Cloud Architecture', 'DevOps', 'Kurumsal İdare', 'Kubernetes'],
+    postsCount: 12,
+    connectionsCount: 390,
+    profileViews: 980
+  },
+  corehub: {
+    username: 'corehub',
+    password: '31316969',
+    role: 'company_admin',
+    companyId: 'comp_3',
+    name: 'Core Innovation Hub (Kuluçka Yönetimi)',
+    title: 'Kuluçka Merkezi & Girişim Hızlandırıcı',
+    company: 'Core Innovation Hub',
+    campus: 'Dijitalpark Çekmeköy Yerleşkesi',
+    avatar: './assets/avatar_batuhan.jpg',
+    bio: 'Core Innovation Hub kuluçka merkezi idari hesabıdır. Kuluçka girişimcilerine mentörlük, yatırımcı buluşmaları ve ekip hesabı yetkilendirmesi sağlar.',
+    skills: ['Kuluçka Yönetimi', 'B2B SaaS', 'Girişim Hızlandırma', 'Yatırım'],
+    postsCount: 24,
+    connectionsCount: 710,
+    profileViews: 2350
+  },
+
+  // 3. DERECE: FİRMA ONAYLI ÇALIŞANLAR / PERSONEL
+  erdemcarkit: {
+    username: 'erdemcarkit',
+    password: '31316969',
+    role: 'employee',
+    companyId: 'comp_1',
+    company: 'Neurologic AI',
+    name: 'Enes Erdem Çarkıt',
+    title: 'Kurucu Ortak & Lead AI Engineer',
+    campus: 'Dijitalpark Çekmeköy Yerleşkesi',
+    avatar: './assets/avatar_erdem.png',
+    bio: 'Neurologic AI bünyesinde derin öğrenme ve otonom ajan mimarileri üzerine Ar-Ge yürütüyoruz. Çekmeköy Yerleşkesi B304 ofisindeyiz.',
+    skills: ['Yapay Zeka', 'Python', 'LLM Agents', 'PyTorch'],
     postsCount: 18,
     connectionsCount: 540,
     profileViews: 1420
@@ -29,13 +106,15 @@ const DEFAULT_ACCOUNTS = {
   aliniyya: {
     username: 'aliniyya',
     password: '31316969',
+    role: 'employee',
+    companyId: 'comp_2',
+    company: 'CloudScale Tech',
     name: 'Ali Nihat Eryürek',
     title: 'Senior Cloud & Systems Architect',
-    company: 'CloudScale Tech',
     campus: 'Dijitalpark Ataşehir Yerleşkesi',
     avatar: './assets/avatar_ali.png',
-    bio: 'Yüksek ölçekli bulut mimarileri, Kubernetes, mikroservisler ve DevOps optimizasyonları. Teknokent firmalarıyla açık kaynak ve ortak Ar-Ge projelerine her zaman açığım.',
-    skills: ['Kubernetes', 'Cloud Native', 'Go', 'AWS/GCP', 'DevOps'],
+    bio: 'CloudScale Tech bünyesinde yüksek ölçekli bulut mimarileri ve DevOps optimizasyonları üzerine çalışıyorum.',
+    skills: ['Kubernetes', 'Cloud Native', 'Go', 'AWS/GCP'],
     postsCount: 12,
     connectionsCount: 390,
     profileViews: 980
@@ -43,175 +122,171 @@ const DEFAULT_ACCOUNTS = {
   bakugan: {
     username: 'bakugan',
     password: '31316969',
+    role: 'employee',
+    companyId: 'comp_3',
+    company: 'Core Innovation Hub',
     name: 'Batuhan Akyazı',
     title: 'Head of Product & Growth Partner',
-    company: 'Core Innovation Hub',
     campus: 'Dijitalpark Çekmeköy Yerleşkesi',
     avatar: './assets/avatar_batuhan.jpg',
-    bio: 'B2B SaaS büyüme stratejileri, ürün yönetimi ve girişim hızlandırma. Teknokent girişimcilerine mentörlük sağlıyor ve küresel açılım destekleri sunuyorum.',
-    skills: ['Product Growth', 'B2B SaaS', 'Girişimcilik', 'UX Strategy'],
+    bio: 'Core Innovation Hub bünyesinde B2B SaaS büyüme stratejileri ve girişim hızlandırma çalışmaları yürütüyorum.',
+    skills: ['Product Growth', 'B2B SaaS', 'Girişimcilik'],
     postsCount: 24,
     connectionsCount: 710,
     profileViews: 2350
   }
 };
 
+// Default Companies (Startups, Ar-Ge Firmaları, Kuluçkalar)
+const DEFAULT_COMPANIES = [
+  {
+    id: 'comp_1',
+    name: 'Neurologic AI',
+    sector: 'Yapay Zeka & Derin Teknoloji (Ar-Ge)',
+    campus: 'Çekmeköy - Ofis B304',
+    size: '12-25 Kişi',
+    adminUsername: 'neurologic',
+    founder: 'Enes Erdem Çarkıt',
+    logoEmoji: '🧠',
+    isFollowing: true
+  },
+  {
+    id: 'comp_2',
+    name: 'CloudScale Tech',
+    sector: 'Bulut Bilişim & Siber Güvenlik (Ar-Ge)',
+    campus: 'Ataşehir - Ofis A112',
+    size: '8-15 Kişi',
+    adminUsername: 'cloudscale',
+    founder: 'Ali Nihat Eryürek',
+    logoEmoji: '☁️',
+    isFollowing: false
+  },
+  {
+    id: 'comp_3',
+    name: 'Core Innovation Hub',
+    sector: 'Girişim Kuluçka Merkezi & Hızlandırıcı',
+    campus: 'Çekmeköy - Girişim Vadisi',
+    size: '5-10 Kişi',
+    adminUsername: 'corehub',
+    founder: 'Batuhan Akyazı',
+    logoEmoji: '🚀',
+    isFollowing: true
+  },
+  {
+    id: 'comp_root',
+    name: 'Marmara Teknokent Yönetim A.Ş.',
+    sector: 'Teknoloji Geliştirme Bölgesi İdaresi',
+    campus: 'Gebze & Dijitalpark Yerleşkeleri',
+    size: '50+ Kişi',
+    adminUsername: 'marmarateknokent',
+    founder: 'TGB İdaresi',
+    logoEmoji: '🏛️',
+    isFollowing: true
+  }
+];
+
 // Initial State Template
 const DEFAULT_STATE = {
   users: JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS)),
-  companies: [
+  companies: JSON.parse(JSON.stringify(DEFAULT_COMPANIES)),
+  accountRequests: [
     {
-      id: 'comp_1',
-      name: 'Neurologic AI',
-      sector: 'Yapay Zeka & Derin Teknoloji',
-      campus: 'Çekmeköy - Ofis B304',
-      size: '12-25 Kişi',
-      founder: 'Enes Erdem Çarkıt',
-      logoEmoji: '🧠',
-      isFollowing: true
-    },
-    {
-      id: 'comp_2',
-      name: 'CloudScale Tech',
-      sector: 'Bulut Bilişim & Siber Güvenlik',
-      campus: 'Ataşehir - Ofis A112',
-      size: '8-15 Kişi',
-      founder: 'Ali Nihat Eryürek',
-      logoEmoji: '☁️',
-      isFollowing: false
-    },
-    {
-      id: 'comp_3',
-      name: 'Core Innovation Hub',
-      sector: 'Girişim Hızlandırıcı & B2B SaaS',
-      campus: 'Çekmeköy - Girişim Vadisi',
-      size: '5-10 Kişi',
-      founder: 'Batuhan Akyazı',
-      logoEmoji: '🚀',
-      isFollowing: true
-    },
-    {
-      id: 'comp_4',
-      name: 'Dijitalpark Yönetim A.Ş.',
-      sector: 'Teknoloji Geliştirme Bölgesi',
-      campus: 'Çekmeköy & Ataşehir',
-      size: '50+ Kişi',
-      founder: 'TGB İdaresi',
-      logoEmoji: '🏛️',
-      isFollowing: true
+      id: 'req_demo_1',
+      name: 'Caner Demir',
+      email: 'caner.demir@neurologic.ai',
+      phone: '0532 555 12 34',
+      companyId: 'comp_1',
+      companyName: 'Neurologic AI',
+      title: 'Kıdemli Yapay Zeka Araştırmacısı',
+      requestedUsername: 'canerdemir',
+      password: '31316969',
+      avatar: './assets/avatar_erdem.png',
+      note: 'Merhaba Erdem Bey, Neurologic AI Ar-Ge ekibinde görüntü işleme projesi için göreve başladım. Hesabımı onaylayabilir misiniz?',
+      status: 'PENDING', // PENDING, APPROVED, REJECTED
+      createdAt: Date.now() - 45 * 60 * 1000,
+      dateStr: '45 dk önce'
     }
   ],
   posts: [
     {
+      id: 'post_admin',
+      authorUsername: 'marmarateknokent',
+      authorType: 'company',
+      companyName: 'Marmara Teknokent Yönetim A.Ş.',
+      timestamp: '10 dakika önce',
+      createdAt: Date.now() - 10 * 60 * 1000,
+      content: '🏛️ DUYURU: Marmara Teknokent bünyesindeki Ar-Ge firmaları ve kuluçka girişimleri için yeni kurumsal iletişim ağı devreye alınmıştır!\n\nYeni hiyerarşik güvenlik yapısı gereğince firma çalışanlarının hesap açma başvuruları doğrudan ilgili firma yetkilisinin onayına sunulmaktadır. Tüm girişimcilerimize başarılar dileriz. 🚀',
+      tags: ['MarmaraTeknokent', 'Duyuru', 'ArGe', 'Inovasyon'],
+      category: 'arge',
+      image: './assets/logo.jpg',
+      likes: ['neurologic', 'cloudscale', 'erdemcarkit', 'aliniyya'],
+      reposts: 12,
+      comments: [
+        {
+          id: 'comm_root_1',
+          authorUsername: 'neurologic',
+          time: '5 dk önce',
+          text: 'Teknokent yönetimine teşekkürler! Neurologic AI olarak Ar-Ge ekibimizle tam entegreyiz.'
+        }
+      ]
+    },
+    {
       id: 'post_1',
       authorUsername: 'erdemcarkit',
       authorType: 'user',
-      timestamp: '25 dakika önce',
-      createdAt: Date.now() - 25 * 60 * 1000,
-      content: 'Dijitalpark Teknokent Çekmeköy kampüsümüzdeki yeni otonom yapay zeka laboratuvarımızda ilk büyük prototip testini tamamladık! 🚀🤖\n\nEkosistemdeki diğer Ar-Ge ekipleriyle gerçek zamanlı veri akışı ve edge-computing modellerini test etmek istiyoruz. İlgilenen ekipler çay-kahveye bekleriz! ☕️',
-      tags: ['YapayZeka', 'ArGe', 'AkıllıKampüs', 'Dijitalpark'],
+      timestamp: '30 dakika önce',
+      createdAt: Date.now() - 30 * 60 * 1000,
+      content: 'Neurologic AI otonom yapay zeka laboratuvarımızda ilk büyük edge-inference prototip testini tamamladık! 🚀🤖\n\nEkosistemdeki diğer Ar-Ge ekipleriyle gerçek zamanlı veri akışı modellerini test etmek istiyoruz. İlgilenen ekipler Çekmeköy B304 ofisimize çay-kahveye bekleriz!',
+      tags: ['YapayZeka', 'ArGe', 'MarmaraTeknokent'],
       category: 'arge',
       image: './assets/post_office.jpg',
       likes: ['aliniyya', 'bakugan'],
       reposts: 4,
-      comments: [
-        {
-          id: 'comm_1',
-          authorUsername: 'aliniyya',
-          time: '18 dk önce',
-          text: 'Tebrikler Erdem! Laboratuvar gerçekten muazzam olmuş. Bulut gecikme sürelerini düşürmek için bizim micro-gateway altyapısıyla entegre edebiliriz, öğleden sonra uğruyorum!'
-        },
-        {
-          id: 'comm_2',
-          authorUsername: 'bakugan',
-          time: '10 dk önce',
-          text: 'Harika bir hamle Erdem. Cuma günü düzenleyeceğimiz Teknokent Girişimcilik Demo Günü için de bir sunum planlayalım derim!'
-        }
-      ]
-    },
-    {
-      id: 'post_2',
-      authorUsername: 'bakugan',
-      authorType: 'user',
-      timestamp: '1 saat önce',
-      createdAt: Date.now() - 60 * 60 * 1000,
-      content: 'Büyük gün! Yeni hızlandırma programımızın demo gününde ekiplerimiz uluslararası yatırımcılarla buluştu. 🎉✨\n\nDijitalpark Teknokent çatısı altındaki 6 girişimimizin ilk yatırım turlarını kapatmasını kutluyoruz. Büyümeye ve Türkiye’den küresel teknoloji markaları çıkarmaya devam!',
-      tags: ['Girişimcilik', 'Lansman', 'Yatırım', 'BridgeToBalkans'],
-      category: 'startup',
-      image: './assets/post_team.jpg',
-      likes: ['erdemcarkit', 'aliniyya'],
-      reposts: 7,
-      comments: [
-        {
-          id: 'comm_3',
-          authorUsername: 'erdemcarkit',
-          time: '45 dk önce',
-          text: 'Tüm ekipleri gönülden kutlarım Batuhan! Ekosistemin enerjisi her geçen gün katlanarak artıyor.'
-        }
-      ]
-    },
-    {
-      id: 'post_3',
-      authorUsername: 'aliniyya',
-      authorType: 'user',
-      timestamp: '3 saat önce',
-      createdAt: Date.now() - 3 * 60 * 60 * 1000,
-      content: 'Ataşehir yerleşkesinde perşembe günü 15:30’da "Zero-Trust Cloud Mimarisi ve Teknokent Firmaları İçin Güvenlik Standartları" atölyesi düzenliyoruz. 🛡️💻\n\nKatılmak isteyen yazılımcı ve sistem yöneticisi arkadaşlar DM atabilir, kontenjan 30 kişiyle sınırlıdır!',
-      tags: ['CloudNative', 'SiberGüvenlik', 'DevOps', 'Etkinlik'],
-      category: 'etkinlik',
-      image: null,
-      likes: ['erdemcarkit'],
-      reposts: 2,
       comments: []
     }
   ],
   messages: {
+    'marmarateknokent__neurologic': [
+      { id: 'm_1', sender: 'marmarateknokent', recipient: 'neurologic', text: 'Sayın Erdem Çarkıt, Neurologic AI yeni dönem Ar-Ge tescili onaylanmıştır.', time: '10:00', timestamp: Date.now() - 7200000 },
+      { id: 'm_2', sender: 'neurologic', recipient: 'marmarateknokent', text: 'Çok teşekkürler Sayın Yönetim, ekibimizle çalışmalara hız kesmeden devam ediyoruz.', time: '10:05', timestamp: Date.now() - 7100000 }
+    ],
     'aliniyya__erdemcarkit': [
-      { id: 'msg_seed_1', sender: 'aliniyya', recipient: 'erdemcarkit', text: 'Selam Erdem, yeni AI modeli testleri nasıl gidiyor?', time: '14:20', timestamp: Date.now() - 3600000 },
-      { id: 'msg_seed_2', sender: 'erdemcarkit', recipient: 'aliniyya', text: 'Selam Ali! Gayet başarılı, biraz önce yeni laboratuvardan post paylaştım.', time: '14:22', timestamp: Date.now() - 3500000 }
-    ],
-    'bakugan__erdemcarkit': [
-      { id: 'msg_seed_3', sender: 'bakugan', recipient: 'erdemcarkit', text: 'Erdem selam, Cuma günkü Teknokent Demo Day için 10 dakikalık bir slot ayırdım sana.', time: '11:15', timestamp: Date.now() - 7200000 }
-    ],
-    'aliniyya__bakugan': [
-      { id: 'msg_seed_4', sender: 'bakugan', recipient: 'aliniyya', text: 'Ali selam, Ataşehir kampüsündeki workshop için salon hazır mı?', time: 'Dün', timestamp: Date.now() - 86400000 }
+      { id: 'm_3', sender: 'aliniyya', recipient: 'erdemcarkit', text: 'Selam Erdem, yeni AI modeli testleri nasıl gidiyor?', time: '14:20', timestamp: Date.now() - 3600000 },
+      { id: 'm_4', sender: 'erdemcarkit', recipient: 'aliniyya', text: 'Selam Ali! Gayet başarılı, laboratuvardan post paylaştım.', time: '14:22', timestamp: Date.now() - 3500000 }
     ]
   }
 };
 
 // -----------------------------------------------------------------------------
-// TAB RUNTIME VARIABLES
+// RUNTIME STATE
 // -----------------------------------------------------------------------------
 let appState = loadSharedState();
-let currentTabUser = null; // Isolated tab auth
+let currentTabUser = null; // Tab-isolated active user
 const tabSessionId = 'tab_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
 let activeChatPartner = null;
 let isChatDockOpen = true;
 let currentFeedCategory = 'all';
 let selectedRegAvatar = './assets/avatar_erdem.png';
+let selectedDirectAvatar = './assets/avatar_erdem.png';
 let typingDebounceTimer = null;
 let presenceHeartbeatTimer = null;
-let peerPresenceMap = {}; // username -> lastSeenTimestamp
+let peerPresenceMap = {};
 
 // -----------------------------------------------------------------------------
-// REAL-TIME BUS: HYBRID MESH
-// 1. BroadcastChannel (0ms Instant Tab-to-Tab)
-// 2. Storage Event (Cross-Tab Local Storage Fallback)
-// 3. MQTT WebSockets (Cross-Device, Internet & Phone Real-time)
+// REAL-TIME BUS (HYBRID MESH)
 // -----------------------------------------------------------------------------
 let localBroadcast = null;
 try {
-  localBroadcast = new BroadcastChannel('teknokent_mesh_v4');
+  localBroadcast = new BroadcastChannel('marmara_mesh_v5');
   localBroadcast.onmessage = (event) => {
     if (event.data && event.data.originSessionId !== tabSessionId) {
       handleRealtimePacket(event.data);
     }
   };
 } catch (e) {
-  console.warn('BroadcastChannel unavailable, using storage bus fallback');
+  console.warn('BroadcastChannel fallback enabled');
 }
 
-// Storage event for cross-tab state syncing
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY) {
     appState = loadSharedState();
@@ -220,22 +295,19 @@ window.addEventListener('storage', (e) => {
       renderChatDock();
       renderActiveChatWindow();
       renderOnlineMembersList();
+      updateCompanyConsoleBadge();
     }
+    checkMyApplicationStatus();
   } else if (e.key === SESSION_LOCK_KEY) {
     checkActiveSessionTakeover();
   }
 });
 
-// Clean up tab session immediately on unload/refresh (Prevents ghost locks!)
 window.addEventListener('beforeunload', () => {
-  if (currentTabUser) {
-    releaseUserSession(currentTabUser);
-  }
+  if (currentTabUser) releaseUserSession(currentTabUser);
 });
 window.addEventListener('pagehide', () => {
-  if (currentTabUser) {
-    releaseUserSession(currentTabUser);
-  }
+  if (currentTabUser) releaseUserSession(currentTabUser);
 });
 
 // MQTT WebSocket Client
@@ -249,18 +321,14 @@ let currentBrokerIdx = 0;
 function initWebSocketRealtime() {
   updateRealtimeStatus(true, 'Canlı (Yerel Kanal)');
 
-  if (typeof mqtt === 'undefined') {
-    console.log('MQTT library not loaded, operating on local real-time mesh');
-    return;
-  }
-
+  if (typeof mqtt === 'undefined') return;
   if (mqttClient) {
     try { mqttClient.end(true); } catch (e) {}
     mqttClient = null;
   }
 
   const brokerUrl = MQTT_BROKERS[currentBrokerIdx];
-  const clientId = 'tk_' + tabSessionId;
+  const clientId = 'marmara_' + tabSessionId;
 
   try {
     mqttClient = mqtt.connect(brokerUrl, {
@@ -271,13 +339,12 @@ function initWebSocketRealtime() {
     });
 
     mqttClient.on('connect', () => {
-      console.log('✅ Realtime WebSocket connected:', brokerUrl);
+      console.log('✅ Realtime connected:', brokerUrl);
       updateRealtimeStatus(true, 'Canlı (WebSocket Online)');
 
-      // Subscribe to global announcements and user private channel
-      mqttClient.subscribe('teknokent/blue/v4/global');
+      mqttClient.subscribe('marmara/teknokent/v5/global');
       if (currentTabUser) {
-        mqttClient.subscribe(`teknokent/blue/v4/user/${currentTabUser}`);
+        mqttClient.subscribe(`marmara/teknokent/v5/user/${currentTabUser}`);
       }
     });
 
@@ -292,9 +359,7 @@ function initWebSocketRealtime() {
       }
     });
 
-    mqttClient.on('error', (err) => {
-      console.warn('MQTT broker issue:', err.message || err);
-      // Try next broker fallback
+    mqttClient.on('error', () => {
       currentBrokerIdx = (currentBrokerIdx + 1) % MQTT_BROKERS.length;
     });
 
@@ -302,7 +367,7 @@ function initWebSocketRealtime() {
       updateRealtimeStatus(true, 'Canlı (Yerel Kanal)');
     });
   } catch (err) {
-    console.warn('MQTT init failed, falling back to local bus', err);
+    console.warn('MQTT init failed, using local mesh', err);
   }
 }
 
@@ -310,28 +375,20 @@ function broadcastPacket(packet) {
   packet.originSessionId = tabSessionId;
   packet.timestamp = packet.timestamp || Date.now();
 
-  // 1. Broadcast locally (Instant 0ms)
   if (localBroadcast) {
-    try {
-      localBroadcast.postMessage(packet);
-    } catch (e) {}
+    try { localBroadcast.postMessage(packet); } catch (e) {}
   }
 
-  // 2. Publish to MQTT WebSocket Mesh (Cross-device / Mobile / Internet)
   if (mqttClient && mqttClient.connected) {
     try {
-      let topic = 'teknokent/blue/v4/global';
+      let topic = 'marmara/teknokent/v5/global';
       if (packet.type === 'CHAT_MESSAGE' && packet.message?.recipient) {
-        topic = `teknokent/blue/v4/user/${packet.message.recipient}`;
+        topic = `marmara/teknokent/v5/user/${packet.message.recipient}`;
       } else if (packet.type === 'TYPING_STATUS' && packet.recipient) {
-        topic = `teknokent/blue/v4/user/${packet.recipient}`;
-      } else if (packet.type === 'SESSION_CLAIMED' && packet.username) {
-        topic = `teknokent/blue/v4/user/${packet.username}`;
+        topic = `marmara/teknokent/v5/user/${packet.recipient}`;
       }
       mqttClient.publish(topic, JSON.stringify(packet), { qos: 1 });
-    } catch (e) {
-      console.warn('MQTT publish error', e);
-    }
+    } catch (e) {}
   }
 }
 
@@ -340,25 +397,41 @@ function handleRealtimePacket(packet) {
 
   switch (packet.type) {
     case 'CHAT_MESSAGE':
-      if (packet.message) {
-        handleIncomingChatMessage(packet.message);
-      }
+      if (packet.message) handleIncomingChatMessage(packet.message);
       break;
 
     case 'TYPING_STATUS':
       handleIncomingTyping(packet);
       break;
 
+    case 'NEW_ACCOUNT_REQUEST':
+      appState = loadSharedState();
+      updateCompanyConsoleBadge();
+      if (isUserAdminOfCompany(currentTabUser, packet.request?.companyId)) {
+        playChimeSound();
+        showToast(`🔔 Yeni Personel Başvurusu: ${packet.request.name} onayınızı bekliyor!`);
+        renderConsoleRequests();
+      }
+      break;
+
+    case 'ACCOUNT_REQUEST_APPROVED':
+      appState = loadSharedState();
+      checkMyApplicationStatus();
+      renderOnlineMembersList();
+      renderChatDock();
+      updateCompanyConsoleBadge();
+      if (currentTabUser) {
+        showToast(`🎉 @${packet.username} hesabı onaylanarak açıldı!`);
+      }
+      break;
+
     case 'FEED_POST':
-      if (packet.post) {
-        // Add to posts if not exists
-        if (!appState.posts.some(p => p.id === packet.post.id)) {
-          appState.posts.unshift(packet.post);
-          saveSharedState();
-          renderFeed();
-          if (currentTabUser && packet.post.authorUsername !== currentTabUser) {
-            showToast(`📢 @${packet.post.authorUsername} yeni bir gönderi paylaştı!`);
-          }
+      if (packet.post && !appState.posts.some(p => p.id === packet.post.id)) {
+        appState.posts.unshift(packet.post);
+        saveSharedState();
+        renderFeed();
+        if (currentTabUser && packet.post.authorUsername !== currentTabUser) {
+          showToast(`📢 @${packet.post.authorUsername} yeni bir gönderi paylaştı!`);
         }
       }
       break;
@@ -368,15 +441,8 @@ function handleRealtimePacket(packet) {
       renderFeed();
       break;
 
-    case 'NEW_USER_REGISTERED':
-      appState = loadSharedState();
-      renderOnlineMembersList();
-      renderChatDock();
-      break;
-
     case 'SESSION_CLAIMED':
       if (currentTabUser && currentTabUser === packet.username && packet.newSessionId !== tabSessionId) {
-        // Another tab or device claimed this session
         showSessionTakeoverNotice();
       }
       break;
@@ -385,7 +451,6 @@ function handleRealtimePacket(packet) {
       if (packet.username) {
         peerPresenceMap[packet.username] = Date.now();
         renderOnlineMembersList();
-        renderChatDockHeader();
       }
       break;
   }
@@ -395,7 +460,6 @@ function updateRealtimeStatus(online, text) {
   const badge = document.getElementById('ws-status-badge');
   const label = document.getElementById('ws-status-text');
   if (!badge) return;
-
   badge.className = online ? 'ws-status-badge' : 'ws-status-badge connecting';
   if (label) label.textContent = text || (online ? 'Canlı (WebSocket)' : 'Bağlanıyor...');
 }
@@ -408,19 +472,26 @@ function loadSharedState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Ensure defaults & real photos are always maintained
+      // Ensure default accounts and real photos exist
       for (const key in DEFAULT_ACCOUNTS) {
         if (!parsed.users[key]) {
           parsed.users[key] = JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS[key]));
         } else {
           parsed.users[key].avatar = DEFAULT_ACCOUNTS[key].avatar;
           parsed.users[key].name = DEFAULT_ACCOUNTS[key].name;
+          parsed.users[key].role = DEFAULT_ACCOUNTS[key].role;
         }
+      }
+      if (!parsed.companies || parsed.companies.length === 0) {
+        parsed.companies = JSON.parse(JSON.stringify(DEFAULT_COMPANIES));
+      }
+      if (!parsed.accountRequests) {
+        parsed.accountRequests = JSON.parse(JSON.stringify(DEFAULT_STATE.accountRequests));
       }
       return parsed;
     }
   } catch (e) {
-    console.warn('Storage load error, falling back to default', e);
+    console.warn('Storage load error, using default state', e);
   }
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
 }
@@ -459,7 +530,6 @@ function claimUserSession(username) {
   };
   saveActiveSessionsRegistry(reg);
 
-  // Broadcast to other tabs so old session hands over gracefully
   broadcastPacket({
     type: 'SESSION_CLAIMED',
     username: username,
@@ -486,9 +556,7 @@ function checkActiveSessionTakeover() {
 
 function showSessionTakeoverNotice() {
   const overlay = document.getElementById('session-takeover-overlay');
-  if (overlay) {
-    overlay.style.display = 'flex';
-  }
+  if (overlay) overlay.style.display = 'flex';
 }
 
 function reclaimSession() {
@@ -498,7 +566,7 @@ function reclaimSession() {
 
   claimUserSession(currentTabUser);
   startHeartbeat(currentTabUser);
-  showToast(`Oturum bu pencereye başarıyla aktarıldı! ⚡`);
+  showToast(`Oturum bu pencereye aktarıldı! ⚡`);
 }
 
 function startHeartbeat(username) {
@@ -522,15 +590,16 @@ function stopHeartbeat() {
 }
 
 // -----------------------------------------------------------------------------
-// APP LIFECYCLE & INITIALIZATION
+// APP INITIALIZATION & LIFECYCLE
 // -----------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   setupEventListeners();
+  populateCompanySelectDropdown();
+  checkMyApplicationStatus();
 
   // Tab-isolated session check
   const sessionUser = sessionStorage.getItem(SESSION_USER_KEY);
-
   if (sessionUser && appState.users[sessionUser]) {
     loginSession(sessionUser, false);
   } else {
@@ -556,11 +625,10 @@ function showLoginScreen(alertMsg) {
   }
 
   stopHeartbeat();
-  if (currentTabUser) {
-    releaseUserSession(currentTabUser);
-  }
+  if (currentTabUser) releaseUserSession(currentTabUser);
   currentTabUser = null;
   sessionStorage.removeItem(SESSION_USER_KEY);
+  checkMyApplicationStatus();
 }
 
 function showMainApp() {
@@ -572,10 +640,9 @@ function showMainApp() {
   if (mainApp) mainApp.style.display = 'block';
   if (takeoverOverlay) takeoverOverlay.style.display = 'none';
 
-  // Set default chat partner to the first other user
   const otherUsers = Object.keys(appState.users).filter(u => u !== currentTabUser);
   if (!activeChatPartner || activeChatPartner === currentTabUser) {
-    activeChatPartner = otherUsers[0] || 'aliniyya';
+    activeChatPartner = otherUsers[0] || 'neurologic';
   }
 
   renderNavbar();
@@ -586,6 +653,7 @@ function showMainApp() {
   renderCompaniesList();
   renderChatDock();
   renderActiveChatWindow();
+  updateCompanyConsoleBadge();
 }
 
 function loginSession(username, showWelcome = true) {
@@ -604,7 +672,35 @@ function loginSession(username, showWelcome = true) {
 }
 
 // -----------------------------------------------------------------------------
-// AUTH: LOGIN & REGISTER LOGIC
+// HIERARCHY PERMISSION HELPERS
+// -----------------------------------------------------------------------------
+function isSuperAdmin(username) {
+  return username === 'marmarateknokent' || appState.users[username]?.role === 'super_admin';
+}
+
+function isCompanyAdmin(username) {
+  return appState.users[username]?.role === 'company_admin' || isSuperAdmin(username);
+}
+
+function isUserAdminOfCompany(username, companyId) {
+  if (!username) return false;
+  if (isSuperAdmin(username)) return true;
+  const user = appState.users[username];
+  return user && user.role === 'company_admin' && user.companyId === companyId;
+}
+
+function getRoleBadgeHtml(role) {
+  if (role === 'super_admin') {
+    return `<span class="role-badge super-admin">🏛️ Marmara Teknokent (Süper Yetkili)</span>`;
+  }
+  if (role === 'company_admin') {
+    return `<span class="role-badge company-admin">🏢 Firma / Kuluçka Yetkilisi</span>`;
+  }
+  return `<span class="role-badge employee">👤 Firma Çalışanı</span>`;
+}
+
+// -----------------------------------------------------------------------------
+// AUTH: LOGIN & ACCOUNT REQUEST SUBMISSION
 // -----------------------------------------------------------------------------
 function switchAuthTab(mode) {
   const loginContainer = document.getElementById('login-form-container');
@@ -627,7 +723,18 @@ function switchAuthTab(mode) {
     if (regContainer) regContainer.style.display = 'block';
     if (btnLogin) btnLogin.classList.remove('active');
     if (btnReg) btnReg.classList.add('active');
+    populateCompanySelectDropdown();
   }
+}
+
+function populateCompanySelectDropdown() {
+  const select = document.getElementById('app-company-select');
+  if (!select) return;
+
+  const validCompanies = appState.companies.filter(c => c.id !== 'comp_root');
+  select.innerHTML = validCompanies.map(comp => `
+    <option value="${comp.id}">${comp.logoEmoji || '🏢'} ${comp.name} (${comp.sector})</option>
+  `).join('');
 }
 
 function handleLoginSubmit(event) {
@@ -643,10 +750,9 @@ function handleLoginSubmit(event) {
     return;
   }
 
-  // Look for user by username or email
+  // Find user by username or email
   let matchedUser = appState.users[username];
   if (!matchedUser) {
-    // Search by email
     for (const key in appState.users) {
       if (appState.users[key].email && appState.users[key].email.toLowerCase() === username) {
         matchedUser = appState.users[key];
@@ -680,22 +786,32 @@ function selectRegAvatar(element) {
   selectedRegAvatar = element.getAttribute('data-avatar') || './assets/avatar_erdem.png';
 }
 
-function handleRegisterSubmit(event) {
+function selectDirectAvatar(element) {
+  document.querySelectorAll('[data-directavatar]').forEach(el => el.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedDirectAvatar = element.getAttribute('data-directavatar') || './assets/avatar_erdem.png';
+}
+
+// -----------------------------------------------------------------------------
+// APPLICATION REQUEST FLOW ("Kabul ettiği takdirde hesap açılsın")
+// -----------------------------------------------------------------------------
+function handleAccountApplicationSubmit(event) {
   if (event) event.preventDefault();
-  const name = document.getElementById('reg-name-input').value.trim();
-  const rawUsername = document.getElementById('reg-username-input').value.trim().toLowerCase();
-  const email = document.getElementById('reg-email-input').value.trim();
-  const password = document.getElementById('reg-password-input').value.trim();
-  const password2 = document.getElementById('reg-password2-input').value.trim();
-  const company = document.getElementById('reg-company-input').value.trim();
-  const title = document.getElementById('reg-title-input').value.trim() || 'Girişimci & Araştırmacı';
-  const campus = document.getElementById('reg-campus-select').value;
+  const companySelect = document.getElementById('app-company-select');
+  const companyId = companySelect.value;
+  const targetCompany = appState.companies.find(c => c.id === companyId);
+
+  const name = document.getElementById('app-name-input').value.trim();
+  const email = document.getElementById('app-email-input').value.trim();
+  const title = document.getElementById('app-title-input').value.trim();
+  const rawUsername = document.getElementById('app-username-input').value.trim().toLowerCase();
+  const password = document.getElementById('app-password-input').value.trim();
+  const note = document.getElementById('app-note-input').value.trim();
   const regAlert = document.getElementById('reg-alert-banner');
 
-  // Sanitize username
   const username = rawUsername.replace(/[^a-z0-9_]/g, '');
 
-  function showRegError(msg) {
+  function showErr(msg) {
     if (regAlert) {
       regAlert.innerHTML = `⚠️ ${msg}`;
       regAlert.style.display = 'block';
@@ -704,37 +820,384 @@ function handleRegisterSubmit(event) {
     }
   }
 
-  if (!name || !username || !password || !company) {
-    showRegError('Lütfen zorunlu (*) alanların tümünü doldurun!');
+  if (!name || !email || !title || !username || !password || !targetCompany) {
+    showErr('Lütfen zorunlu (*) alanların tümünü doldurun!');
     return;
   }
 
   if (password.length < 4) {
-    showRegError('Şifreniz en az 4 karakter uzunluğunda olmalıdır!');
-    return;
-  }
-
-  if (password !== password2) {
-    showRegError('Girdiğiniz şifreler birbiriyle eşleşmiyor!');
+    showErr('Şifreniz en az 4 karakter olmalıdır!');
     return;
   }
 
   if (appState.users[username]) {
-    showRegError(`"@${username}" kullanıcı adı zaten kayıtlı! Lütfen farklı bir kullanıcı adı seçin.`);
+    showErr(`"@${username}" kullanıcı adı zaten bir hesap tarafından kullanılıyor!`);
     return;
   }
+
+  // Check if there is an existing pending request with this username
+  const existingReq = appState.accountRequests.find(r => r.requestedUsername === username && r.status === 'PENDING');
+  if (existingReq) {
+    showErr(`"@${username}" adına zaten onay bekleyen bir başvuru bulunmaktadır!`);
+    return;
+  }
+
+  const newRequest = {
+    id: 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    name: name,
+    email: email,
+    phone: '',
+    companyId: targetCompany.id,
+    companyName: targetCompany.name,
+    title: title,
+    requestedUsername: username,
+    password: password,
+    avatar: selectedRegAvatar || './assets/avatar_erdem.png',
+    note: note || `${targetCompany.name} bünyesinde görev yapmaktayım.`,
+    status: 'PENDING',
+    createdAt: Date.now(),
+    dateStr: 'Yeni Başvuru (Şimdi)'
+  };
+
+  appState.accountRequests.unshift(newRequest);
+  saveSharedState();
+
+  // Save applicant's tracking info in localStorage
+  localStorage.setItem(MY_APP_KEY, JSON.stringify({
+    requestId: newRequest.id,
+    username: username,
+    companyName: targetCompany.name,
+    name: name,
+    password: password,
+    timestamp: Date.now()
+  }));
+
+  // Broadcast to other tabs & MQTT mesh
+  broadcastPacket({
+    type: 'NEW_ACCOUNT_REQUEST',
+    request: newRequest
+  });
+
+  checkMyApplicationStatus();
+
+  // Reset form
+  document.getElementById('app-name-input').value = '';
+  document.getElementById('app-email-input').value = '';
+  document.getElementById('app-title-input').value = '';
+  document.getElementById('app-username-input').value = '';
+  document.getElementById('app-password-input').value = '';
+  document.getElementById('app-note-input').value = '';
+
+  showToast(`✅ Başvurunuz ${targetCompany.name} yetkilisine iletildi!`);
+}
+
+function checkMyApplicationStatus() {
+  const statusCard = document.getElementById('applicant-live-status');
+  const titleEl = document.getElementById('applicant-status-firm-name');
+  const descEl = document.getElementById('applicant-status-text');
+  if (!statusCard) return;
+
+  const raw = localStorage.getItem(MY_APP_KEY);
+  if (!raw) {
+    statusCard.style.display = 'none';
+    return;
+  }
+
+  try {
+    const myApp = JSON.parse(raw);
+    const req = appState.accountRequests.find(r => r.id === myApp.requestId);
+
+    if (!req || req.status === 'PENDING') {
+      statusCard.style.display = 'block';
+      statusCard.style.borderColor = 'rgba(0, 180, 216, 0.4)';
+      statusCard.style.background = 'rgba(0, 180, 216, 0.08)';
+      if (titleEl) titleEl.innerHTML = `⏳ ${myApp.companyName} Onayı Bekleniyor...`;
+      if (descEl) descEl.innerHTML = `
+        <strong>Sayın ${myApp.name}</strong>, <code>@${myApp.username}</code> kullanıcı adı talebiniz ${myApp.companyName} yetkilisinin onay paneline iletildi. Yetkili onay verdiği anda hesabınız açılacak ve bu ekranda otomatik bilgilendirileceksiniz.
+      `;
+    } else if (req.status === 'APPROVED') {
+      statusCard.style.display = 'block';
+      statusCard.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+      statusCard.style.background = 'rgba(16, 185, 129, 0.12)';
+      if (titleEl) titleEl.innerHTML = `🎉 Başvurunuz Onaylandı! Hesabınız Açıldı.`;
+      if (descEl) descEl.innerHTML = `
+        Tebrikler ${myApp.name}! ${myApp.companyName} başvurunuzu onayladı.<br>
+        <strong>Kullanıcı Adı:</strong> <code>@${myApp.username}</code><br>
+        <button onclick="quickFillApprovedUser('${myApp.username}', '${myApp.password}')" style="margin-top:0.5rem; background:var(--brand-online); color:#fff; font-weight:700; border:none; padding:0.4rem 0.85rem; border-radius:4px; cursor:pointer;">
+          Hemen Giriş Yap &rarr;
+        </button>
+      `;
+    } else if (req.status === 'REJECTED') {
+      statusCard.style.display = 'block';
+      statusCard.style.borderColor = 'rgba(238, 32, 46, 0.4)';
+      statusCard.style.background = 'rgba(238, 32, 46, 0.12)';
+      if (titleEl) titleEl.innerHTML = `❌ Başvurunuz Onaylanmadı`;
+      if (descEl) descEl.innerHTML = `${myApp.companyName} yetkilisi başvurunuzu onaylamadı. Başka bir firma seçebilir veya tekrar başvurabilirsiniz.`;
+    }
+  } catch (e) {
+    statusCard.style.display = 'none';
+  }
+}
+
+function quickFillApprovedUser(username, password) {
+  switchAuthTab('login');
+  const uInput = document.getElementById('login-username-input');
+  const pInput = document.getElementById('login-password-input');
+  if (uInput) uInput.value = username;
+  if (pInput) pInput.value = password;
+  performUserLogin(username, password);
+}
+
+function performUserLogin(username, password) {
+  const user = appState.users[username];
+  if (!user) return;
+  loginSession(username, true);
+}
+
+// -----------------------------------------------------------------------------
+// COMPANY CONSOLE & APPROVAL ACTIONS ("Yetki Yalnızca Firmalarda")
+// -----------------------------------------------------------------------------
+function openCompanyConsoleModal() {
+  if (!currentTabUser || !isCompanyAdmin(currentTabUser)) return;
+  const modal = document.getElementById('company-console-modal');
+  if (!modal) return;
+
+  const headerEmoji = document.getElementById('console-header-emoji');
+  const headerTitle = document.getElementById('console-header-title');
+
+  if (isSuperAdmin(currentTabUser)) {
+    if (headerEmoji) headerEmoji.textContent = '🏛️';
+    if (headerTitle) headerTitle.textContent = 'Marmara Teknokent Süper Yönetim Konsolu';
+  } else {
+    const user = appState.users[currentTabUser];
+    if (headerEmoji) headerEmoji.textContent = '🏢';
+    if (headerTitle) headerTitle.textContent = `${user.company} Firma Yönetim Paneli`;
+  }
+
+  switchConsoleTab('requests');
+  renderConsoleRequests();
+  modal.classList.add('show');
+}
+
+function closeCompanyConsoleModal() {
+  const modal = document.getElementById('company-console-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function switchConsoleTab(tabKey) {
+  const paneRequests = document.getElementById('console-pane-requests');
+  const paneCreate = document.getElementById('console-pane-create');
+  const paneMembers = document.getElementById('console-pane-members');
+
+  const btnRequests = document.getElementById('c-tab-requests');
+  const btnCreate = document.getElementById('c-tab-create');
+  const btnMembers = document.getElementById('c-tab-members');
+
+  if (paneRequests) paneRequests.style.display = tabKey === 'requests' ? 'block' : 'none';
+  if (paneCreate) paneCreate.style.display = tabKey === 'create' ? 'block' : 'none';
+  if (paneMembers) paneMembers.style.display = tabKey === 'members' ? 'block' : 'none';
+
+  if (btnRequests) btnRequests.classList.toggle('active', tabKey === 'requests');
+  if (btnCreate) btnCreate.classList.toggle('active', tabKey === 'create');
+  if (btnMembers) btnMembers.classList.toggle('active', tabKey === 'members');
+
+  if (tabKey === 'requests') renderConsoleRequests();
+  if (tabKey === 'members') renderConsoleMembers();
+}
+
+function updateCompanyConsoleBadge() {
+  const navBtn = document.getElementById('nav-company-console-btn');
+  const navBadge = document.getElementById('nav-pending-badge');
+  const tabBadge = document.getElementById('console-tab-pending-badge');
+  const sidebarBtn = document.getElementById('sidebar-company-console-btn');
+
+  if (!currentTabUser || !isCompanyAdmin(currentTabUser)) {
+    if (navBtn) navBtn.style.display = 'none';
+    if (sidebarBtn) sidebarBtn.style.display = 'none';
+    return;
+  }
+
+  if (navBtn) navBtn.style.display = 'flex';
+  if (sidebarBtn) sidebarBtn.style.display = 'block';
+
+  // Filter requests for current user's scope
+  let pendingRequests = [];
+  if (isSuperAdmin(currentTabUser)) {
+    pendingRequests = appState.accountRequests.filter(r => r.status === 'PENDING');
+  } else {
+    const userCompanyId = appState.users[currentTabUser]?.companyId;
+    pendingRequests = appState.accountRequests.filter(r => r.status === 'PENDING' && r.companyId === userCompanyId);
+  }
+
+  const count = pendingRequests.length;
+  if (navBadge) {
+    navBadge.textContent = count;
+    navBadge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+  if (tabBadge) {
+    tabBadge.textContent = count;
+  }
+}
+
+function renderConsoleRequests() {
+  const container = document.getElementById('console-requests-list');
+  if (!container || !currentTabUser) return;
+
+  const isSuper = isSuperAdmin(currentTabUser);
+  const userCompanyId = appState.users[currentTabUser]?.companyId;
+
+  const list = appState.accountRequests.filter(r => {
+    if (r.status !== 'PENDING') return false;
+    return isSuper || r.companyId === userCompanyId;
+  });
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:2.5rem; color:var(--text-secondary); background:var(--bg-input); border-radius:var(--radius-md);">
+        <span style="font-size:2rem; display:block; margin-bottom:0.5rem;">🎉</span>
+        <strong>Bekleyen hesap açma başvurusu yok!</strong>
+        <p style="font-size:0.8rem; margin-top:0.3rem;">Giriş sayfasından yeni adaylar başvuru yaptığında burada anlık listelenecektir.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = list.map(req => {
+    return `
+      <div class="request-card" id="req-card-${req.id}">
+        <div class="request-card-header">
+          <div class="request-candidate-info">
+            <img src="${req.avatar || './assets/avatar_erdem.png'}" class="request-avatar" alt="${req.name}" />
+            <div class="request-names">
+              <span class="request-name">${req.name}</span>
+              <span class="request-username">İstenen Handle: @${req.requestedUsername}</span>
+            </div>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">📅 ${req.dateStr}</span>
+        </div>
+
+        <div class="request-meta-grid">
+          <div><strong>Firma:</strong> ${req.companyName}</div>
+          <div><strong>Pozisyon:</strong> ${req.title}</div>
+          <div><strong>E-posta:</strong> ${req.email}</div>
+          <div><strong>Geçici Şifre:</strong> <code>${req.password}</code></div>
+        </div>
+
+        ${req.note ? `<div class="request-note-box">💬 "${escapeHtml(req.note)}"</div>` : ''}
+
+        <div class="request-actions-row">
+          <button class="btn-reject" onclick="rejectAccountRequest('${req.id}')">
+            <span>✕ Reddet</span>
+          </button>
+          <button class="btn-approve" onclick="approveAccountRequest('${req.id}')">
+            <span>✓ Onayla & Hesabı Aç</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function approveAccountRequest(requestId) {
+  const req = appState.accountRequests.find(r => r.id === requestId);
+  if (!req) return;
+
+  const company = appState.companies.find(c => c.id === req.companyId) || { name: req.companyName, campus: 'Dijitalpark Çekmeköy Yerleşkesi' };
+
+  // Create official employee account
+  const newUser = {
+    username: req.requestedUsername,
+    password: req.password,
+    role: 'employee',
+    companyId: req.companyId,
+    company: req.companyName,
+    name: req.name,
+    email: req.email,
+    title: req.title,
+    campus: company.campus || 'Dijitalpark Çekmeköy Yerleşkesi',
+    avatar: req.avatar || './assets/avatar_erdem.png',
+    bio: `${req.companyName} bünyesinde ${req.title} olarak Ar-Ge projeleri yürütüyorum.`,
+    skills: ['Teknokent Personeli', 'Ar-Ge'],
+    postsCount: 0,
+    connectionsCount: 1,
+    profileViews: 1
+  };
+
+  appState.users[req.requestedUsername] = newUser;
+  req.status = 'APPROVED';
+  saveSharedState();
+
+  // Broadcast approval across local mesh & MQTT
+  broadcastPacket({
+    type: 'ACCOUNT_REQUEST_APPROVED',
+    requestId: requestId,
+    username: req.requestedUsername,
+    companyId: req.companyId
+  });
+
+  renderConsoleRequests();
+  updateCompanyConsoleBadge();
+  renderOnlineMembersList();
+  renderChatDock();
+  playChimeSound();
+
+  showToast(`🎉 @${req.requestedUsername} hesabı onaylandı ve kullanıma açıldı!`);
+}
+
+function rejectAccountRequest(requestId) {
+  const req = appState.accountRequests.find(r => r.id === requestId);
+  if (!req) return;
+
+  req.status = 'REJECTED';
+  saveSharedState();
+
+  broadcastPacket({
+    type: 'ACCOUNT_REQUEST_APPROVED',
+    requestId: requestId
+  });
+
+  renderConsoleRequests();
+  updateCompanyConsoleBadge();
+  showToast(`Adayın başvurusu reddedildi.`);
+}
+
+function handleDirectPersonnelCreation(event) {
+  if (event) event.preventDefault();
+  const name = document.getElementById('direct-name').value.trim();
+  const title = document.getElementById('direct-title').value.trim();
+  const rawUsername = document.getElementById('direct-username').value.trim().toLowerCase();
+  const password = document.getElementById('direct-password').value.trim();
+  const email = document.getElementById('direct-email').value.trim();
+  const campus = document.getElementById('direct-campus').value;
+
+  const username = rawUsername.replace(/[^a-z0-9_]/g, '');
+
+  if (!name || !title || !username || !password) {
+    alert('Lütfen zorunlu alanları doldurun!');
+    return;
+  }
+
+  if (appState.users[username]) {
+    alert(`"@${username}" kullanıcı adı zaten kayıtlı!`);
+    return;
+  }
+
+  const currentUser = appState.users[currentTabUser];
+  const targetCompany = appState.companies.find(c => c.id === currentUser.companyId) || appState.companies[0];
 
   const newUser = {
     username: username,
     password: password,
+    role: 'employee',
+    companyId: targetCompany.id,
+    company: targetCompany.name,
     name: name,
     email: email,
     title: title,
-    company: company,
     campus: campus,
-    avatar: selectedRegAvatar || './assets/avatar_erdem.png',
-    bio: `${company} bünyesinde Teknokent Ar-Ge projeleri yürütüyorum.`,
-    skills: ['Girişimcilik', 'İnovasyon', 'Ar-Ge'],
+    avatar: selectedDirectAvatar || './assets/avatar_erdem.png',
+    bio: `${targetCompany.name} bünyesinde ${title} olarak Ar-Ge projeleri yürütüyorum.`,
+    skills: ['Firma Personeli', 'Ar-Ge'],
     postsCount: 0,
     connectionsCount: 1,
     profileViews: 1
@@ -743,40 +1206,65 @@ function handleRegisterSubmit(event) {
   appState.users[username] = newUser;
   saveSharedState();
 
-  // Broadcast new registration
   broadcastPacket({
-    type: 'NEW_USER_REGISTERED',
-    user: newUser
+    type: 'ACCOUNT_REQUEST_APPROVED',
+    username: username
   });
 
-  // Automatically log in as the newly registered user
-  loginSession(username, true);
-  showToast(`🎉 Tebrikler ${name}! Hesabınız oluşturuldu ve giriş yapıldı.`);
+  // Reset form
+  document.getElementById('direct-name').value = '';
+  document.getElementById('direct-title').value = '';
+  document.getElementById('direct-username').value = '';
+  document.getElementById('direct-email').value = '';
+
+  renderOnlineMembersList();
+  renderChatDock();
+  showToast(`🎉 ${name} (@${username}) başarıyla kaydedildi!`);
+  switchConsoleTab('members');
 }
 
-function logout() {
-  stopHeartbeat();
-  if (currentTabUser) {
-    releaseUserSession(currentTabUser);
-    if (mqttClient) {
-      try {
-        mqttClient.unsubscribe(`teknokent/blue/v4/user/${currentTabUser}`);
-      } catch (e) {}
-    }
-  }
-  currentTabUser = null;
-  sessionStorage.removeItem(SESSION_USER_KEY);
-  showLoginScreen('Güvenli şekilde çıkış yapıldı.');
-}
+function renderConsoleMembers() {
+  const container = document.getElementById('console-members-list');
+  if (!container || !currentTabUser) return;
 
-function togglePasswordVisibility(inputId) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
+  const isSuper = isSuperAdmin(currentTabUser);
+  const userCompanyId = appState.users[currentTabUser]?.companyId;
 
-function openNewTabForTesting() {
-  window.open(window.location.href, '_blank');
+  const members = Object.keys(appState.users).filter(uName => {
+    const u = appState.users[uName];
+    if (isSuper) return true;
+    return u.companyId === userCompanyId;
+  });
+
+  container.innerHTML = members.map(uName => {
+    const u = appState.users[uName];
+    const isOnline = uName === currentTabUser || (peerPresenceMap[uName] && (Date.now() - peerPresenceMap[uName] < 10000));
+    return `
+      <div class="request-card" style="padding:0.85rem 1rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <div style="position:relative;">
+              <img src="${u.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" alt="${u.name}" />
+              <div class="online-status-dot" style="background-color: ${isOnline ? 'var(--brand-online)' : '#64748B'};"></div>
+            </div>
+            <div>
+              <div style="font-weight:800; font-size:0.92rem; color:var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
+                ${u.name} ${getRoleBadgeHtml(u.role)}
+              </div>
+              <div style="font-size:0.76rem; color:var(--text-muted);">
+                @${u.username} • ${u.company} • ${u.title}
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:0.4rem;">
+            <button class="switch-pill-btn" onclick="closeCompanyConsoleModal(); openChatWith('${u.username}')">
+              💬 Sohbet
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // -----------------------------------------------------------------------------
@@ -795,8 +1283,8 @@ function toggleAccountSwitcher(event) {
 
   const users = Object.keys(appState.users);
   dropdown.innerHTML = `
-    <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.4rem; padding:0.2rem 0.4rem;">
-      KULLANICI SEÇ (BU SEKMEDE AÇ)
+    <div style="font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.4rem; padding:0.2rem 0.4rem;">
+      HİYERARŞİK HESAP GEÇİŞİ (BU SEKMEDE AÇ)
     </div>
     ${users.map(uName => {
       const u = appState.users[uName];
@@ -809,18 +1297,12 @@ function toggleAccountSwitcher(event) {
             <div class="online-status-dot" style="background-color: ${isOnline ? 'var(--brand-online)' : '#64748B'};"></div>
           </div>
           <div class="account-switch-meta">
-            <span class="account-switch-name">${u.name} ${isMe ? '(Aktif)' : ''}</span>
+            <span class="account-switch-name">${u.name} ${isMe ? '(Siz)' : ''}</span>
             <span class="account-switch-handle">@${u.username} • ${u.company}</span>
           </div>
         </div>
       `;
     }).join('')}
-    <div style="border-top:1px solid var(--border-color); margin-top:0.4rem; padding-top:0.4rem;">
-      <div class="account-switch-item" onclick="showLoginScreen(); switchAuthTab('register');">
-        <span>➕</span>
-        <span style="font-size:0.8rem; font-weight:700; color:var(--brand-turq);">Yeni Kullanıcı Kaydet</span>
-      </div>
-    </div>
   `;
 
   dropdown.classList.add('show');
@@ -834,7 +1316,6 @@ function switchAccountTo(username) {
   loginSession(username, true);
 }
 
-// Close account switcher dropdown on outside click
 document.addEventListener('click', (e) => {
   const dropdown = document.getElementById('account-switcher-dropdown');
   if (dropdown && !dropdown.contains(e.target)) {
@@ -843,7 +1324,7 @@ document.addEventListener('click', (e) => {
 });
 
 // -----------------------------------------------------------------------------
-// REAL-TIME CHAT ENGINE (ZERO LATENCY, ZERO DUPLICATION)
+// CHAT ENGINE (ZERO LATENCY & DEDUPLICATION)
 // -----------------------------------------------------------------------------
 function getThreadKey(userA, userB) {
   return [userA, userB].sort().join('__');
@@ -855,7 +1336,6 @@ function formatTime(d) {
 
 function sendChatMessage(textOverride) {
   if (!currentTabUser || !activeChatPartner) return;
-
   const input = document.getElementById('chat-message-input');
   const text = (textOverride !== undefined ? textOverride : (input ? input.value : '')).trim();
   if (!text) return;
@@ -873,20 +1353,17 @@ function sendChatMessage(textOverride) {
     timestamp: Date.now()
   };
 
-  // 1. Add locally
   addMessageToThread(messageObj);
 
   if (input) input.value = '';
   renderActiveChatWindow();
   renderChatDock();
 
-  // 2. Broadcast via Hybrid Mesh (BroadcastChannel + MQTT)
   broadcastPacket({
     type: 'CHAT_MESSAGE',
     message: messageObj
   });
 
-  // Cancel typing status
   broadcastPacket({
     type: 'TYPING_STATUS',
     sender: currentTabUser,
@@ -905,12 +1382,11 @@ function addMessageToThread(msg) {
     appState.messages[threadKey] = [];
   }
 
-  // Strict deduplication by ID or exact content within 2s window
-  const alreadyExists = appState.messages[threadKey].some(m => 
+  const exists = appState.messages[threadKey].some(m => 
     m.id === msg.id || (m.sender === msg.sender && m.text === msg.text && Math.abs(m.timestamp - msg.timestamp) < 2000)
   );
 
-  if (!alreadyExists) {
+  if (!exists) {
     appState.messages[threadKey].push(msg);
     saveSharedState();
   }
@@ -918,13 +1394,10 @@ function addMessageToThread(msg) {
 
 function handleIncomingChatMessage(msg) {
   if (!currentTabUser || !msg) return;
-
-  // Process only if recipient or sender is current user
   if (msg.recipient !== currentTabUser && msg.sender !== currentTabUser) return;
 
   addMessageToThread(msg);
 
-  // Play audio chime and show notification if message came from another user
   if (msg.sender !== currentTabUser) {
     playChimeSound();
     if (!activeChatPartner || activeChatPartner !== msg.sender) {
@@ -1004,13 +1477,6 @@ function renderChatDock() {
   }).join('');
 }
 
-function renderChatDockHeader() {
-  const dock = document.getElementById('linkedin-chat-dock');
-  if (!dock) return;
-  // Dynamic online updates for contacts
-  renderChatDock();
-}
-
 function renderActiveChatWindow() {
   const chatWindow = document.getElementById('active-conversation-window');
   if (!chatWindow) return;
@@ -1034,7 +1500,7 @@ function renderActiveChatWindow() {
   if (targetName) targetName.textContent = `${partner.name} (@${partner.username})`;
   if (targetStatus) {
     targetStatus.innerHTML = isOnline 
-      ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> 🟢 Çevrimiçi (Canlı)'
+      ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> 🟢 Çevrimiçi'
       : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748B;"></span> Çevrimdışı';
   }
 
@@ -1093,7 +1559,6 @@ function filterChatContacts(query) {
   });
 }
 
-// Native Web Audio Synthesizer Chime
 function playChimeSound() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1103,8 +1568,8 @@ function playChimeSound() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
 
     gain.gain.setValueAtTime(0.12, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
@@ -1188,7 +1653,7 @@ function submitNewPost() {
     timestamp: 'Şimdi',
     createdAt: Date.now(),
     content: content,
-    tags: hashtags.length > 0 ? hashtags : ['Teknokent'],
+    tags: hashtags.length > 0 ? hashtags : ['MarmaraTeknokent'],
     category: hashtags.some(t => /arge|ai|yapayzeka|yazılım/i.test(t)) ? 'arge' : 'startup',
     image: selectedPostImage,
     likes: [],
@@ -1207,7 +1672,6 @@ function submitNewPost() {
   renderFeed();
   showToast('Gönderiniz canlı akışta yayınlandı! 🚀');
 
-  // Broadcast to other sessions and mobile devices
   broadcastPacket({
     type: 'FEED_POST',
     post: newPost
@@ -1312,10 +1776,39 @@ function renderNavbar() {
   const pillAvatar = document.getElementById('nav-user-avatar');
   const pillName = document.getElementById('nav-user-name');
   const pillRole = document.getElementById('nav-user-role');
+  const roleBadge = document.getElementById('nav-user-role-badge');
 
   if (pillAvatar) pillAvatar.src = user.avatar;
   if (pillName) pillName.textContent = user.name;
   if (pillRole) pillRole.textContent = `@${user.username}`;
+
+  if (roleBadge) {
+    if (user.role === 'super_admin') {
+      roleBadge.className = 'role-badge super-admin';
+      roleBadge.textContent = '🏛️ Süper Yönetici';
+    } else if (user.role === 'company_admin') {
+      roleBadge.className = 'role-badge company-admin';
+      roleBadge.textContent = '🏢 Firma Yetkilisi';
+    } else {
+      roleBadge.className = 'role-badge employee';
+      roleBadge.textContent = '👤 Personel';
+    }
+  }
+
+  // Update Console button label
+  const consoleBtn = document.getElementById('nav-company-console-btn');
+  const consoleLabel = document.getElementById('nav-company-console-label');
+  if (consoleBtn && consoleLabel) {
+    if (isSuperAdmin(currentTabUser)) {
+      consoleBtn.style.display = 'flex';
+      consoleLabel.textContent = '🏛️ Teknokent Yönetimi';
+    } else if (isCompanyAdmin(currentTabUser)) {
+      consoleBtn.style.display = 'flex';
+      consoleLabel.textContent = '🏢 Firma Yönetimi';
+    } else {
+      consoleBtn.style.display = 'none';
+    }
+  }
 }
 
 function renderProfileCard() {
@@ -1327,12 +1820,14 @@ function renderProfileCard() {
   const name = document.getElementById('sidebar-user-name');
   const headline = document.getElementById('sidebar-user-headline');
   const campusBadge = document.getElementById('sidebar-user-campus');
+  const badgeContainer = document.getElementById('sidebar-user-badge-container');
   const statPosts = document.getElementById('stat-posts-count');
   const statConnections = document.getElementById('stat-connections-count');
   const statViews = document.getElementById('stat-views-count');
 
   if (avatar) avatar.src = user.avatar;
   if (name) name.innerHTML = `${user.name} <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>`;
+  if (badgeContainer) badgeContainer.innerHTML = getRoleBadgeHtml(user.role);
   if (headline) headline.textContent = `${user.title} • @${user.username}`;
   if (campusBadge) campusBadge.innerHTML = `📍 ${user.campus}`;
   if (statPosts) statPosts.textContent = user.postsCount || 18;
@@ -1352,7 +1847,7 @@ function renderComposer() {
   if (postAsSelect) {
     postAsSelect.innerHTML = `
       <option value="user">${user.name} (@${user.username})</option>
-      <option value="company">${user.company} (Şirket Adına)</option>
+      <option value="company">${user.company} (Kurumsal Kimlikle)</option>
     `;
   }
 }
@@ -1385,26 +1880,29 @@ function renderFeed() {
     let authorTitle = '';
     let authorAvatar = '';
     let campus = '';
+    let roleBadge = '';
 
     if (isCompany) {
       authorName = post.companyName || 'Şirket';
       authorHandle = 'kurumsal';
-      authorTitle = 'Teknokent Ar-Ge Şirketi';
+      authorTitle = 'Marmara Teknokent Kurumu';
       authorAvatar = './assets/logo.jpg';
-      campus = 'Dijitalpark Teknokent';
+      campus = 'Marmara Teknokent';
+      roleBadge = '<span class="role-badge company-admin">🏢 Kurumsal</span>';
     } else {
       const acc = appState.users[post.authorUsername] || {
         name: 'Teknokent Üyesi',
         username: 'uye',
         title: 'Girişimci',
         avatar: './assets/avatar_erdem.png',
-        campus: 'Dijitalpark Çekmeköy'
+        campus: 'Marmara Teknokent'
       };
       authorName = acc.name;
       authorHandle = acc.username;
       authorTitle = acc.title;
       authorAvatar = acc.avatar;
       campus = acc.campus;
+      roleBadge = getRoleBadgeHtml(acc.role);
     }
 
     const isLiked = post.likes && post.likes.includes(currentTabUser);
@@ -1425,9 +1923,7 @@ function renderFeed() {
               <div class="post-author-name-row">
                 <span class="post-author-name">${authorName}</span>
                 <span style="font-size:0.75rem; color:var(--text-muted);">@${authorHandle}</span>
-                <span class="verified-badge">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                </span>
+                ${roleBadge}
               </div>
               <span class="post-author-title">${authorTitle}</span>
               <div class="post-meta-details">
@@ -1528,7 +2024,7 @@ function renderOnlineMembersList() {
           </div>
           <div class="test-user-names">
             <span class="test-name">${acc.name} ${isMe ? '(Siz)' : ''}</span>
-            <span class="test-title">@${acc.username} • ${isOnline ? '🟢 Çevrimiçi' : '⚪ Çevrimdışı'}</span>
+            <span class="test-title">@${acc.username} • ${acc.company}</span>
           </div>
         </div>
         <button class="switch-pill-btn" style="${isMe ? 'background:var(--brand-online);' : ''}">
@@ -1571,7 +2067,7 @@ function toggleFollowCompany(companyId) {
 }
 
 // -----------------------------------------------------------------------------
-// MODALS
+// PROFILE & COMPANY MODALS
 // -----------------------------------------------------------------------------
 function openProfileModal() {
   if (!currentTabUser) return;
@@ -1582,7 +2078,7 @@ function openProfileModal() {
   document.getElementById('edit-profile-name').value = user.name || '';
   document.getElementById('edit-profile-title').value = user.title || '';
   document.getElementById('edit-profile-company').value = user.company || '';
-  document.getElementById('edit-profile-campus').value = user.campus || 'Dijitalpark Çekmeköy Yerleşkesi';
+  document.getElementById('edit-profile-campus').value = user.campus || 'Marmara Teknokent Gebze Kampüsü';
   document.getElementById('edit-profile-bio').value = user.bio || '';
 
   modal.classList.add('show');
@@ -1650,7 +2146,8 @@ function registerNewCompany() {
   saveSharedState();
   closeCompanyModal();
   renderCompaniesList();
-  showToast(`"${name}" Şirket hesabı oluşturuldu! 🎉`);
+  populateCompanySelectDropdown();
+  showToast(`"${name}" Şirket kaydı oluşturuldu! 🎉`);
 }
 
 function openImageLightbox(imgSrc) {
@@ -1668,7 +2165,7 @@ function closeLightbox() {
 }
 
 // -----------------------------------------------------------------------------
-// EVENT LISTENERS & HELPERS
+// GENERAL UTILS & LISTENERS
 // -----------------------------------------------------------------------------
 function setupEventListeners() {
   const chatInput = document.getElementById('chat-message-input');
@@ -1725,6 +2222,31 @@ function updateThemeIcon(theme) {
     : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
 }
 
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function openNewTabForTesting() {
+  window.open(window.location.href, '_blank');
+}
+
+function logout() {
+  stopHeartbeat();
+  if (currentTabUser) {
+    releaseUserSession(currentTabUser);
+    if (mqttClient) {
+      try {
+        mqttClient.unsubscribe(`marmara/teknokent/v5/user/${currentTabUser}`);
+      } catch (e) {}
+    }
+  }
+  currentTabUser = null;
+  sessionStorage.removeItem(SESSION_USER_KEY);
+  showLoginScreen('Güvenli şekilde çıkış yapıldı.');
+}
+
 function showToast(msg) {
   let container = document.getElementById('toast-container');
   if (!container) {
@@ -1743,13 +2265,14 @@ function showToast(msg) {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity 0.4s ease';
     setTimeout(() => toast.remove(), 400);
-  }, 3200);
+  }, 3400);
 }
 
 function resetDataToDefault() {
-  if (confirm('Tüm verileri, sohbetleri ve oturumları sıfırlamak istiyor musunuz?')) {
+  if (confirm('Tüm hiyerarşik verileri, hesap başvurularını ve oturumları sıfırlamak istiyor musunuz?')) {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SESSION_LOCK_KEY);
+    localStorage.removeItem(MY_APP_KEY);
     sessionStorage.removeItem(SESSION_USER_KEY);
     location.reload();
   }

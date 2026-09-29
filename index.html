@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dijitalpark Teknokent Connect | Startup & Şirket İnovasyon Ağı</title>
-  <meta name="description" content="Dijitalpark Teknokent bünyesindeki Ar-Ge firmaları, startuplar ve girişimciler için Twitter ve LinkedIn tarzı gerçek zamanlı profesyonel etkileşim ve iş ağı platformu.">
+  <title>Marmara Teknokent Connect | Hiyerarşik Startup & Şirket Ağı</title>
+  <meta name="description" content="Marmara Teknokent bünyesindeki Ar-Ge firmaları, startuplar ve kuluçka merkezleri için hiyerarşik yetki ve firma onaylı üyelik sistemine sahip gerçek zamanlı iş birliği platformu.">
   
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- MQTT.js over Secure WebSockets for True Cross-Device & Internet Real-time Communication with CDN Fallback -->
+  <!-- MQTT.js over Secure WebSockets with CDN Fallback -->
   <script src="https://unpkg.com/mqtt@5.16.0/dist/mqtt.min.js"></script>
   <script>
     if (typeof mqtt === 'undefined') {
@@ -19,96 +19,96 @@
     }
   </script>
   
-  <link rel="stylesheet" href="style.css?v=3.5">
+  <link rel="stylesheet" href="style.css?v=4.0">
   <link rel="icon" type="image/jpeg" href="./assets/logo.jpg">
 </head>
 <body>
 
   <!-- ==========================================================================
-       1. LOGIN / REGISTER SCREEN (SPLIT VIEW)
+       1. LOGIN / HIERARCHICAL REGISTRATION SCREEN
        ========================================================================== -->
   <div id="login-screen">
     <div class="login-split-container">
       
-      <!-- Sol Taraf: Marka & Ekosistem Tanıtımı -->
+      <!-- Sol Taraf: Marmara Teknokent Marka & Hiyerarşi Tanıtımı -->
       <div class="login-left-brand">
         <div class="login-brand-header">
-          <img src="./assets/logo.jpg" class="login-brand-logo" alt="Dijitalpark Logo" />
+          <img src="./assets/logo.jpg" class="login-brand-logo" alt="Marmara Teknokent Logo" />
           <div>
-            <div class="login-brand-title">DİJİTALPARK <span>TEKNOKENT</span></div>
-            <div class="login-brand-subtitle">Teknoloji Geliştirme Bölgesi</div>
+            <div class="login-brand-title">MARMARA <span>TEKNOKENT</span></div>
+            <div class="login-brand-subtitle">Teknoloji Geliştirme Bölgesi Yönetimi</div>
           </div>
         </div>
 
         <div class="login-hero-content">
-          <h1 class="login-hero-heading">Teknokent Ekosisteminin Yeni Nesil İletişim Ağı.</h1>
+          <h1 class="login-hero-heading">Hiyerarşik Yetkili Teknokent İletişim Ağı.</h1>
           <p class="login-hero-desc">
-            Çekmeköy ve Ataşehir yerleşkelerindeki Ar-Ge firmaları, kuluçka girişimcileri ve mühendisler için tasarlanmış gerçek zamanlı iş birliği platformu.
+            Marmara Teknokent çatı yönetiminde Ar-Ge şirketleri, startuplar ve kuluçka merkezlerinin yetkili onay mekanizmasıyla çalışan kapalı devre profesyonel platformu.
           </p>
 
           <div class="login-features-grid">
             <div class="login-feature-card">
-              <span class="login-feature-icon">⚡</span>
+              <span class="login-feature-icon">🏛️</span>
               <div class="login-feature-text">
-                <span class="login-feature-title">Canlı WebSocket & Bus</span>
-                <span class="login-feature-sub">Sekmeler ve cihazlar arası 0ms gecikmesiz sohbet</span>
+                <span class="login-feature-title">Marmara Teknokent</span>
+                <span class="login-feature-sub">Tüm ekosistemde en üst düzey süper yetkili yönetim</span>
               </div>
             </div>
 
             <div class="login-feature-card">
               <span class="login-feature-icon">🏢</span>
               <div class="login-feature-text">
-                <span class="login-feature-title">400+ Ar-Ge Firması</span>
-                <span class="login-feature-sub">Ekosistem içi iş birliği ve networking</span>
-              </div>
-            </div>
-
-            <div class="login-feature-card">
-              <span class="login-feature-icon">📍</span>
-              <div class="login-feature-text">
-                <span class="login-feature-title">2 Yerleşke</span>
-                <span class="login-feature-sub">Çekmeköy & Ataşehir kampüsleri</span>
+                <span class="login-feature-title">Firma & Kuluçka İdaresi</span>
+                <span class="login-feature-sub">Şirketlere özel personel hesabı ve onay sistemi</span>
               </div>
             </div>
 
             <div class="login-feature-card">
               <span class="login-feature-icon">🔒</span>
               <div class="login-feature-text">
-                <span class="login-feature-title">Tekil Oturum Mimarisi</span>
-                <span class="login-feature-sub">Aynı anda 1 kullanıcı oturum devir koruması</span>
+                <span class="login-feature-title">Firma Onaylı Üyelik</span>
+                <span class="login-feature-sub">Yalnızca firma yetkilisinin onayladığı hesaplar açılır</span>
+              </div>
+            </div>
+
+            <div class="login-feature-card">
+              <span class="login-feature-icon">⚡</span>
+              <div class="login-feature-text">
+                <span class="login-feature-title">Canlı 0ms Mesajlaşma</span>
+                <span class="login-feature-sub">Firma içi ve firmalar arası anlık WebSocket sohbet</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="login-left-footer">
-          <span>Dijitalpark Teknokent Yönetim A.Ş. © 2026</span>
-          <span>v3.5 Realtime Multi-Transport</span>
+          <span>Marmara Teknokent Yönetim A.Ş. © 2026</span>
+          <span>v4.0 Hiyerarşik Yetki Sistemi</span>
         </div>
       </div>
 
-      <!-- Sağ Taraf: Giriş Formu & Üye Kaydı -->
+      <!-- Sağ Taraf: Giriş Formu & Firma Personel Başvurusu -->
       <div class="login-right-form-col">
         <div class="login-form-card">
           
-          <!-- Auth Tabs (Giriş Yap vs Yeni Üye Kaydı) -->
+          <!-- Auth Tabs (Giriş Yap vs Hesap Başvurusu) -->
           <div class="auth-tabs-bar">
             <button type="button" id="tab-btn-login" class="auth-tab-btn active" onclick="switchAuthTab('login')">
               <span>🔑</span> Giriş Yap
             </button>
             <button type="button" id="tab-btn-register" class="auth-tab-btn" onclick="switchAuthTab('register')">
-              <span>➕</span> Yeni Üye Kaydı
+              <span>📝</span> Personel Başvurusu
             </button>
           </div>
 
-          <!-- Alert / Oturum Uyarı Alanı -->
+          <!-- Alert / Bilgilendirme Bannerı -->
           <div id="login-alert-banner" class="login-alert-banner"></div>
 
           <!-- TAB 1: GİRİŞ FORMU -->
           <div id="login-form-container">
             <div class="login-form-header">
               <h2 class="login-form-title">Giriş Yap</h2>
-              <p class="login-form-desc">Teknokent hesabınızla oturum açın.</p>
+              <p class="login-form-desc">Marmara Teknokent, firma yetkilisi veya çalışan hesabınızla oturum açın.</p>
             </div>
 
             <form onsubmit="handleLoginSubmit(event)">
@@ -116,7 +116,7 @@
                 <label for="login-username-input">Kullanıcı Adı veya E-posta</label>
                 <div class="login-input-wrapper">
                   <span class="login-input-icon">@</span>
-                  <input type="text" id="login-username-input" class="login-input" placeholder="erdemcarkit / aliniyya / bakugan" required autocomplete="username" />
+                  <input type="text" id="login-username-input" class="login-input" placeholder="marmarateknokent / neurologic / erdemcarkit" required autocomplete="username" />
                 </div>
               </div>
 
@@ -132,9 +132,9 @@
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
                 <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
                   <input type="checkbox" id="login-remember-me" checked style="accent-color: var(--brand-turq);" />
-                  Beni bu tarayıcıda hatırla
+                  Oturumu hatırla
                 </label>
-                <span style="color: var(--brand-turq); font-weight: 600;">Şifre: 31316969</span>
+                <span style="color: var(--brand-turq); font-weight: 600;">Test Şifresi: 31316969</span>
               </div>
 
               <button type="submit" class="login-submit-btn">
@@ -143,137 +143,182 @@
               </button>
             </form>
 
-            <!-- Hızlı Test Giriş Seçici Kartları -->
+            <!-- Hiyerarşik Hızlı Test Giriş Seçici Kartları -->
             <div class="quick-login-section">
               <div class="quick-login-title">
-                <span>HIZLI TEST GİRİŞİ (TEK TIKLA GİR)</span>
+                <span>HİYERARŞİK TEST GİRİŞLERİ</span>
                 <span class="pass-hint">Şifre: 31316969</span>
               </div>
               
-              <div class="quick-login-grid">
-                <!-- Erdem -->
-                <div class="quick-user-card" onclick="quickSelectUser('erdemcarkit')">
-                  <div class="quick-user-left">
-                    <img src="./assets/avatar_erdem.png" class="quick-user-avatar" alt="Erdem" />
-                    <div class="quick-user-meta">
-                      <span class="quick-user-name">Enes Erdem Çarkıt</span>
-                      <span class="quick-user-handle">@erdemcarkit • Neurologic AI</span>
-                    </div>
-                  </div>
-                  <span class="quick-user-badge">Giriş &rarr;</span>
+              <!-- 1. Kademe: Marmara Teknokent Süper Yetkili -->
+              <div class="quick-hierarchical-group">
+                <div class="quick-hierarchical-heading">
+                  <span>🏛️ 1. DERECE: TEKNOKENT GENEL YÖNETİMİ</span>
                 </div>
-
-                <!-- Ali Nihat -->
-                <div class="quick-user-card" onclick="quickSelectUser('aliniyya')">
+                <div class="quick-user-card" onclick="quickSelectUser('marmarateknokent')" style="border-left: 3px solid #F59E0B;">
                   <div class="quick-user-left">
-                    <img src="./assets/avatar_ali.png" class="quick-user-avatar" alt="Ali Nihat" />
+                    <img src="./assets/logo.jpg" class="quick-user-avatar" style="border-color:#F59E0B;" alt="Teknokent" />
                     <div class="quick-user-meta">
-                      <span class="quick-user-name">Ali Nihat Eryürek</span>
-                      <span class="quick-user-handle">@aliniyya • CloudScale Tech</span>
+                      <span class="quick-user-name">Marmara Teknokent Yönetim A.Ş.</span>
+                      <span class="quick-user-handle" style="color:#FBBF24;">@marmarateknokent • Süper Yönetici</span>
                     </div>
                   </div>
-                  <span class="quick-user-badge">Giriş &rarr;</span>
-                </div>
-
-                <!-- Batuhan -->
-                <div class="quick-user-card" onclick="quickSelectUser('bakugan')">
-                  <div class="quick-user-left">
-                    <img src="./assets/avatar_batuhan.jpg" class="quick-user-avatar" alt="Batuhan" />
-                    <div class="quick-user-meta">
-                      <span class="quick-user-name">Batuhan Akyazı</span>
-                      <span class="quick-user-handle">@bakugan • Core Hub</span>
-                    </div>
-                  </div>
-                  <span class="quick-user-badge">Giriş &rarr;</span>
+                  <span class="quick-user-badge" style="background:rgba(245,158,11,0.15); color:#FBBF24; border-color:rgba(245,158,11,0.3);">Yönetici &rarr;</span>
                 </div>
               </div>
+
+              <!-- 2. Kademe: Firma / Startup / Kuluçka Yetkilileri -->
+              <div class="quick-hierarchical-group">
+                <div class="quick-hierarchical-heading">
+                  <span>🏢 2. DERECE: FİRMA & KULUÇKA YETKİLİLERİ</span>
+                </div>
+                <div class="quick-login-grid">
+                  <!-- Neurologic AI Firma Yönetimi -->
+                  <div class="quick-user-card" onclick="quickSelectUser('neurologic')">
+                    <div class="quick-user-left">
+                      <img src="./assets/avatar_erdem.png" class="quick-user-avatar" alt="Neurologic" />
+                      <div class="quick-user-meta">
+                        <span class="quick-user-name">Neurologic AI (Firma Yetkilisi)</span>
+                        <span class="quick-user-handle">@neurologic • Ar-Ge Firması</span>
+                      </div>
+                    </div>
+                    <span class="quick-user-badge">Firma &rarr;</span>
+                  </div>
+
+                  <!-- CloudScale Tech Firma Yönetimi -->
+                  <div class="quick-user-card" onclick="quickSelectUser('cloudscale')">
+                    <div class="quick-user-left">
+                      <img src="./assets/avatar_ali.png" class="quick-user-avatar" alt="CloudScale" />
+                      <div class="quick-user-meta">
+                        <span class="quick-user-name">CloudScale Tech (Firma Yetkilisi)</span>
+                        <span class="quick-user-handle">@cloudscale • Bulut Firması</span>
+                      </div>
+                    </div>
+                    <span class="quick-user-badge">Firma &rarr;</span>
+                  </div>
+
+                  <!-- Core Innovation Hub Kuluçka -->
+                  <div class="quick-user-card" onclick="quickSelectUser('corehub')">
+                    <div class="quick-user-left">
+                      <img src="./assets/avatar_batuhan.jpg" class="quick-user-avatar" alt="CoreHub" />
+                      <div class="quick-user-meta">
+                        <span class="quick-user-name">Core Innovation Hub</span>
+                        <span class="quick-user-handle">@corehub • Kuluçka Merkezi</span>
+                      </div>
+                    </div>
+                    <span class="quick-user-badge">Kuluçka &rarr;</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Kademe: Firma Çalışanları / Personel -->
+              <div class="quick-hierarchical-group">
+                <div class="quick-hierarchical-heading">
+                  <span>👤 3. DERECE: FİRMA ONAYLI ÇALIŞANLAR</span>
+                </div>
+                <div class="quick-login-grid">
+                  <div class="quick-user-card" onclick="quickSelectUser('erdemcarkit')">
+                    <div class="quick-user-left">
+                      <img src="./assets/avatar_erdem.png" class="quick-user-avatar" alt="Erdem" />
+                      <div class="quick-user-meta">
+                        <span class="quick-user-name">Enes Erdem Çarkıt</span>
+                        <span class="quick-user-handle">@erdemcarkit • Neurologic AI Personeli</span>
+                      </div>
+                    </div>
+                    <span class="quick-user-badge">Giriş &rarr;</span>
+                  </div>
+
+                  <div class="quick-user-card" onclick="quickSelectUser('aliniyya')">
+                    <div class="quick-user-left">
+                      <img src="./assets/avatar_ali.png" class="quick-user-avatar" alt="Ali Nihat" />
+                      <div class="quick-user-meta">
+                        <span class="quick-user-name">Ali Nihat Eryürek</span>
+                        <span class="quick-user-handle">@aliniyya • CloudScale Personeli</span>
+                      </div>
+                    </div>
+                    <span class="quick-user-badge">Giriş &rarr;</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <!-- TAB 2: YENİ ÜYE KAYIT FORMU -->
+          <!-- TAB 2: FİRMAYA PERSONEL HESAP BAŞVURUSU -->
           <div id="register-form-container" style="display: none;">
             <div class="login-form-header">
-              <h2 class="login-form-title">Yeni Üye Kaydı</h2>
-              <p class="login-form-desc">Teknokent ekosistemine katılmak için profilinizi oluşturun.</p>
+              <h2 class="login-form-title">Personel Hesap Başvurusu</h2>
+              <p class="login-form-desc">Güvenlik gereği yeni hesaplar doğrudan açılamaz. Başvurunuz firmanızın yetkilisine iletilir, onaylandığında aktifleşir.</p>
             </div>
 
             <!-- Kayıt Hata Mesajı -->
             <div id="reg-alert-banner" class="login-alert-banner"></div>
 
-            <form onsubmit="handleRegisterSubmit(event)">
+            <form onsubmit="handleAccountApplicationSubmit(event)">
+              <div class="login-field">
+                <label>Bağlı Olduğunuz Firma / Startup / Kuluçka *</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">🏢</span>
+                  <select id="app-company-select" class="login-input" required></select>
+                </div>
+                <span style="font-size:0.72rem; color:var(--text-muted); margin-top:2px; display:block;">Hesap oluşturma isteği seçtiğiniz bu firmanın onay paneline düşecektir.</span>
+              </div>
+
               <div class="login-field">
                 <label>Ad Soyad *</label>
                 <div class="login-input-wrapper">
                   <span class="login-input-icon">👤</span>
-                  <input type="text" id="reg-name-input" class="login-input" placeholder="Örn: Caner Demir" required />
-                </div>
-              </div>
-
-              <div class="login-field">
-                <label>Kullanıcı Adı (Username) *</label>
-                <div class="login-input-wrapper">
-                  <span class="login-input-icon">@</span>
-                  <input type="text" id="reg-username-input" class="login-input" placeholder="Örn: canerdemir" required autocomplete="username" />
-                </div>
-              </div>
-
-              <div class="login-field">
-                <label>E-posta Adresi</label>
-                <div class="login-input-wrapper">
-                  <span class="login-input-icon">✉️</span>
-                  <input type="email" id="reg-email-input" class="login-input" placeholder="caner@teknokent.com" />
+                  <input type="text" id="app-name-input" class="login-input" placeholder="Örn: Caner Demir" required />
                 </div>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                 <div class="login-field">
-                  <label>Şifre Belirleyin *</label>
+                  <label>E-posta Adresi *</label>
                   <div class="login-input-wrapper">
-                    <span class="login-input-icon">🔑</span>
-                    <input type="password" id="reg-password-input" class="login-input" placeholder="En az 4 karakter" required />
+                    <span class="login-input-icon">✉️</span>
+                    <input type="email" id="app-email-input" class="login-input" placeholder="caner@firma.com" required />
                   </div>
                 </div>
 
                 <div class="login-field">
-                  <label>Şifre Tekrar *</label>
-                  <div class="login-input-wrapper">
-                    <span class="login-input-icon">🔒</span>
-                    <input type="password" id="reg-password2-input" class="login-input" placeholder="Şifre tekrarı" required />
-                  </div>
-                </div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                <div class="login-field">
-                  <label>Şirket / Startup Adı *</label>
-                  <div class="login-input-wrapper">
-                    <span class="login-input-icon">🏢</span>
-                    <input type="text" id="reg-company-input" class="login-input" placeholder="Örn: Nexo AI Solutions" required />
-                  </div>
-                </div>
-
-                <div class="login-field">
-                  <label>Ünvan / Rol</label>
+                  <label>Pozisyon / Ünvan *</label>
                   <div class="login-input-wrapper">
                     <span class="login-input-icon">💼</span>
-                    <input type="text" id="reg-title-input" class="login-input" placeholder="Örn: Kurucu & CTO" />
+                    <input type="text" id="app-title-input" class="login-input" placeholder="Örn: AI Yazılım Mühendisi" required />
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="login-field">
+                  <label>Talep Edilen Kullanıcı Adı *</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">@</span>
+                    <input type="text" id="app-username-input" class="login-input" placeholder="canerdemir" required autocomplete="username" />
+                  </div>
+                </div>
+
+                <div class="login-field">
+                  <label>Belirlemek İstediğiniz Şifre *</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">🔑</span>
+                    <input type="password" id="app-password-input" class="login-input" placeholder="En az 4 karakter" required />
                   </div>
                 </div>
               </div>
 
               <div class="login-field">
-                <label>Teknokent Yerleşkesi</label>
+                <label>Firma Yetkilisine Not (Opsiyonel)</label>
                 <div class="login-input-wrapper">
-                  <select id="reg-campus-select" class="login-input">
-                    <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
-                    <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
-                  </select>
+                  <span class="login-input-icon">📝</span>
+                  <input type="text" id="app-note-input" class="login-input" placeholder="Örn: Ar-Ge ekibinde yeni göreve başladım." />
                 </div>
               </div>
 
               <!-- Avatar Seçimi -->
               <div class="login-field">
-                <label>Profil Fotoğrafı Seçin</label>
+                <label>Profil Görseli Seçin</label>
                 <div class="reg-avatar-options">
                   <img src="./assets/avatar_erdem.png" class="reg-avatar-choice selected" data-avatar="./assets/avatar_erdem.png" onclick="selectRegAvatar(this)" alt="Seçenek 1" />
                   <img src="./assets/avatar_ali.png" class="reg-avatar-choice" data-avatar="./assets/avatar_ali.png" onclick="selectRegAvatar(this)" alt="Seçenek 2" />
@@ -283,10 +328,21 @@
               </div>
 
               <button type="submit" class="login-submit-btn" style="margin-top: 1rem;">
-                <span>Hesabı Oluştur & Giriş Yap</span>
+                <span>Firmaya Hesap Başvurusu Gönder</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
             </form>
+
+            <!-- Başvuran Kişiye Özel Canlı Durum Kartı -->
+            <div id="applicant-live-status" class="applicant-status-card">
+              <div class="applicant-status-title">
+                <span>⏳</span> <span id="applicant-status-firm-name">Firma Onayı Bekleniyor</span>
+              </div>
+              <div class="applicant-status-desc" id="applicant-status-text">
+                Hesap talebiniz ilgili firmanın yetkili paneline düştü. Firma yetkilisi onay verdiğinde şifrenizle giriş yapabileceksiniz.
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -305,10 +361,10 @@
       <div class="nav-container">
         <!-- Brand Logo & Title -->
         <div class="brand-wrapper" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-          <img src="./assets/logo.jpg" alt="Dijitalpark Teknokent Logo" class="brand-logo-img" />
+          <img src="./assets/logo.jpg" alt="Marmara Teknokent Logo" class="brand-logo-img" />
           <div class="brand-text">
             <div class="brand-title">
-              DİJİTALPARK <span class="red-accent">CONNECT</span>
+              MARMARA <span class="red-accent">TEKNOKENT</span>
             </div>
             <div class="brand-subtitle">Teknoloji Geliştirme Bölgesi</div>
           </div>
@@ -339,6 +395,13 @@
             <span>Akış</span>
           </button>
 
+          <!-- Company / SuperAdmin Dedicated Management Console Button -->
+          <button id="nav-company-console-btn" class="nav-company-btn" onclick="openCompanyConsoleModal()" style="display: none;" title="Firma Yönetim Konsolu & Başvurular">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span id="nav-company-console-label">Firma Yönetimi</span>
+            <span id="nav-pending-badge" class="nav-company-badge-count" style="display:none;">0</span>
+          </button>
+
           <button class="nav-link-btn" onclick="openCompanyModal()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -358,15 +421,14 @@
           <!-- Quick Account Switcher Menu -->
           <div style="position: relative;">
             <button class="nav-link-btn" onclick="toggleAccountSwitcher(event)" title="Hızlı Hesap Değiştirici">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              <span>Hesap Değiştir ▾</span>
+              <span>🔄 Hesap Değiştir ▾</span>
             </button>
             <div id="account-switcher-dropdown" class="account-switcher-dropdown"></div>
           </div>
 
           <!-- Open In New Tab Button (for Testing Realtime Chat) -->
-          <button class="nav-link-btn" onclick="openNewTabForTesting()" title="Yeni Sekmede Aç (Çoklu Kullanıcı Testi)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <button class="nav-link-btn" onclick="openNewTabForTesting()" title="Yeni Sekmede Aç (Çoklu Oturum Testi)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
             <span>Yeni Sekme</span>
           </button>
 
@@ -381,8 +443,11 @@
               <div class="online-status-dot"></div>
             </div>
             <div class="pill-info">
-              <span id="nav-user-name" class="pill-name">Enes Erdem Çarkıt</span>
-              <span id="nav-user-role" class="pill-role">@erdemcarkit</span>
+              <div style="display:flex; align-items:center; gap:0.35rem;">
+                <span id="nav-user-name" class="pill-name">Kullanıcı</span>
+                <span id="nav-user-role-badge" class="role-badge employee">Çalışan</span>
+              </div>
+              <span id="nav-user-role" class="pill-role">@kullanici</span>
             </div>
           </div>
 
@@ -408,9 +473,10 @@
               <img id="sidebar-user-avatar" src="./assets/avatar_erdem.png" class="profile-avatar-lg" alt="Kullanıcı Avatarı" />
               <div class="online-status-dot" style="bottom: 4px; right: 4px; width: 14px; height: 14px;"></div>
             </div>
-            <h2 id="sidebar-user-name" class="profile-name">Enes Erdem Çarkıt</h2>
-            <p id="sidebar-user-headline" class="profile-headline">Kurucu Ortak & Lead AI Engineer</p>
-            <div id="sidebar-user-campus" class="profile-badge-tag">📍 Dijitalpark Çekmeköy</div>
+            <h2 id="sidebar-user-name" class="profile-name">Kullanıcı</h2>
+            <div id="sidebar-user-badge-container" style="margin-top: 0.2rem; margin-bottom: 0.3rem;"></div>
+            <p id="sidebar-user-headline" class="profile-headline">Ünvan • @kullanici</p>
+            <div id="sidebar-user-campus" class="profile-badge-tag">📍 Marmara Teknokent</div>
 
             <div class="profile-stats-row">
               <div class="profile-stat-item">
@@ -428,6 +494,10 @@
             </div>
 
             <div class="profile-card-actions">
+              <!-- Company console shortcut for authorized accounts -->
+              <button id="sidebar-company-console-btn" class="btn-primary" onclick="openCompanyConsoleModal()" style="display: none; width: 100%; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--brand-turq) 0%, #0096B4 100%);">
+                <span>🏢 Firma Yönetim Paneli</span>
+              </button>
               <button class="btn-secondary" onclick="openProfileModal()">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                 <span>Profili Düzenle</span>
@@ -476,15 +546,15 @@
         <!-- Campus Info -->
         <div class="card-base" style="padding: 1.15rem; font-size: 0.8rem; color: var(--text-secondary);">
           <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-            <span style="color: var(--brand-red);">📍</span> Dijitalpark Kampüsleri
+            <span style="color: var(--brand-red);">📍</span> Marmara Teknokent Yerleşkeleri
           </div>
           <div style="margin-bottom: 0.4rem; line-height: 1.4;">
-            <strong>Çekmeköy:</strong> Taşdelen Mah. Barış Cad. No:1
+            <strong>Ana Kampüs:</strong> Gebze / Çayırova Yerleşkesi
           </div>
           <div style="margin-bottom: 0.6rem; line-height: 1.4;">
-            <strong>Ataşehir:</strong> Örnek Mah. Ercüment Batanay Sok. No:14
+            <strong>Dijitalpark Çekmeköy:</strong> Taşdelen Mah. Barış Cad. No:1
           </div>
-          <a href="https://www.dijitalparkteknokent.com.tr" target="_blank" style="color: var(--brand-turq); font-weight: 700; text-decoration: underline;">
+          <a href="javascript:void(0)" onclick="showToast('Marmara Teknokent Portalı Açılıyor')" style="color: var(--brand-turq); font-weight: 700; text-decoration: underline;">
             Resmi Teknokent Portalı &rarr;
           </a>
         </div>
@@ -515,7 +585,7 @@
             <span class="hashtag-chip" onclick="addHashtagToComposer('ArGe')">+ #ArGe</span>
             <span class="hashtag-chip" onclick="addHashtagToComposer('Girişimcilik')">+ #Girişimcilik</span>
             <span class="hashtag-chip" onclick="addHashtagToComposer('Yatırım')">+ #Yatırım</span>
-            <span class="hashtag-chip" onclick="addHashtagToComposer('AkıllıKampüs')">+ #AkıllıKampüs</span>
+            <span class="hashtag-chip" onclick="addHashtagToComposer('MarmaraTeknokent')">+ #MarmaraTeknokent</span>
           </div>
 
           <input type="file" id="post-image-file-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)" />
@@ -561,7 +631,7 @@
         <div class="card-base test-accounts-panel">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
             <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
-              👥 Ekosistem Üyeleri
+              👥 Ekosistem Üyeleri & Firmalar
             </span>
             <span class="test-badge">Canlı Sync</span>
           </div>
@@ -577,10 +647,10 @@
             <span class="sidebar-section-title">Teknokent Gündemi</span>
             <span style="font-size: 1rem;">🔥</span>
           </div>
-          <div class="trend-item" onclick="addHashtagToComposer('ÇekmeköyAkıllıKampüs')">
-            <div class="trend-category">Kampüs İnovasyonu • Gündem</div>
-            <div class="trend-tag">#ÇekmeköyAkıllıKampüs</div>
-            <div class="trend-count">428 paylaşım</div>
+          <div class="trend-item" onclick="addHashtagToComposer('MarmaraTeknokent')">
+            <div class="trend-category">Ekosistem • Gündem</div>
+            <div class="trend-tag">#MarmaraTeknokent</div>
+            <div class="trend-count">512 paylaşım</div>
           </div>
           <div class="trend-item" onclick="addHashtagToComposer('BridgeToBalkans')">
             <div class="trend-category">Global Açılım • Program</div>
@@ -619,9 +689,9 @@
       <div class="chat-dock-header" onclick="toggleChatDock()">
         <div class="chat-dock-title">
           <div class="chat-dock-avatar-stack">
+            <img src="./assets/logo.jpg" alt="Marmara" />
             <img src="./assets/avatar_erdem.png" alt="Erdem" />
-            <img src="./assets/avatar_ali.png" alt="Ali Nihat" />
-            <img src="./assets/avatar_batuhan.jpg" alt="Batuhan" />
+            <img src="./assets/avatar_ali.png" alt="Ali" />
           </div>
           <span>Canlı Mesajlaşma (🟢 Online)</span>
         </div>
@@ -676,6 +746,123 @@
       </div>
     </div>
 
+    <!-- ==========================================================================
+         3. HIERARCHICAL COMPANY & SUPERADMIN MANAGEMENT CONSOLE MODAL
+         ========================================================================== -->
+    <div id="company-console-modal" class="modal-backdrop">
+      <div class="modal-container company-console-container">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span id="console-header-emoji">🏢</span>
+            <span id="console-header-title">Firma Yönetim Konsolu</span>
+          </div>
+          <button class="modal-close-btn" onclick="closeCompanyConsoleModal()">✕</button>
+        </div>
+
+        <!-- Console Tabs -->
+        <div class="company-console-tabs">
+          <button type="button" id="c-tab-requests" class="console-tab-btn active" onclick="switchConsoleTab('requests')">
+            <span>🔔</span> Gelen Hesap Başvuruları
+            <span id="console-tab-pending-badge" class="console-tab-count">0</span>
+          </button>
+          <button type="button" id="c-tab-create" class="console-tab-btn" onclick="switchConsoleTab('create')">
+            <span>➕</span> Yeni Personel Tanımla
+          </button>
+          <button type="button" id="c-tab-members" class="console-tab-btn" onclick="switchConsoleTab('members')">
+            <span>👥</span> Firma Kadrosu
+          </button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.5rem;">
+          
+          <!-- TAB 1: GELEN BAŞVURULAR (ONAY BEKLEYENLER) -->
+          <div id="console-pane-requests">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+              <p style="font-size:0.84rem; color:var(--text-secondary); margin:0;">
+                Giriş sayfasından firmanız adına hesap açma başvurusu yapan adaylar. Onay verdiğiniz takdirde hesapları anında açılır.
+              </p>
+              <button onclick="renderConsoleRequests()" style="font-size:0.75rem; color:var(--brand-turq); font-weight:700;">🔄 Yenile</button>
+            </div>
+
+            <div id="console-requests-list" class="requests-grid"></div>
+          </div>
+
+          <!-- TAB 2: DOĞRUDAN PERSONEL HESABI OLUŞTURMA -->
+          <div id="console-pane-create" style="display: none;">
+            <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:1.25rem;">
+              Firmanız bünyesindeki çalışanlara doğrudan kullanıcı adı ve şifre vererek anında hesap oluşturabilirsiniz.
+            </p>
+
+            <form onsubmit="handleDirectPersonnelCreation(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Personel Ad Soyad *</label>
+                  <input type="text" id="direct-name" class="form-control" placeholder="Örn: Mehmet Öz" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Pozisyon / Ünvan *</label>
+                  <input type="text" id="direct-title" class="form-control" placeholder="Örn: Senior Backend Dev" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Verilecek Kullanıcı Adı (@username) *</label>
+                  <input type="text" id="direct-username" class="form-control" placeholder="mehmetoz" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Belirlenen Şifre *</label>
+                  <input type="text" id="direct-password" class="form-control" value="31316969" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">E-posta Adresi</label>
+                  <input type="email" id="direct-email" class="form-control" placeholder="mehmet@firma.com" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Yerleşke</label>
+                  <select id="direct-campus" class="form-control">
+                    <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
+                    <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
+                    <option value="Marmara Teknokent Gebze Kampüsü">Marmara Teknokent Gebze Kampüsü</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Profil Görseli</label>
+                <div class="reg-avatar-options">
+                  <img src="./assets/avatar_erdem.png" class="reg-avatar-choice selected" data-directavatar="./assets/avatar_erdem.png" onclick="selectDirectAvatar(this)" alt="Avatar 1" />
+                  <img src="./assets/avatar_ali.png" class="reg-avatar-choice" data-directavatar="./assets/avatar_ali.png" onclick="selectDirectAvatar(this)" alt="Avatar 2" />
+                  <img src="./assets/avatar_batuhan.jpg" class="reg-avatar-choice" data-directavatar="./assets/avatar_batuhan.jpg" onclick="selectDirectAvatar(this)" alt="Avatar 3" />
+                  <img src="./assets/logo.jpg" class="reg-avatar-choice" data-directavatar="./assets/logo.jpg" onclick="selectDirectAvatar(this)" alt="Avatar 4" />
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" style="margin-top: 1rem; width: 100%;">
+                <span>Hesabı Oluştur & Personeli Yetkilendir</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 3: FİRMA KADROSU -->
+          <div id="console-pane-members" style="display: none;">
+            <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:1rem;">
+              Firmanıza bağlı olarak yetkilendirilmiş ve onaylanmış aktif çalışanların listesi.
+            </p>
+            <div id="console-members-list" class="requests-grid"></div>
+          </div>
+
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="closeCompanyConsoleModal()">Kapat</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modals -->
     <!-- Profile Edit Modal -->
     <div id="profile-edit-modal" class="modal-backdrop">
@@ -703,6 +890,7 @@
               <select id="edit-profile-campus" class="form-control">
                 <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
                 <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
+                <option value="Marmara Teknokent Gebze Kampüsü">Marmara Teknokent Gebze Kampüsü</option>
               </select>
             </div>
           </div>
@@ -788,6 +976,6 @@
 
   </div>
 
-  <script src="app.js?v=3.5"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>

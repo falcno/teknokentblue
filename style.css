@@ -2453,5 +2453,288 @@ input, textarea, select {
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   HIERARCHICAL ROLES & COMPANY MANAGEMENT STYLES
+   ========================================================================== */
+
+/* Role Badges */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+}
+
+.role-badge.super-admin {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #FBBF24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.role-badge.company-admin {
+  background: rgba(0, 180, 216, 0.15);
+  border: 1px solid rgba(0, 180, 216, 0.4);
+  color: var(--brand-turq);
+  box-shadow: 0 0 10px var(--brand-turq-glow);
+}
+
+.role-badge.employee {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #CBD5E1;
+}
+
+/* Company Admin Action Button in Navbar */
+.nav-company-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.18) 0%, rgba(0, 150, 180, 0.25) 100%);
+  border: 1px solid var(--brand-turq);
+  color: var(--brand-turq-light);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-company-btn:hover {
+  background: var(--brand-turq);
+  color: #FFFFFF;
+  box-shadow: 0 0 15px var(--brand-turq-glow);
+}
+
+.nav-company-badge-count {
+  background: var(--brand-red);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  animation: pulseDot 2s infinite;
+}
+
+/* Modal for Company Console */
+.company-console-container {
+  max-width: 820px !important;
+}
+
+.company-console-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 1.5rem;
+  background: var(--bg-surface-elevated);
+}
+
+.console-tab-btn {
+  padding: 0.85rem 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.console-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.console-tab-btn.active {
+  color: var(--brand-turq);
+  border-bottom-color: var(--brand-turq);
+}
+
+.console-tab-count {
+  background: var(--brand-red);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* Request Cards List */
+.requests-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.request-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  transition: all var(--transition-fast);
+}
+
+.request-card:hover {
+  border-color: rgba(0, 180, 216, 0.4);
+}
+
+.request-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.request-candidate-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.request-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--brand-turq);
+}
+
+.request-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.request-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.request-username {
+  font-size: 0.76rem;
+  color: var(--brand-turq-light);
+  font-weight: 600;
+}
+
+.request-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.request-note-box {
+  background: rgba(0, 180, 216, 0.05);
+  border-left: 3px solid var(--brand-turq);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 0.85rem;
+  font-style: italic;
+}
+
+.request-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.btn-approve {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  padding: 0.5rem 1.15rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.btn-approve:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.btn-reject {
+  background: rgba(238, 32, 46, 0.12);
+  border: 1px solid rgba(238, 32, 46, 0.3);
+  color: var(--brand-red-light);
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.btn-reject:hover {
+  background: var(--brand-red);
+  color: #FFFFFF;
+}
+
+/* Quick Hierarchical Section in Login Screen */
+.quick-hierarchical-group {
+  margin-bottom: 0.85rem;
+}
+
+.quick-hierarchical-heading {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--brand-turq-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Live Applicant Status Card in Login */
+.applicant-status-card {
+  background: rgba(0, 180, 216, 0.08);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+  display: none;
+}
+
+.applicant-status-card.active {
+  display: block;
+}
+
+.applicant-status-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--brand-turq);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.applicant-status-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+
 
 
