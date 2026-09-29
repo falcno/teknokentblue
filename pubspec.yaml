@@ -1,0 +1,30 @@
+name: marmara_teknokent_blue
+description: "Marmara Teknokent Connect - Hiyerarşik Startup, Şirket ve Kuluçka Ağı (iOS, Android, Web)"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.jpg
+    - assets/avatar_ali.jpg
+    - assets/avatar_batuhan.jpg
+    - assets/avatar_erdem.jpg
+    - assets/avatar_enes.jpg
+    - assets/post_office.jpg
+    - assets/post_team.jpg
