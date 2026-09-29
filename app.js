@@ -1,52 +1,46 @@
 /**
  * DIJITALPARK TEKNOKENT CONNECT
- * Core Application Logic, Authentication, Active Session Lock & True Real-time Synchronization
+ * True Real-Time Hybrid Mesh (BroadcastChannel + LocalStorage EventBus + MQTT WebSockets)
+ * Clean Concurrency Session Lock & Tab-Isolated Auth
  */
 
 // Storage Keys
-const STORAGE_KEY = 'dijitalpark_connect_v2';
-const AUTH_KEY = 'dijitalpark_active_auth_v2';
-const SESSIONS_KEY = 'dijitalpark_active_sessions_v2';
+const STORAGE_KEY = 'dijitalpark_connect_v4';
+const SESSION_USER_KEY = 'dijitalpark_tab_user_v4';
+const SESSION_LOCK_KEY = 'dijitalpark_active_sessions_v4';
 const THEME_KEY = 'dijitalpark_theme';
 
-// Registered Accounts
-const ACCOUNTS = {
+// Registered Default Accounts with Real User Photos
+const DEFAULT_ACCOUNTS = {
   erdemcarkit: {
-    id: 'user_enes',
     username: 'erdemcarkit',
     password: '31316969',
     name: 'Enes Erdem Çarkıt',
     title: 'Kurucu Ortak & Lead AI Engineer',
     company: 'Neurologic AI',
     campus: 'Dijitalpark Çekmeköy Yerleşkesi',
-    avatar: './assets/avatar_erdem.jpg',
+    avatar: './assets/avatar_erdem.png',
     bio: 'Yapay zeka, derin öğrenme ve otonom ajan mimarileri üzerine Ar-Ge yürütüyoruz. Dijitalpark Teknokent Çekmeköy Yerleşkesi 3. Kat B304 ofisindeyiz.',
     skills: ['Yapay Zeka', 'Python', 'LLM Agents', 'PyTorch', 'Ar-Ge'],
     postsCount: 18,
     connectionsCount: 540,
-    profileViews: 1420,
-    online: true,
-    verified: true
+    profileViews: 1420
   },
   aliniyya: {
-    id: 'user_ali',
     username: 'aliniyya',
     password: '31316969',
     name: 'Ali Nihat Eryürek',
     title: 'Senior Cloud & Systems Architect',
     company: 'CloudScale Tech',
     campus: 'Dijitalpark Ataşehir Yerleşkesi',
-    avatar: './assets/avatar_ali.jpg',
+    avatar: './assets/avatar_ali.png',
     bio: 'Yüksek ölçekli bulut mimarileri, Kubernetes, mikroservisler ve DevOps optimizasyonları. Teknokent firmalarıyla açık kaynak ve ortak Ar-Ge projelerine her zaman açığım.',
     skills: ['Kubernetes', 'Cloud Native', 'Go', 'AWS/GCP', 'DevOps'],
     postsCount: 12,
     connectionsCount: 390,
-    profileViews: 980,
-    online: true,
-    verified: true
+    profileViews: 980
   },
   bakugan: {
-    id: 'user_batuhan',
     username: 'bakugan',
     password: '31316969',
     name: 'Batuhan Akyazı',
@@ -58,15 +52,13 @@ const ACCOUNTS = {
     skills: ['Product Growth', 'B2B SaaS', 'Girişimcilik', 'UX Strategy'],
     postsCount: 24,
     connectionsCount: 710,
-    profileViews: 2350,
-    online: true,
-    verified: true
+    profileViews: 2350
   }
 };
 
-// Default Initial State
+// Initial State Template
 const DEFAULT_STATE = {
-  users: JSON.parse(JSON.stringify(ACCOUNTS)),
+  users: JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS)),
   companies: [
     {
       id: 'comp_1',
@@ -174,102 +166,373 @@ const DEFAULT_STATE = {
     }
   ],
   messages: {
-    'aliniyya_erdemcarkit': [
-      { sender: 'aliniyya', text: 'Selam Erdem, yeni AI modeli testleri nasıl gidiyor?', time: '14:20' },
-      { sender: 'erdemcarkit', text: 'Selam Ali! Gayet başarılı, biraz önce yeni laboratuvardan post paylaştım.', time: '14:22' },
-      { sender: 'aliniyya', text: 'Gördüm az önce yorum da yazdım. Çekmeköy kampüsüne gelince kahve içelim.', time: '14:25' }
+    'aliniyya__erdemcarkit': [
+      { id: 'msg_seed_1', sender: 'aliniyya', recipient: 'erdemcarkit', text: 'Selam Erdem, yeni AI modeli testleri nasıl gidiyor?', time: '14:20', timestamp: Date.now() - 3600000 },
+      { id: 'msg_seed_2', sender: 'erdemcarkit', recipient: 'aliniyya', text: 'Selam Ali! Gayet başarılı, biraz önce yeni laboratuvardan post paylaştım.', time: '14:22', timestamp: Date.now() - 3500000 }
     ],
-    'bakugan_erdemcarkit': [
-      { sender: 'bakugan', text: 'Erdem selam, Cuma günkü Teknokent Demo Day için 10 dakikalık bir slot ayırdım sana.', time: '11:15' },
-      { sender: 'erdemcarkit', text: 'Harika olur Batuhan! Prototipi canlı demoda çalıştırabiliriz.', time: '11:18' }
+    'bakugan__erdemcarkit': [
+      { id: 'msg_seed_3', sender: 'bakugan', recipient: 'erdemcarkit', text: 'Erdem selam, Cuma günkü Teknokent Demo Day için 10 dakikalık bir slot ayırdım sana.', time: '11:15', timestamp: Date.now() - 7200000 }
     ],
-    'aliniyya_bakugan': [
-      { sender: 'bakugan', text: 'Ali selam, Ataşehir kampüsündeki workshop için salon hazır mı?', time: 'Dün' },
-      { sender: 'aliniyya', text: 'Evet Batuhan, yönetimle konuştuk A Blok Konferans Salonu ayrıldı.', time: 'Dün' }
+    'aliniyya__bakugan': [
+      { id: 'msg_seed_4', sender: 'bakugan', recipient: 'aliniyya', text: 'Ali selam, Ataşehir kampüsündeki workshop için salon hazır mı?', time: 'Dün', timestamp: Date.now() - 86400000 }
     ]
   }
 };
 
-// Global Runtime State
-let appState = loadAppState();
-let currentAuthUser = null;
-let currentSessionId = 'sess_' + Math.random().toString(36).substring(2, 9) + Date.now();
-let heartbeatInterval = null;
-let activeChatPartner = 'aliniyya';
+// -----------------------------------------------------------------------------
+// TAB RUNTIME VARIABLES
+// -----------------------------------------------------------------------------
+let appState = loadSharedState();
+let currentTabUser = null; // Isolated tab auth
+const tabSessionId = 'tab_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+let activeChatPartner = null;
 let isChatDockOpen = true;
 let currentFeedCategory = 'all';
+let selectedRegAvatar = './assets/avatar_erdem.png';
+let typingDebounceTimer = null;
+let presenceHeartbeatTimer = null;
+let peerPresenceMap = {}; // username -> lastSeenTimestamp
 
-// BroadcastChannel for TRUE REAL-TIME MULTI-TAB & MULTI-USER SYNCHRONIZATION
-let realTimeChannel = null;
+// -----------------------------------------------------------------------------
+// REAL-TIME BUS: HYBRID MESH
+// 1. BroadcastChannel (0ms Instant Tab-to-Tab)
+// 2. Storage Event (Cross-Tab Local Storage Fallback)
+// 3. MQTT WebSockets (Cross-Device, Internet & Phone Real-time)
+// -----------------------------------------------------------------------------
+let localBroadcast = null;
 try {
-  realTimeChannel = new BroadcastChannel('dijitalpark_realtime_channel_v2');
-  realTimeChannel.onmessage = handleRealTimeEvent;
+  localBroadcast = new BroadcastChannel('teknokent_mesh_v4');
+  localBroadcast.onmessage = (event) => {
+    if (event.data && event.data.originSessionId !== tabSessionId) {
+      handleRealtimePacket(event.data);
+    }
+  };
 } catch (e) {
-  console.warn('BroadcastChannel not supported in this environment, falling back to storage listener', e);
+  console.warn('BroadcastChannel unavailable, using storage bus fallback');
 }
 
-// Fallback Cross-Tab Storage Listener
+// Storage event for cross-tab state syncing
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY) {
-    appState = loadAppState();
-    if (currentAuthUser) {
+    appState = loadSharedState();
+    if (currentTabUser) {
       renderFeed();
       renderChatDock();
       renderActiveChatWindow();
       renderOnlineMembersList();
     }
-  } else if (e.key === SESSIONS_KEY) {
-    checkActiveSessionHealth();
+  } else if (e.key === SESSION_LOCK_KEY) {
+    checkActiveSessionTakeover();
   }
 });
 
-function loadAppState() {
+// Clean up tab session immediately on unload/refresh (Prevents ghost locks!)
+window.addEventListener('beforeunload', () => {
+  if (currentTabUser) {
+    releaseUserSession(currentTabUser);
+  }
+});
+window.addEventListener('pagehide', () => {
+  if (currentTabUser) {
+    releaseUserSession(currentTabUser);
+  }
+});
+
+// MQTT WebSocket Client
+let mqttClient = null;
+const MQTT_BROKERS = [
+  'wss://broker.hivemq.com:8884/mqtt',
+  'wss://broker.emqx.io:8084/mqtt'
+];
+let currentBrokerIdx = 0;
+
+function initWebSocketRealtime() {
+  updateRealtimeStatus(true, 'Canlı (Yerel Kanal)');
+
+  if (typeof mqtt === 'undefined') {
+    console.log('MQTT library not loaded, operating on local real-time mesh');
+    return;
+  }
+
+  if (mqttClient) {
+    try { mqttClient.end(true); } catch (e) {}
+    mqttClient = null;
+  }
+
+  const brokerUrl = MQTT_BROKERS[currentBrokerIdx];
+  const clientId = 'tk_' + tabSessionId;
+
+  try {
+    mqttClient = mqtt.connect(brokerUrl, {
+      clientId: clientId,
+      clean: true,
+      connectTimeout: 5000,
+      reconnectPeriod: 6000
+    });
+
+    mqttClient.on('connect', () => {
+      console.log('✅ Realtime WebSocket connected:', brokerUrl);
+      updateRealtimeStatus(true, 'Canlı (WebSocket Online)');
+
+      // Subscribe to global announcements and user private channel
+      mqttClient.subscribe('teknokent/blue/v4/global');
+      if (currentTabUser) {
+        mqttClient.subscribe(`teknokent/blue/v4/user/${currentTabUser}`);
+      }
+    });
+
+    mqttClient.on('message', (topic, payload) => {
+      try {
+        const data = JSON.parse(payload.toString());
+        if (data.originSessionId !== tabSessionId) {
+          handleRealtimePacket(data);
+        }
+      } catch (err) {
+        console.error('MQTT packet parse error', err);
+      }
+    });
+
+    mqttClient.on('error', (err) => {
+      console.warn('MQTT broker issue:', err.message || err);
+      // Try next broker fallback
+      currentBrokerIdx = (currentBrokerIdx + 1) % MQTT_BROKERS.length;
+    });
+
+    mqttClient.on('offline', () => {
+      updateRealtimeStatus(true, 'Canlı (Yerel Kanal)');
+    });
+  } catch (err) {
+    console.warn('MQTT init failed, falling back to local bus', err);
+  }
+}
+
+function broadcastPacket(packet) {
+  packet.originSessionId = tabSessionId;
+  packet.timestamp = packet.timestamp || Date.now();
+
+  // 1. Broadcast locally (Instant 0ms)
+  if (localBroadcast) {
+    try {
+      localBroadcast.postMessage(packet);
+    } catch (e) {}
+  }
+
+  // 2. Publish to MQTT WebSocket Mesh (Cross-device / Mobile / Internet)
+  if (mqttClient && mqttClient.connected) {
+    try {
+      let topic = 'teknokent/blue/v4/global';
+      if (packet.type === 'CHAT_MESSAGE' && packet.message?.recipient) {
+        topic = `teknokent/blue/v4/user/${packet.message.recipient}`;
+      } else if (packet.type === 'TYPING_STATUS' && packet.recipient) {
+        topic = `teknokent/blue/v4/user/${packet.recipient}`;
+      } else if (packet.type === 'SESSION_CLAIMED' && packet.username) {
+        topic = `teknokent/blue/v4/user/${packet.username}`;
+      }
+      mqttClient.publish(topic, JSON.stringify(packet), { qos: 1 });
+    } catch (e) {
+      console.warn('MQTT publish error', e);
+    }
+  }
+}
+
+function handleRealtimePacket(packet) {
+  if (!packet || !packet.type) return;
+
+  switch (packet.type) {
+    case 'CHAT_MESSAGE':
+      if (packet.message) {
+        handleIncomingChatMessage(packet.message);
+      }
+      break;
+
+    case 'TYPING_STATUS':
+      handleIncomingTyping(packet);
+      break;
+
+    case 'FEED_POST':
+      if (packet.post) {
+        // Add to posts if not exists
+        if (!appState.posts.some(p => p.id === packet.post.id)) {
+          appState.posts.unshift(packet.post);
+          saveSharedState();
+          renderFeed();
+          if (currentTabUser && packet.post.authorUsername !== currentTabUser) {
+            showToast(`📢 @${packet.post.authorUsername} yeni bir gönderi paylaştı!`);
+          }
+        }
+      }
+      break;
+
+    case 'FEED_INTERACTION':
+      appState = loadSharedState();
+      renderFeed();
+      break;
+
+    case 'NEW_USER_REGISTERED':
+      appState = loadSharedState();
+      renderOnlineMembersList();
+      renderChatDock();
+      break;
+
+    case 'SESSION_CLAIMED':
+      if (currentTabUser && currentTabUser === packet.username && packet.newSessionId !== tabSessionId) {
+        // Another tab or device claimed this session
+        showSessionTakeoverNotice();
+      }
+      break;
+
+    case 'PRESENCE_PING':
+      if (packet.username) {
+        peerPresenceMap[packet.username] = Date.now();
+        renderOnlineMembersList();
+        renderChatDockHeader();
+      }
+      break;
+  }
+}
+
+function updateRealtimeStatus(online, text) {
+  const badge = document.getElementById('ws-status-badge');
+  const label = document.getElementById('ws-status-text');
+  if (!badge) return;
+
+  badge.className = online ? 'ws-status-badge' : 'ws-status-badge connecting';
+  if (label) label.textContent = text || (online ? 'Canlı (WebSocket)' : 'Bağlanıyor...');
+}
+
+// -----------------------------------------------------------------------------
+// STORAGE HELPERS
+// -----------------------------------------------------------------------------
+function loadSharedState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Ensure default users exist with latest photos
-      for (const key in ACCOUNTS) {
-        if (!parsed.users[key] || !parsed.users[key].avatar) {
-          parsed.users[key] = JSON.parse(JSON.stringify(ACCOUNTS[key]));
+      // Ensure defaults & real photos are always maintained
+      for (const key in DEFAULT_ACCOUNTS) {
+        if (!parsed.users[key]) {
+          parsed.users[key] = JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS[key]));
         } else {
-          // Always ensure latest avatar path
-          parsed.users[key].avatar = ACCOUNTS[key].avatar;
+          parsed.users[key].avatar = DEFAULT_ACCOUNTS[key].avatar;
+          parsed.users[key].name = DEFAULT_ACCOUNTS[key].name;
         }
       }
       return parsed;
     }
   } catch (e) {
-    console.warn('Storage read error', e);
+    console.warn('Storage load error, falling back to default', e);
   }
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
 }
 
-function saveAppState() {
+function saveSharedState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   } catch (e) {
-    console.error('Storage save failed', e);
+    console.error('Failed to save shared state', e);
   }
 }
 
 // -----------------------------------------------------------------------------
-// APP STARTUP & AUTHENTICATION
+// SESSION CONCURRENCY MANAGEMENT (Aynı Anda 1 Kişi Kuralı)
 // -----------------------------------------------------------------------------
+function getActiveSessionsRegistry() {
+  try {
+    const raw = localStorage.getItem(SESSION_LOCK_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
 
+function saveActiveSessionsRegistry(reg) {
+  try {
+    localStorage.setItem(SESSION_LOCK_KEY, JSON.stringify(reg));
+  } catch (e) {}
+}
+
+function claimUserSession(username) {
+  const reg = getActiveSessionsRegistry();
+  reg[username] = {
+    sessionId: tabSessionId,
+    timestamp: Date.now()
+  };
+  saveActiveSessionsRegistry(reg);
+
+  // Broadcast to other tabs so old session hands over gracefully
+  broadcastPacket({
+    type: 'SESSION_CLAIMED',
+    username: username,
+    newSessionId: tabSessionId
+  });
+}
+
+function releaseUserSession(username) {
+  const reg = getActiveSessionsRegistry();
+  if (reg[username] && reg[username].sessionId === tabSessionId) {
+    delete reg[username];
+    saveActiveSessionsRegistry(reg);
+  }
+}
+
+function checkActiveSessionTakeover() {
+  if (!currentTabUser) return;
+  const reg = getActiveSessionsRegistry();
+  const entry = reg[currentTabUser];
+  if (entry && entry.sessionId !== tabSessionId) {
+    showSessionTakeoverNotice();
+  }
+}
+
+function showSessionTakeoverNotice() {
+  const overlay = document.getElementById('session-takeover-overlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+  }
+}
+
+function reclaimSession() {
+  if (!currentTabUser) return;
+  const overlay = document.getElementById('session-takeover-overlay');
+  if (overlay) overlay.style.display = 'none';
+
+  claimUserSession(currentTabUser);
+  startHeartbeat(currentTabUser);
+  showToast(`Oturum bu pencereye başarıyla aktarıldı! ⚡`);
+}
+
+function startHeartbeat(username) {
+  stopHeartbeat();
+  function ping() {
+    peerPresenceMap[username] = Date.now();
+    broadcastPacket({
+      type: 'PRESENCE_PING',
+      username: username
+    });
+  }
+  ping();
+  presenceHeartbeatTimer = setInterval(ping, 3500);
+}
+
+function stopHeartbeat() {
+  if (presenceHeartbeatTimer) {
+    clearInterval(presenceHeartbeatTimer);
+    presenceHeartbeatTimer = null;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// APP LIFECYCLE & INITIALIZATION
+// -----------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   setupEventListeners();
 
-  // Check existing session
-  const savedUsername = localStorage.getItem(AUTH_KEY);
-  if (savedUsername && ACCOUNTS[savedUsername]) {
-    // Check if session is already occupied elsewhere
-    if (isAccountActiveElsewhere(savedUsername)) {
-      showLoginScreen(`⚠️ "@${savedUsername}" hesabı şu anda başka bir sekmede aktif. Oturum açmak için giriş yapın.`);
-    } else {
-      performLogin(savedUsername, ACCOUNTS[savedUsername].password, false);
-    }
+  // Tab-isolated session check
+  const sessionUser = sessionStorage.getItem(SESSION_USER_KEY);
+
+  if (sessionUser && appState.users[sessionUser]) {
+    loginSession(sessionUser, false);
   } else {
     showLoginScreen();
   }
@@ -278,32 +541,42 @@ document.addEventListener('DOMContentLoaded', () => {
 function showLoginScreen(alertMsg) {
   const loginScreen = document.getElementById('login-screen');
   const mainApp = document.getElementById('main-app-screen');
-  const alertBox = document.getElementById('login-alert-banner');
+  const alertBanner = document.getElementById('login-alert-banner');
 
   if (loginScreen) loginScreen.style.display = 'flex';
   if (mainApp) mainApp.style.display = 'none';
 
-  if (alertBox) {
+  if (alertBanner) {
     if (alertMsg) {
-      alertBox.textContent = alertMsg;
-      alertBox.style.display = 'block';
+      alertBanner.innerHTML = alertMsg;
+      alertBanner.style.display = 'block';
     } else {
-      alertBox.style.display = 'none';
+      alertBanner.style.display = 'none';
     }
   }
 
-  // Clear active heartbeat if any
-  if (heartbeatInterval) clearInterval(heartbeatInterval);
-  currentAuthUser = null;
-  localStorage.removeItem(AUTH_KEY);
+  stopHeartbeat();
+  if (currentTabUser) {
+    releaseUserSession(currentTabUser);
+  }
+  currentTabUser = null;
+  sessionStorage.removeItem(SESSION_USER_KEY);
 }
 
 function showMainApp() {
   const loginScreen = document.getElementById('login-screen');
   const mainApp = document.getElementById('main-app-screen');
+  const takeoverOverlay = document.getElementById('session-takeover-overlay');
 
   if (loginScreen) loginScreen.style.display = 'none';
   if (mainApp) mainApp.style.display = 'block';
+  if (takeoverOverlay) takeoverOverlay.style.display = 'none';
+
+  // Set default chat partner to the first other user
+  const otherUsers = Object.keys(appState.users).filter(u => u !== currentTabUser);
+  if (!activeChatPartner || activeChatPartner === currentTabUser) {
+    activeChatPartner = otherUsers[0] || 'aliniyya';
+  }
 
   renderNavbar();
   renderProfileCard();
@@ -315,92 +588,47 @@ function showMainApp() {
   renderActiveChatWindow();
 }
 
-// Single active user rule (Tek kullanıcı oturum kontrolü)
-function isAccountActiveElsewhere(username) {
-  try {
-    const rawSessions = localStorage.getItem(SESSIONS_KEY);
-    if (!rawSessions) return false;
-    const sessions = JSON.parse(rawSessions);
-    const session = sessions[username];
-    if (session && session.sessionId !== currentSessionId) {
-      // Check if heartbeat is alive within last 12 seconds
-      if (Date.now() - session.timestamp < 12000) {
-        return true;
-      }
-    }
-  } catch (e) {}
-  return false;
-}
+function loginSession(username, showWelcome = true) {
+  currentTabUser = username;
+  sessionStorage.setItem(SESSION_USER_KEY, username);
 
-function registerActiveSession(username) {
-  try {
-    let sessions = {};
-    const raw = localStorage.getItem(SESSIONS_KEY);
-    if (raw) sessions = JSON.parse(raw);
+  claimUserSession(username);
+  startHeartbeat(username);
+  showMainApp();
+  initWebSocketRealtime();
 
-    sessions[username] = {
-      sessionId: currentSessionId,
-      timestamp: Date.now()
-    };
-    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-
-    // Broadcast session lock
-    broadcastEvent({
-      type: 'SESSION_LOCK',
-      username: username,
-      sessionId: currentSessionId
-    });
-
-    // Start Heartbeat every 4 seconds
-    if (heartbeatInterval) clearInterval(heartbeatInterval);
-    heartbeatInterval = setInterval(() => {
-      if (!currentAuthUser) return;
-      try {
-        let currentSessions = {};
-        const r = localStorage.getItem(SESSIONS_KEY);
-        if (r) currentSessions = JSON.parse(r);
-        currentSessions[currentAuthUser] = {
-          sessionId: currentSessionId,
-          timestamp: Date.now()
-        };
-        localStorage.setItem(SESSIONS_KEY, JSON.stringify(currentSessions));
-      } catch (e) {}
-    }, 4000);
-  } catch (e) {}
-}
-
-function releaseActiveSession(username) {
-  try {
-    const raw = localStorage.getItem(SESSIONS_KEY);
-    if (raw) {
-      let sessions = JSON.parse(raw);
-      if (sessions[username] && sessions[username].sessionId === currentSessionId) {
-        delete sessions[username];
-        localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-      }
-    }
-  } catch (e) {}
-}
-
-function checkActiveSessionHealth() {
-  if (!currentAuthUser) return;
-  try {
-    const raw = localStorage.getItem(SESSIONS_KEY);
-    if (raw) {
-      const sessions = JSON.parse(raw);
-      const session = sessions[currentAuthUser];
-      // If another tab took over this user session
-      if (session && session.sessionId !== currentSessionId) {
-        alert(`Oturumunuz başka bir pencere veya cihazda açıldığı için sonlandırıldı.`);
-        logout();
-      }
-    }
-  } catch (e) {}
+  if (showWelcome) {
+    const user = appState.users[username];
+    showToast(`Hoş geldiniz, ${user ? user.name : username}! 🚀`);
+  }
 }
 
 // -----------------------------------------------------------------------------
-// LOGIN / LOGOUT HANDLERS
+// AUTH: LOGIN & REGISTER LOGIC
 // -----------------------------------------------------------------------------
+function switchAuthTab(mode) {
+  const loginContainer = document.getElementById('login-form-container');
+  const regContainer = document.getElementById('register-form-container');
+  const btnLogin = document.getElementById('tab-btn-login');
+  const btnReg = document.getElementById('tab-btn-register');
+  const alertBanner = document.getElementById('login-alert-banner');
+  const regAlert = document.getElementById('reg-alert-banner');
+
+  if (alertBanner) alertBanner.style.display = 'none';
+  if (regAlert) regAlert.style.display = 'none';
+
+  if (mode === 'login') {
+    if (loginContainer) loginContainer.style.display = 'block';
+    if (regContainer) regContainer.style.display = 'none';
+    if (btnLogin) btnLogin.classList.add('active');
+    if (btnReg) btnReg.classList.remove('active');
+  } else {
+    if (loginContainer) loginContainer.style.display = 'none';
+    if (regContainer) regContainer.style.display = 'block';
+    if (btnLogin) btnLogin.classList.remove('active');
+    if (btnReg) btnReg.classList.add('active');
+  }
+}
 
 function handleLoginSubmit(event) {
   if (event) event.preventDefault();
@@ -411,154 +639,466 @@ function handleLoginSubmit(event) {
   const password = passwordInput ? passwordInput.value.trim() : '';
 
   if (!username || !password) {
-    showLoginAlert('Lütfen kullanıcı adı ve şifrenizi girin!');
+    showLoginScreen('Lütfen kullanıcı adı ve şifrenizi girin!');
     return;
   }
 
-  performLogin(username, password, false);
+  // Look for user by username or email
+  let matchedUser = appState.users[username];
+  if (!matchedUser) {
+    // Search by email
+    for (const key in appState.users) {
+      if (appState.users[key].email && appState.users[key].email.toLowerCase() === username) {
+        matchedUser = appState.users[key];
+        break;
+      }
+    }
+  }
+
+  if (!matchedUser) {
+    showLoginScreen(`❌ "@${username}" adına kayıtlı bir kullanıcı bulunamadı.`);
+    return;
+  }
+
+  if (password !== (matchedUser.password || '31316969')) {
+    showLoginScreen(`❌ Şifre hatalı! Lütfen kontrol edin.`);
+    return;
+  }
+
+  loginSession(matchedUser.username, true);
 }
 
 function quickSelectUser(username) {
-  const usernameInput = document.getElementById('login-username-input');
-  const passwordInput = document.getElementById('login-password-input');
-  if (usernameInput) usernameInput.value = username;
-  if (passwordInput) passwordInput.value = '31316969';
-
-  performLogin(username, '31316969', false);
+  const user = appState.users[username];
+  if (!user) return;
+  loginSession(username, true);
 }
 
-function performLogin(username, password, forceTakeover) {
-  const account = ACCOUNTS[username];
-  if (!account) {
-    showLoginAlert(`Geçersiz kullanıcı adı! Kayıtlı hesaplar: erdemcarkit, aliniyya, bakugan`);
-    return;
-  }
+function selectRegAvatar(element) {
+  document.querySelectorAll('.reg-avatar-choice').forEach(el => el.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedRegAvatar = element.getAttribute('data-avatar') || './assets/avatar_erdem.png';
+}
 
-  if (password !== account.password) {
-    showLoginAlert(`Hatalı şifre! (Belirlenen şifre: 31316969)`);
-    return;
-  }
+function handleRegisterSubmit(event) {
+  if (event) event.preventDefault();
+  const name = document.getElementById('reg-name-input').value.trim();
+  const rawUsername = document.getElementById('reg-username-input').value.trim().toLowerCase();
+  const email = document.getElementById('reg-email-input').value.trim();
+  const password = document.getElementById('reg-password-input').value.trim();
+  const password2 = document.getElementById('reg-password2-input').value.trim();
+  const company = document.getElementById('reg-company-input').value.trim();
+  const title = document.getElementById('reg-title-input').value.trim() || 'Girişimci & Araştırmacı';
+  const campus = document.getElementById('reg-campus-select').value;
+  const regAlert = document.getElementById('reg-alert-banner');
 
-  // Check single active user constraint
-  if (!forceTakeover && isAccountActiveElsewhere(username)) {
-    const alertBox = document.getElementById('login-alert-banner');
-    if (alertBox) {
-      alertBox.innerHTML = `
-        <div style="margin-bottom: 0.5rem;">⚠️ <strong>@${username}</strong> hesabı şu anda başka bir sekmede aktif! Aynı anda sadece 1 kişi oturum açabilir.</div>
-        <button onclick="performLogin('${username}', '${password}', true)" style="background:var(--brand-red); color:#fff; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; cursor:pointer;">
-          Oturumu Devral (Diğerini Kapat)
-        </button>
-      `;
-      alertBox.style.display = 'block';
+  // Sanitize username
+  const username = rawUsername.replace(/[^a-z0-9_]/g, '');
+
+  function showRegError(msg) {
+    if (regAlert) {
+      regAlert.innerHTML = `⚠️ ${msg}`;
+      regAlert.style.display = 'block';
+    } else {
+      alert(msg);
     }
+  }
+
+  if (!name || !username || !password || !company) {
+    showRegError('Lütfen zorunlu (*) alanların tümünü doldurun!');
     return;
   }
 
-  // Login successful
-  currentAuthUser = username;
-  localStorage.setItem(AUTH_KEY, username);
-  registerActiveSession(username);
+  if (password.length < 4) {
+    showRegError('Şifreniz en az 4 karakter uzunluğunda olmalıdır!');
+    return;
+  }
 
-  // Set default partner for chat
-  const otherUsers = Object.keys(ACCOUNTS).filter(u => u !== username);
-  activeChatPartner = otherUsers[0] || 'aliniyya';
+  if (password !== password2) {
+    showRegError('Girdiğiniz şifreler birbiriyle eşleşmiyor!');
+    return;
+  }
 
-  showMainApp();
-  showToast(`Hoş geldin, ${account.name}! 👋`);
+  if (appState.users[username]) {
+    showRegError(`"@${username}" kullanıcı adı zaten kayıtlı! Lütfen farklı bir kullanıcı adı seçin.`);
+    return;
+  }
+
+  const newUser = {
+    username: username,
+    password: password,
+    name: name,
+    email: email,
+    title: title,
+    company: company,
+    campus: campus,
+    avatar: selectedRegAvatar || './assets/avatar_erdem.png',
+    bio: `${company} bünyesinde Teknokent Ar-Ge projeleri yürütüyorum.`,
+    skills: ['Girişimcilik', 'İnovasyon', 'Ar-Ge'],
+    postsCount: 0,
+    connectionsCount: 1,
+    profileViews: 1
+  };
+
+  appState.users[username] = newUser;
+  saveSharedState();
+
+  // Broadcast new registration
+  broadcastPacket({
+    type: 'NEW_USER_REGISTERED',
+    user: newUser
+  });
+
+  // Automatically log in as the newly registered user
+  loginSession(username, true);
+  showToast(`🎉 Tebrikler ${name}! Hesabınız oluşturuldu ve giriş yapıldı.`);
 }
 
 function logout() {
-  if (currentAuthUser) {
-    releaseActiveSession(currentAuthUser);
-    broadcastEvent({
-      type: 'USER_LOGOUT',
-      username: currentAuthUser
-    });
+  stopHeartbeat();
+  if (currentTabUser) {
+    releaseUserSession(currentTabUser);
+    if (mqttClient) {
+      try {
+        mqttClient.unsubscribe(`teknokent/blue/v4/user/${currentTabUser}`);
+      } catch (e) {}
+    }
   }
-  if (heartbeatInterval) clearInterval(heartbeatInterval);
-  currentAuthUser = null;
-  localStorage.removeItem(AUTH_KEY);
-  showLoginScreen('Başarıyla çıkış yapıldı.');
+  currentTabUser = null;
+  sessionStorage.removeItem(SESSION_USER_KEY);
+  showLoginScreen('Güvenli şekilde çıkış yapıldı.');
 }
 
-function showLoginAlert(msg) {
-  const alertBox = document.getElementById('login-alert-banner');
-  if (alertBox) {
-    alertBox.textContent = msg;
-    alertBox.style.display = 'block';
-  }
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function openNewTabForTesting() {
+  window.open(window.location.href, '_blank');
 }
 
 // -----------------------------------------------------------------------------
-// REAL-TIME EVENT BUS (BROADCAST & STORAGE SYNC)
+// ACCOUNT SWITCHER MENU
 // -----------------------------------------------------------------------------
+function toggleAccountSwitcher(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('account-switcher-dropdown');
+  if (!dropdown) return;
 
-function broadcastEvent(payload) {
-  if (realTimeChannel) {
-    try {
-      realTimeChannel.postMessage(payload);
-    } catch (e) {
-      console.warn('Broadcast failed', e);
-    }
+  const isVisible = dropdown.classList.contains('show');
+  if (isVisible) {
+    dropdown.classList.remove('show');
+    return;
+  }
+
+  const users = Object.keys(appState.users);
+  dropdown.innerHTML = `
+    <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.4rem; padding:0.2rem 0.4rem;">
+      KULLANICI SEÇ (BU SEKMEDE AÇ)
+    </div>
+    ${users.map(uName => {
+      const u = appState.users[uName];
+      const isMe = uName === currentTabUser;
+      const isOnline = isMe || (peerPresenceMap[uName] && (Date.now() - peerPresenceMap[uName] < 10000));
+      return `
+        <div class="account-switch-item ${isMe ? 'active' : ''}" onclick="switchAccountTo('${uName}')">
+          <div style="position:relative;">
+            <img src="${u.avatar}" class="account-switch-avatar" alt="${u.name}" />
+            <div class="online-status-dot" style="background-color: ${isOnline ? 'var(--brand-online)' : '#64748B'};"></div>
+          </div>
+          <div class="account-switch-meta">
+            <span class="account-switch-name">${u.name} ${isMe ? '(Aktif)' : ''}</span>
+            <span class="account-switch-handle">@${u.username} • ${u.company}</span>
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <div style="border-top:1px solid var(--border-color); margin-top:0.4rem; padding-top:0.4rem;">
+      <div class="account-switch-item" onclick="showLoginScreen(); switchAuthTab('register');">
+        <span>➕</span>
+        <span style="font-size:0.8rem; font-weight:700; color:var(--brand-turq);">Yeni Kullanıcı Kaydet</span>
+      </div>
+    </div>
+  `;
+
+  dropdown.classList.add('show');
+}
+
+function switchAccountTo(username) {
+  const dropdown = document.getElementById('account-switcher-dropdown');
+  if (dropdown) dropdown.classList.remove('show');
+  if (username === currentTabUser) return;
+
+  loginSession(username, true);
+}
+
+// Close account switcher dropdown on outside click
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('account-switcher-dropdown');
+  if (dropdown && !dropdown.contains(e.target)) {
+    dropdown.classList.remove('show');
+  }
+});
+
+// -----------------------------------------------------------------------------
+// REAL-TIME CHAT ENGINE (ZERO LATENCY, ZERO DUPLICATION)
+// -----------------------------------------------------------------------------
+function getThreadKey(userA, userB) {
+  return [userA, userB].sort().join('__');
+}
+
+function formatTime(d) {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function sendChatMessage(textOverride) {
+  if (!currentTabUser || !activeChatPartner) return;
+
+  const input = document.getElementById('chat-message-input');
+  const text = (textOverride !== undefined ? textOverride : (input ? input.value : '')).trim();
+  if (!text) return;
+
+  const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+  const now = new Date();
+  const timeStr = formatTime(now);
+
+  const messageObj = {
+    id: msgId,
+    sender: currentTabUser,
+    recipient: activeChatPartner,
+    text: text,
+    time: timeStr,
+    timestamp: Date.now()
+  };
+
+  // 1. Add locally
+  addMessageToThread(messageObj);
+
+  if (input) input.value = '';
+  renderActiveChatWindow();
+  renderChatDock();
+
+  // 2. Broadcast via Hybrid Mesh (BroadcastChannel + MQTT)
+  broadcastPacket({
+    type: 'CHAT_MESSAGE',
+    message: messageObj
+  });
+
+  // Cancel typing status
+  broadcastPacket({
+    type: 'TYPING_STATUS',
+    sender: currentTabUser,
+    recipient: activeChatPartner,
+    isTyping: false
+  });
+}
+
+function sendQuickReply(text) {
+  sendChatMessage(text);
+}
+
+function addMessageToThread(msg) {
+  const threadKey = getThreadKey(msg.sender, msg.recipient);
+  if (!appState.messages[threadKey]) {
+    appState.messages[threadKey] = [];
+  }
+
+  // Strict deduplication by ID or exact content within 2s window
+  const alreadyExists = appState.messages[threadKey].some(m => 
+    m.id === msg.id || (m.sender === msg.sender && m.text === msg.text && Math.abs(m.timestamp - msg.timestamp) < 2000)
+  );
+
+  if (!alreadyExists) {
+    appState.messages[threadKey].push(msg);
+    saveSharedState();
   }
 }
 
-function handleRealTimeEvent(event) {
-  const data = event.data;
-  if (!data) return;
+function handleIncomingChatMessage(msg) {
+  if (!currentTabUser || !msg) return;
 
-  if (data.type === 'CHAT_MESSAGE') {
-    handleIncomingMessage(data);
-  } else if (data.type === 'NEW_POST') {
-    handleIncomingPost(data);
-  } else if (data.type === 'POST_LIKE' || data.type === 'POST_COMMENT') {
-    appState = loadAppState();
-    renderFeed();
-  } else if (data.type === 'SESSION_LOCK') {
-    if (currentAuthUser && currentAuthUser === data.username && data.sessionId !== currentSessionId) {
-      alert(`Oturumunuz başka bir pencerede devralındı.`);
-      logout();
-    }
-  } else if (data.type === 'USER_LOGOUT') {
-    appState = loadAppState();
-    renderOnlineMembersList();
-    renderChatDock();
-  }
-}
+  // Process only if recipient or sender is current user
+  if (msg.recipient !== currentTabUser && msg.sender !== currentTabUser) return;
 
-function handleIncomingMessage(msgData) {
-  // Reload state from local storage to have the message
-  appState = loadAppState();
+  addMessageToThread(msg);
 
-  // If this message is intended for or involves the current user
-  if (currentAuthUser && (msgData.sender === currentAuthUser || msgData.recipient === currentAuthUser)) {
+  // Play audio chime and show notification if message came from another user
+  if (msg.sender !== currentTabUser) {
     playChimeSound();
+    if (!activeChatPartner || activeChatPartner !== msg.sender) {
+      showToast(`💬 @${msg.sender}: "${msg.text.substring(0, 30)}..."`);
+    }
+  }
 
-    renderChatDock();
-    renderActiveChatWindow();
+  renderChatDock();
+  renderActiveChatWindow();
+}
 
-    // If message is from someone else, show toast notification
-    if (msgData.sender !== currentAuthUser) {
-      const senderAcc = ACCOUNTS[msgData.sender] || { name: msgData.sender };
-      showToast(`💬 @${msgData.sender}: "${msgData.text.substring(0, 32)}..."`);
+function handleChatInputTyping() {
+  if (!currentTabUser || !activeChatPartner) return;
+
+  broadcastPacket({
+    type: 'TYPING_STATUS',
+    sender: currentTabUser,
+    recipient: activeChatPartner,
+    isTyping: true
+  });
+
+  clearTimeout(typingDebounceTimer);
+  typingDebounceTimer = setTimeout(() => {
+    broadcastPacket({
+      type: 'TYPING_STATUS',
+      sender: currentTabUser,
+      recipient: activeChatPartner,
+      isTyping: false
+    });
+  }, 2500);
+}
+
+function handleIncomingTyping(packet) {
+  if (!currentTabUser) return;
+  if (packet.recipient === currentTabUser && packet.sender === activeChatPartner) {
+    const indicator = document.getElementById('chat-typing-indicator');
+    if (indicator) {
+      if (packet.isTyping) {
+        indicator.innerHTML = `✍️ @${packet.sender} yazıyor<span class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span>`;
+        indicator.style.display = 'block';
+      } else {
+        indicator.style.display = 'none';
+      }
     }
   }
 }
 
-function handleIncomingPost(postData) {
-  appState = loadAppState();
-  renderFeed();
-  if (currentAuthUser && postData.authorUsername !== currentAuthUser) {
-    showToast(`📢 @${postData.authorUsername} yeni bir gönderi paylaştı!`);
+function renderChatDock() {
+  const container = document.getElementById('chat-contacts-list');
+  if (!container || !currentTabUser) return;
+
+  const otherUsers = Object.keys(appState.users).filter(u => u !== currentTabUser);
+
+  container.innerHTML = otherUsers.map(partnerUName => {
+    const partner = appState.users[partnerUName];
+    const threadKey = getThreadKey(currentTabUser, partnerUName);
+    const messages = appState.messages[threadKey] || [];
+    const lastMsg = messages.length > 0 ? messages[messages.length - 1] : { text: 'Sohbet başlatın...', time: '' };
+
+    const isOnline = peerPresenceMap[partnerUName] && (Date.now() - peerPresenceMap[partnerUName] < 10000);
+
+    return `
+      <div class="chat-contact-row" onclick="openChatWith('${partnerUName}')">
+        <div class="contact-avatar-wrapper">
+          <img src="${partner.avatar}" class="contact-avatar" alt="${partner.name}" />
+          <div class="online-status-dot" style="background-color: ${isOnline ? 'var(--brand-online)' : '#64748B'};"></div>
+        </div>
+        <div class="contact-info">
+          <div class="contact-top-line">
+            <span class="contact-name">${partner.name}</span>
+            <span class="contact-time">${lastMsg.time || ''}</span>
+          </div>
+          <div class="contact-last-msg">${escapeHtml(lastMsg.text)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderChatDockHeader() {
+  const dock = document.getElementById('linkedin-chat-dock');
+  if (!dock) return;
+  // Dynamic online updates for contacts
+  renderChatDock();
+}
+
+function renderActiveChatWindow() {
+  const chatWindow = document.getElementById('active-conversation-window');
+  if (!chatWindow) return;
+
+  if (!activeChatPartner || !currentTabUser) {
+    chatWindow.style.display = 'none';
+    return;
+  }
+
+  chatWindow.style.display = 'flex';
+  const partner = appState.users[activeChatPartner];
+  if (!partner) return;
+
+  const targetAvatar = document.getElementById('chat-target-avatar');
+  const targetName = document.getElementById('chat-target-name');
+  const targetStatus = document.getElementById('chat-target-status');
+
+  const isOnline = peerPresenceMap[activeChatPartner] && (Date.now() - peerPresenceMap[activeChatPartner] < 10000);
+
+  if (targetAvatar) targetAvatar.src = partner.avatar;
+  if (targetName) targetName.textContent = `${partner.name} (@${partner.username})`;
+  if (targetStatus) {
+    targetStatus.innerHTML = isOnline 
+      ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> 🟢 Çevrimiçi (Canlı)'
+      : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748B;"></span> Çevrimdışı';
+  }
+
+  const threadKey = getThreadKey(currentTabUser, activeChatPartner);
+  const messages = appState.messages[threadKey] || [];
+  const body = document.getElementById('chat-messages-body');
+
+  if (body) {
+    body.innerHTML = messages.map(msg => {
+      const isOutgoing = msg.sender === currentTabUser;
+      return `
+        <div class="chat-bubble ${isOutgoing ? 'outgoing' : 'incoming'}">
+          ${escapeHtml(msg.text)}
+          <div class="chat-bubble-time">${msg.time} ${isOutgoing ? '✓✓' : ''}</div>
+        </div>
+      `;
+    }).join('');
+
+    body.scrollTop = body.scrollHeight;
   }
 }
 
-// Pleasant Native Web Audio Chime (Zero External Files)
+function openChatWith(username) {
+  activeChatPartner = username;
+  renderActiveChatWindow();
+  const input = document.getElementById('chat-message-input');
+  if (input) input.focus();
+}
+
+function closeActiveChat() {
+  activeChatPartner = null;
+  const chatWindow = document.getElementById('active-conversation-window');
+  if (chatWindow) chatWindow.style.display = 'none';
+}
+
+function toggleChatDock() {
+  const content = document.getElementById('chat-dock-content');
+  const icon = document.getElementById('dock-toggle-icon');
+  if (!content) return;
+
+  isChatDockOpen = !isChatDockOpen;
+  content.style.display = isChatDockOpen ? 'block' : 'none';
+  if (icon) {
+    icon.innerHTML = isChatDockOpen 
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+  }
+}
+
+function filterChatContacts(query) {
+  const q = query.toLowerCase().trim();
+  const rows = document.querySelectorAll('.chat-contact-row');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? 'flex' : 'none';
+  });
+}
+
+// Native Web Audio Synthesizer Chime
 function playChimeSound() {
   try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -574,18 +1114,199 @@ function playChimeSound() {
 
     osc.start();
     osc.stop(ctx.currentTime + 0.36);
-  } catch (e) {
-    // audio context may be muted or blocked by browser gesture
-  }
+  } catch (e) {}
 }
 
 // -----------------------------------------------------------------------------
-// UI RENDERING: NAVBAR, PROFILES, FEED, COMPANIES
+// POSTS & FEED
 // -----------------------------------------------------------------------------
+let selectedPostImage = null;
 
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    selectedPostImage = e.target.result;
+    showImagePreview(selectedPostImage);
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectSampleImage(type) {
+  if (type === 'office') selectedPostImage = './assets/post_office.jpg';
+  if (type === 'team') selectedPostImage = './assets/post_team.jpg';
+  showImagePreview(selectedPostImage);
+}
+
+function showImagePreview(imgSrc) {
+  const previewBox = document.getElementById('composer-preview-box');
+  const previewImg = document.getElementById('composer-preview-img');
+  if (previewBox && previewImg) {
+    previewImg.src = imgSrc;
+    previewBox.style.display = 'block';
+  }
+}
+
+function removeComposerImage() {
+  selectedPostImage = null;
+  const previewBox = document.getElementById('composer-preview-box');
+  if (previewBox) previewBox.style.display = 'none';
+  const fileInput = document.getElementById('post-image-file-input');
+  if (fileInput) fileInput.value = '';
+}
+
+function addHashtagToComposer(tag) {
+  const textarea = document.getElementById('post-composer-text');
+  if (!textarea) return;
+  textarea.value = (textarea.value.trim() + ' #' + tag).trim() + ' ';
+  textarea.focus();
+}
+
+function submitNewPost() {
+  if (!currentTabUser) return;
+  const textarea = document.getElementById('post-composer-text');
+  const content = textarea ? textarea.value.trim() : '';
+
+  if (!content && !selectedPostImage) {
+    showToast('Lütfen bir metin yazın veya görsel ekleyin!');
+    return;
+  }
+
+  const postAsSelect = document.getElementById('post-as-select');
+  const postAs = postAsSelect ? postAsSelect.value : 'user';
+  const user = appState.users[currentTabUser];
+
+  const hashtags = (content.match(/#([a-zA-Z0-9ığüşöçİĞÜŞÖÇ_]+)/g) || []).map(t => t.replace('#', ''));
+
+  const newPost = {
+    id: 'post_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    authorUsername: currentTabUser,
+    authorType: postAs,
+    companyName: postAs === 'company' ? user.company : null,
+    timestamp: 'Şimdi',
+    createdAt: Date.now(),
+    content: content,
+    tags: hashtags.length > 0 ? hashtags : ['Teknokent'],
+    category: hashtags.some(t => /arge|ai|yapayzeka|yazılım/i.test(t)) ? 'arge' : 'startup',
+    image: selectedPostImage,
+    likes: [],
+    reposts: 0,
+    comments: []
+  };
+
+  appState.posts.unshift(newPost);
+  user.postsCount = (user.postsCount || 0) + 1;
+  saveSharedState();
+
+  if (textarea) textarea.value = '';
+  removeComposerImage();
+
+  renderProfileCard();
+  renderFeed();
+  showToast('Gönderiniz canlı akışta yayınlandı! 🚀');
+
+  // Broadcast to other sessions and mobile devices
+  broadcastPacket({
+    type: 'FEED_POST',
+    post: newPost
+  });
+}
+
+function toggleLike(postId) {
+  if (!currentTabUser) return;
+  const post = appState.posts.find(p => p.id === postId);
+  if (!post) return;
+
+  if (!post.likes) post.likes = [];
+  const idx = post.likes.indexOf(currentTabUser);
+
+  if (idx > -1) {
+    post.likes.splice(idx, 1);
+  } else {
+    post.likes.push(currentTabUser);
+  }
+
+  saveSharedState();
+  renderFeed();
+
+  broadcastPacket({
+    type: 'FEED_INTERACTION',
+    action: 'like',
+    postId: postId
+  });
+}
+
+function toggleCommentsSection(postId) {
+  const commentsWrapper = document.getElementById(`comments-${postId}`);
+  if (!commentsWrapper) return;
+  commentsWrapper.classList.toggle('show');
+}
+
+function handleCommentKeyPress(event, postId) {
+  if (event.key === 'Enter') submitComment(postId);
+}
+
+function submitComment(postId) {
+  if (!currentTabUser) return;
+  const input = document.getElementById(`comment-input-${postId}`);
+  const text = input ? input.value.trim() : '';
+  if (!text) return;
+
+  const post = appState.posts.find(p => p.id === postId);
+  if (!post) return;
+
+  if (!post.comments) post.comments = [];
+  post.comments.push({
+    id: 'comm_' + Date.now(),
+    authorUsername: currentTabUser,
+    time: 'Şimdi',
+    text: text
+  });
+
+  saveSharedState();
+  if (input) input.value = '';
+  renderFeed();
+
+  const commentsWrapper = document.getElementById(`comments-${postId}`);
+  if (commentsWrapper) commentsWrapper.classList.add('show');
+
+  broadcastPacket({
+    type: 'FEED_INTERACTION',
+    action: 'comment',
+    postId: postId
+  });
+}
+
+function repost(postId) {
+  const post = appState.posts.find(p => p.id === postId);
+  if (!post) return;
+  post.reposts = (post.reposts || 0) + 1;
+  saveSharedState();
+  renderFeed();
+  showToast('Gönderi yeniden paylaşıldı! 🔄');
+}
+
+function sharePost(postId) {
+  navigator.clipboard?.writeText(window.location.href);
+  showToast('Gönderi bağlantısı panoya kopyalandı! 📋');
+}
+
+function setFeedCategory(category) {
+  currentFeedCategory = category;
+  document.querySelectorAll('.feed-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.getAttribute('data-cat') === category);
+  });
+  renderFeed();
+}
+
+// -----------------------------------------------------------------------------
+// UI RENDERING: NAVBAR, PROFILES, FEED
+// -----------------------------------------------------------------------------
 function renderNavbar() {
-  if (!currentAuthUser) return;
-  const user = ACCOUNTS[currentAuthUser];
+  if (!currentTabUser) return;
+  const user = appState.users[currentTabUser];
   if (!user) return;
 
   const pillAvatar = document.getElementById('nav-user-avatar');
@@ -598,8 +1319,8 @@ function renderNavbar() {
 }
 
 function renderProfileCard() {
-  if (!currentAuthUser) return;
-  const user = ACCOUNTS[currentAuthUser];
+  if (!currentTabUser) return;
+  const user = appState.users[currentTabUser];
   if (!user) return;
 
   const avatar = document.getElementById('sidebar-user-avatar');
@@ -620,8 +1341,8 @@ function renderProfileCard() {
 }
 
 function renderComposer() {
-  if (!currentAuthUser) return;
-  const user = ACCOUNTS[currentAuthUser];
+  if (!currentTabUser) return;
+  const user = appState.users[currentTabUser];
   if (!user) return;
 
   const composerAvatar = document.getElementById('composer-active-avatar');
@@ -672,11 +1393,11 @@ function renderFeed() {
       authorAvatar = './assets/logo.jpg';
       campus = 'Dijitalpark Teknokent';
     } else {
-      const acc = ACCOUNTS[post.authorUsername] || {
+      const acc = appState.users[post.authorUsername] || {
         name: 'Teknokent Üyesi',
         username: 'uye',
         title: 'Girişimci',
-        avatar: './assets/avatar_enes.jpg',
+        avatar: './assets/avatar_erdem.png',
         campus: 'Dijitalpark Çekmeköy'
       };
       authorName = acc.name;
@@ -686,7 +1407,7 @@ function renderFeed() {
       campus = acc.campus;
     }
 
-    const isLiked = post.likes && post.likes.includes(currentAuthUser);
+    const isLiked = post.likes && post.likes.includes(currentTabUser);
     const likeCount = post.likes ? post.likes.length : 0;
     const commentCount = post.comments ? post.comments.length : 0;
 
@@ -755,7 +1476,7 @@ function renderFeed() {
 
         <div class="comments-wrapper" id="comments-${post.id}">
           <div class="comment-input-row">
-            <img src="${ACCOUNTS[currentAuthUser]?.avatar}" class="comment-avatar-mini" />
+            <img src="${appState.users[currentTabUser]?.avatar}" class="comment-avatar-mini" />
             <div class="comment-input-box">
               <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Düşüncenizi paylaşın..." onkeypress="handleCommentKeyPress(event, '${post.id}')" />
               <button class="comment-send-btn" onclick="submitComment('${post.id}')">
@@ -766,7 +1487,7 @@ function renderFeed() {
 
           <div class="comments-list" id="comments-list-${post.id}">
             ${(post.comments || []).map(c => {
-              const commenter = ACCOUNTS[c.authorUsername] || { name: c.authorUsername, avatar: './assets/avatar_enes.jpg' };
+              const commenter = appState.users[c.authorUsername] || { name: c.authorUsername, avatar: './assets/avatar_erdem.png' };
               return `
                 <div class="comment-item">
                   <img src="${commenter.avatar}" class="comment-avatar-mini" />
@@ -787,31 +1508,31 @@ function renderFeed() {
   }).join('');
 }
 
-// Right Sidebar: Online Members & Fast Direct Message
 function renderOnlineMembersList() {
   const container = document.getElementById('test-accounts-list');
-  if (!container || !currentAuthUser) return;
+  if (!container || !currentTabUser) return;
 
-  const users = Object.keys(ACCOUNTS);
+  const users = Object.keys(appState.users);
 
   container.innerHTML = users.map(uName => {
-    const acc = ACCOUNTS[uName];
-    const isMe = uName === currentAuthUser;
+    const acc = appState.users[uName];
+    const isMe = uName === currentTabUser;
+    const isOnline = isMe || (peerPresenceMap[uName] && (Date.now() - peerPresenceMap[uName] < 10000));
 
     return `
       <div class="test-user-item ${isMe ? 'active-test-user' : ''}" onclick="${isMe ? '' : `openChatWith('${uName}')`}">
         <div class="test-user-info">
           <div style="position:relative;">
             <img src="${acc.avatar}" class="test-user-avatar" alt="${acc.name}" />
-            <div class="online-status-dot"></div>
+            <div class="online-status-dot" style="background-color: ${isOnline ? 'var(--brand-online)' : '#64748B'};"></div>
           </div>
           <div class="test-user-names">
             <span class="test-name">${acc.name} ${isMe ? '(Siz)' : ''}</span>
-            <span class="test-title">@${acc.username} • ${acc.company}</span>
+            <span class="test-title">@${acc.username} • ${isOnline ? '🟢 Çevrimiçi' : '⚪ Çevrimdışı'}</span>
           </div>
         </div>
         <button class="switch-pill-btn" style="${isMe ? 'background:var(--brand-online);' : ''}">
-          ${isMe ? 'Aktif' : '💬 Mesaj'}
+          ${isMe ? 'Aktif' : '💬 Sohbet'}
         </button>
       </div>
     `;
@@ -840,347 +1561,11 @@ function renderCompaniesList() {
   }).join('');
 }
 
-// -----------------------------------------------------------------------------
-// REAL-TIME CHAT & MESSAGING SYSTEM
-// -----------------------------------------------------------------------------
-
-function renderChatDock() {
-  const container = document.getElementById('chat-contacts-list');
-  if (!container || !currentAuthUser) return;
-
-  const otherUsers = Object.keys(ACCOUNTS).filter(u => u !== currentAuthUser);
-
-  container.innerHTML = otherUsers.map(partnerUName => {
-    const partner = ACCOUNTS[partnerUName];
-    const threadKey = getThreadKey(currentAuthUser, partnerUName);
-    const messages = appState.messages[threadKey] || [];
-    const lastMsg = messages.length > 0 ? messages[messages.length - 1] : { text: 'Canlı sohbet başlatın...', time: '' };
-
-    return `
-      <div class="chat-contact-row" onclick="openChatWith('${partnerUName}')">
-        <div class="contact-avatar-wrapper">
-          <img src="${partner.avatar}" class="contact-avatar" />
-          <div class="online-status-dot"></div>
-        </div>
-        <div class="contact-info">
-          <div class="contact-top-line">
-            <span class="contact-name">${partner.name}</span>
-            <span class="contact-time">${lastMsg.time || ''}</span>
-          </div>
-          <div class="contact-last-msg">${escapeHtml(lastMsg.text)}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderActiveChatWindow() {
-  const chatWindow = document.getElementById('active-conversation-window');
-  if (!chatWindow) return;
-
-  if (!activeChatPartner || !currentAuthUser) {
-    chatWindow.style.display = 'none';
-    return;
-  }
-
-  chatWindow.style.display = 'flex';
-  const partner = ACCOUNTS[activeChatPartner];
-  if (!partner) return;
-
-  const targetAvatar = document.getElementById('chat-target-avatar');
-  const targetName = document.getElementById('chat-target-name');
-  const targetStatus = document.getElementById('chat-target-status');
-
-  if (targetAvatar) targetAvatar.src = partner.avatar;
-  if (targetName) targetName.textContent = `${partner.name} (@${partner.username})`;
-  if (targetStatus) {
-    targetStatus.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> Şu an aktif (Canlı)';
-  }
-
-  const threadKey = getThreadKey(currentAuthUser, activeChatPartner);
-  const messages = appState.messages[threadKey] || [];
-  const body = document.getElementById('chat-messages-body');
-
-  if (body) {
-    body.innerHTML = messages.map(msg => {
-      const isOutgoing = msg.sender === currentAuthUser;
-      return `
-        <div class="chat-bubble ${isOutgoing ? 'outgoing' : 'incoming'}">
-          ${escapeHtml(msg.text)}
-          <div class="chat-bubble-time">${msg.time} ${isOutgoing ? '✓✓' : ''}</div>
-        </div>
-      `;
-    }).join('');
-
-    body.scrollTop = body.scrollHeight;
-  }
-}
-
-function getThreadKey(userA, userB) {
-  return [userA, userB].sort().join('_');
-}
-
-function openChatWith(username) {
-  activeChatPartner = username;
-  renderActiveChatWindow();
-}
-
-function closeActiveChat() {
-  activeChatPartner = null;
-  const chatWindow = document.getElementById('active-conversation-window');
-  if (chatWindow) chatWindow.style.display = 'none';
-}
-
-function toggleChatDock() {
-  const content = document.getElementById('chat-dock-content');
-  const icon = document.getElementById('dock-toggle-icon');
-  if (!content) return;
-
-  isChatDockOpen = !isChatDockOpen;
-  content.style.display = isChatDockOpen ? 'block' : 'none';
-  if (icon) {
-    icon.innerHTML = isChatDockOpen 
-      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>'
-      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-  }
-}
-
-function sendChatMessage(textOverride) {
-  if (!currentAuthUser || !activeChatPartner) return;
-
-  const input = document.getElementById('chat-message-input');
-  const text = textOverride || (input ? input.value.trim() : '');
-  if (!text) return;
-
-  const now = new Date();
-  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-  const threadKey = getThreadKey(currentAuthUser, activeChatPartner);
-  if (!appState.messages[threadKey]) {
-    appState.messages[threadKey] = [];
-  }
-
-  const messageObj = {
-    sender: currentAuthUser,
-    recipient: activeChatPartner,
-    text: text,
-    time: timeStr,
-    timestamp: Date.now()
-  };
-
-  appState.messages[threadKey].push(messageObj);
-  saveAppState();
-
-  if (input) input.value = '';
-  renderActiveChatWindow();
-  renderChatDock();
-
-  // BROADCAST TO ALL OTHER OPEN TABS/BROWSERS IN REAL TIME!
-  broadcastEvent({
-    type: 'CHAT_MESSAGE',
-    sender: currentAuthUser,
-    recipient: activeChatPartner,
-    text: text,
-    time: timeStr,
-    timestamp: Date.now()
-  });
-}
-
-function sendQuickReply(text) {
-  sendChatMessage(text);
-}
-
-// -----------------------------------------------------------------------------
-// POST CREATION & INTERACTIONS
-// -----------------------------------------------------------------------------
-
-let selectedPostImage = null;
-
-function handleImageSelect(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    selectedPostImage = e.target.result;
-    showImagePreview(selectedPostImage);
-  };
-  reader.readAsDataURL(file);
-}
-
-function selectSampleImage(type) {
-  if (type === 'office') selectedPostImage = './assets/post_office.jpg';
-  if (type === 'team') selectedPostImage = './assets/post_team.jpg';
-  showImagePreview(selectedPostImage);
-}
-
-function showImagePreview(imgSrc) {
-  const previewBox = document.getElementById('composer-preview-box');
-  const previewImg = document.getElementById('composer-preview-img');
-  if (previewBox && previewImg) {
-    previewImg.src = imgSrc;
-    previewBox.style.display = 'block';
-  }
-}
-
-function removeComposerImage() {
-  selectedPostImage = null;
-  const previewBox = document.getElementById('composer-preview-box');
-  if (previewBox) previewBox.style.display = 'none';
-  const fileInput = document.getElementById('post-image-file-input');
-  if (fileInput) fileInput.value = '';
-}
-
-function addHashtagToComposer(tag) {
-  const textarea = document.getElementById('post-composer-text');
-  if (!textarea) return;
-  textarea.value = (textarea.value.trim() + ' #' + tag).trim() + ' ';
-  textarea.focus();
-}
-
-function submitNewPost() {
-  if (!currentAuthUser) return;
-  const textarea = document.getElementById('post-composer-text');
-  const content = textarea ? textarea.value.trim() : '';
-
-  if (!content && !selectedPostImage) {
-    showToast('Lütfen bir metin yazın veya görsel ekleyin!');
-    return;
-  }
-
-  const postAsSelect = document.getElementById('post-as-select');
-  const postAs = postAsSelect ? postAsSelect.value : 'user';
-  const user = ACCOUNTS[currentAuthUser];
-
-  const hashtags = (content.match(/#([a-zA-Z0-9ığüşöçİĞÜŞÖÇ_]+)/g) || []).map(t => t.replace('#', ''));
-
-  const newPost = {
-    id: 'post_' + Date.now(),
-    authorUsername: currentAuthUser,
-    authorType: postAs,
-    companyName: postAs === 'company' ? user.company : null,
-    timestamp: 'Şimdi',
-    createdAt: Date.now(),
-    content: content,
-    tags: hashtags.length > 0 ? hashtags : ['Teknokent'],
-    category: hashtags.some(t => /arge|ai|yapayzeka|yazılım/i.test(t)) ? 'arge' : 'startup',
-    image: selectedPostImage,
-    likes: [],
-    reposts: 0,
-    comments: []
-  };
-
-  appState.posts.unshift(newPost);
-  user.postsCount = (user.postsCount || 0) + 1;
-  saveAppState();
-
-  if (textarea) textarea.value = '';
-  removeComposerImage();
-
-  renderProfileCard();
-  renderFeed();
-  showToast('Gönderiniz canlı akışta yayınlandı! 🚀');
-
-  // Broadcast new post in real-time
-  broadcastEvent({
-    type: 'NEW_POST',
-    authorUsername: currentAuthUser,
-    postId: newPost.id
-  });
-}
-
-function toggleLike(postId) {
-  if (!currentAuthUser) return;
-  const post = appState.posts.find(p => p.id === postId);
-  if (!post) return;
-
-  if (!post.likes) post.likes = [];
-  const idx = post.likes.indexOf(currentAuthUser);
-
-  if (idx > -1) {
-    post.likes.splice(idx, 1);
-  } else {
-    post.likes.push(currentAuthUser);
-  }
-
-  saveAppState();
-  renderFeed();
-
-  broadcastEvent({
-    type: 'POST_LIKE',
-    postId: postId,
-    byUser: currentAuthUser
-  });
-}
-
-function toggleCommentsSection(postId) {
-  const commentsWrapper = document.getElementById(`comments-${postId}`);
-  if (!commentsWrapper) return;
-  commentsWrapper.classList.toggle('show');
-}
-
-function handleCommentKeyPress(event, postId) {
-  if (event.key === 'Enter') submitComment(postId);
-}
-
-function submitComment(postId) {
-  if (!currentAuthUser) return;
-  const input = document.getElementById(`comment-input-${postId}`);
-  const text = input ? input.value.trim() : '';
-  if (!text) return;
-
-  const post = appState.posts.find(p => p.id === postId);
-  if (!post) return;
-
-  if (!post.comments) post.comments = [];
-  post.comments.push({
-    id: 'comm_' + Date.now(),
-    authorUsername: currentAuthUser,
-    time: 'Şimdi',
-    text: text
-  });
-
-  saveAppState();
-  if (input) input.value = '';
-  renderFeed();
-
-  const commentsWrapper = document.getElementById(`comments-${postId}`);
-  if (commentsWrapper) commentsWrapper.classList.add('show');
-
-  broadcastEvent({
-    type: 'POST_COMMENT',
-    postId: postId,
-    authorUsername: currentAuthUser
-  });
-}
-
-function repost(postId) {
-  const post = appState.posts.find(p => p.id === postId);
-  if (!post) return;
-  post.reposts = (post.reposts || 0) + 1;
-  saveAppState();
-  renderFeed();
-  showToast('Gönderi profilinizde yeniden paylaşıldı! 🔄');
-}
-
-function sharePost(postId) {
-  navigator.clipboard?.writeText(window.location.href);
-  showToast('Gönderi bağlantısı panoya kopyalandı! 📋');
-}
-
-function setFeedCategory(category) {
-  currentFeedCategory = category;
-  document.querySelectorAll('.feed-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.getAttribute('data-cat') === category);
-  });
-  renderFeed();
-}
-
 function toggleFollowCompany(companyId) {
   const comp = appState.companies.find(c => c.id === companyId);
   if (!comp) return;
   comp.isFollowing = !comp.isFollowing;
-  saveAppState();
+  saveSharedState();
   renderCompaniesList();
   showToast(comp.isFollowing ? `${comp.name} takip ediliyor!` : `${comp.name} takipten çıkarıldı.`);
 }
@@ -1188,11 +1573,10 @@ function toggleFollowCompany(companyId) {
 // -----------------------------------------------------------------------------
 // MODALS
 // -----------------------------------------------------------------------------
-
 function openProfileModal() {
-  if (!currentAuthUser) return;
+  if (!currentTabUser) return;
   const modal = document.getElementById('profile-edit-modal');
-  const user = ACCOUNTS[currentAuthUser];
+  const user = appState.users[currentTabUser];
   if (!modal || !user) return;
 
   document.getElementById('edit-profile-name').value = user.name || '';
@@ -1210,8 +1594,8 @@ function closeProfileModal() {
 }
 
 function saveProfileEdits() {
-  if (!currentAuthUser) return;
-  const user = ACCOUNTS[currentAuthUser];
+  if (!currentTabUser) return;
+  const user = appState.users[currentTabUser];
   if (!user) return;
 
   user.name = document.getElementById('edit-profile-name').value.trim() || user.name;
@@ -1220,7 +1604,7 @@ function saveProfileEdits() {
   user.campus = document.getElementById('edit-profile-campus').value;
   user.bio = document.getElementById('edit-profile-bio').value.trim() || user.bio;
 
-  saveAppState();
+  saveSharedState();
   closeProfileModal();
   renderNavbar();
   renderProfileCard();
@@ -1257,13 +1641,13 @@ function registerNewCompany() {
     sector: sector,
     campus: campus,
     size: size,
-    founder: ACCOUNTS[currentAuthUser]?.name || 'Teknokent Üyesi',
+    founder: appState.users[currentTabUser]?.name || 'Teknokent Üyesi',
     logoEmoji: emoji,
     isFollowing: true
   };
 
   appState.companies.push(newCompany);
-  saveAppState();
+  saveSharedState();
   closeCompanyModal();
   renderCompaniesList();
   showToast(`"${name}" Şirket hesabı oluşturuldu! 🎉`);
@@ -1284,14 +1668,16 @@ function closeLightbox() {
 }
 
 // -----------------------------------------------------------------------------
-// EVENT LISTENERS & UTILITIES
+// EVENT LISTENERS & HELPERS
 // -----------------------------------------------------------------------------
-
 function setupEventListeners() {
   const chatInput = document.getElementById('chat-message-input');
   if (chatInput) {
     chatInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendChatMessage();
+    });
+    chatInput.addEventListener('input', () => {
+      handleChatInputTyping();
     });
   }
 
@@ -1303,11 +1689,10 @@ function setupEventListeners() {
         renderFeed();
         return;
       }
-      const container = document.getElementById('feed-posts-container');
       const filtered = appState.posts.filter(p => 
         p.content.toLowerCase().includes(q) || 
         (p.tags && p.tags.some(t => t.toLowerCase().includes(q))) ||
-        (ACCOUNTS[p.authorUsername] && ACCOUNTS[p.authorUsername].name.toLowerCase().includes(q))
+        (appState.users[p.authorUsername] && appState.users[p.authorUsername].name.toLowerCase().includes(q))
       );
       
       const oldPosts = appState.posts;
@@ -1362,10 +1747,10 @@ function showToast(msg) {
 }
 
 function resetDataToDefault() {
-  if (confirm('Tüm verileri ve oturumları sıfırlamak istiyor musunuz?')) {
+  if (confirm('Tüm verileri, sohbetleri ve oturumları sıfırlamak istiyor musunuz?')) {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(AUTH_KEY);
-    localStorage.removeItem(SESSIONS_KEY);
+    localStorage.removeItem(SESSION_LOCK_KEY);
+    sessionStorage.removeItem(SESSION_USER_KEY);
     location.reload();
   }
 }

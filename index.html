@@ -4,20 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dijitalpark Teknokent Connect | Startup & Şirket İnovasyon Ağı</title>
-  <meta name="description" content="Dijitalpark Teknokent bünyesindeki Ar-Ge firmaları, startuplar ve girişimciler için Twitter ve LinkedIn tarzı profesyonel etkileşim ve iş ağı platformu.">
+  <meta name="description" content="Dijitalpark Teknokent bünyesindeki Ar-Ge firmaları, startuplar ve girişimciler için Twitter ve LinkedIn tarzı gerçek zamanlı profesyonel etkileşim ve iş ağı platformu.">
   
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=2.1">
+  <!-- MQTT.js over Secure WebSockets for True Cross-Device & Internet Real-time Communication with CDN Fallback -->
+  <script src="https://unpkg.com/mqtt@5.16.0/dist/mqtt.min.js"></script>
+  <script>
+    if (typeof mqtt === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.10.1/mqtt.min.js"><\/script>');
+    }
+  </script>
+  
+  <link rel="stylesheet" href="style.css?v=3.5">
   <link rel="icon" type="image/jpeg" href="./assets/logo.jpg">
 </head>
 <body>
 
   <!-- ==========================================================================
-       1. LOGIN SCREEN (SPLIT VIEW: BRAND ON LEFT, LOGIN ON RIGHT)
+       1. LOGIN / REGISTER SCREEN (SPLIT VIEW)
        ========================================================================== -->
   <div id="login-screen">
     <div class="login-split-container">
@@ -42,8 +50,8 @@
             <div class="login-feature-card">
               <span class="login-feature-icon">⚡</span>
               <div class="login-feature-text">
-                <span class="login-feature-title">Canlı Sohbet</span>
-                <span class="login-feature-sub">Gerçek zamanlı LinkedIn tarzı mesajlaşma</span>
+                <span class="login-feature-title">Canlı WebSocket & Bus</span>
+                <span class="login-feature-sub">Sekmeler ve cihazlar arası 0ms gecikmesiz sohbet</span>
               </div>
             </div>
 
@@ -66,8 +74,8 @@
             <div class="login-feature-card">
               <span class="login-feature-icon">🔒</span>
               <div class="login-feature-text">
-                <span class="login-feature-title">Tekil Oturum Koruması</span>
-                <span class="login-feature-sub">Aynı anda 1 kullanıcı kuralı</span>
+                <span class="login-feature-title">Tekil Oturum Mimarisi</span>
+                <span class="login-feature-sub">Aynı anda 1 kullanıcı oturum devir koruması</span>
               </div>
             </div>
           </div>
@@ -75,88 +83,210 @@
 
         <div class="login-left-footer">
           <span>Dijitalpark Teknokent Yönetim A.Ş. © 2026</span>
-          <span>Sürüm 2.4 (Canlı Sync)</span>
+          <span>v3.5 Realtime Multi-Transport</span>
         </div>
       </div>
 
-      <!-- Sağ Taraf: Giriş Formu & Hızlı Test Seçici -->
+      <!-- Sağ Taraf: Giriş Formu & Üye Kaydı -->
       <div class="login-right-form-col">
         <div class="login-form-card">
-          <div class="login-form-header">
-            <h2 class="login-form-title">Giriş Yap</h2>
-            <p class="login-form-desc">Teknokent üyelik bilgilerinizle oturum açın.</p>
+          
+          <!-- Auth Tabs (Giriş Yap vs Yeni Üye Kaydı) -->
+          <div class="auth-tabs-bar">
+            <button type="button" id="tab-btn-login" class="auth-tab-btn active" onclick="switchAuthTab('login')">
+              <span>🔑</span> Giriş Yap
+            </button>
+            <button type="button" id="tab-btn-register" class="auth-tab-btn" onclick="switchAuthTab('register')">
+              <span>➕</span> Yeni Üye Kaydı
+            </button>
           </div>
 
           <!-- Alert / Oturum Uyarı Alanı -->
           <div id="login-alert-banner" class="login-alert-banner"></div>
 
-          <form onsubmit="handleLoginSubmit(event)">
-            <div class="login-field">
-              <label for="login-username-input">Kullanıcı Adı</label>
-              <div class="login-input-wrapper">
-                <span class="login-input-icon">@</span>
-                <input type="text" id="login-username-input" class="login-input" placeholder="erdemcarkit / aliniyya / bakugan" required />
+          <!-- TAB 1: GİRİŞ FORMU -->
+          <div id="login-form-container">
+            <div class="login-form-header">
+              <h2 class="login-form-title">Giriş Yap</h2>
+              <p class="login-form-desc">Teknokent hesabınızla oturum açın.</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)">
+              <div class="login-field">
+                <label for="login-username-input">Kullanıcı Adı veya E-posta</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">@</span>
+                  <input type="text" id="login-username-input" class="login-input" placeholder="erdemcarkit / aliniyya / bakugan" required autocomplete="username" />
+                </div>
+              </div>
+
+              <div class="login-field">
+                <label for="login-password-input">Şifre</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">🔑</span>
+                  <input type="password" id="login-password-input" class="login-input" placeholder="••••••••" required autocomplete="current-password" />
+                  <span class="login-password-toggle" onclick="togglePasswordVisibility('login-password-input')" title="Şifreyi Göster/Gizle">👁️</span>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                  <input type="checkbox" id="login-remember-me" checked style="accent-color: var(--brand-turq);" />
+                  Beni bu tarayıcıda hatırla
+                </label>
+                <span style="color: var(--brand-turq); font-weight: 600;">Şifre: 31316969</span>
+              </div>
+
+              <button type="submit" class="login-submit-btn">
+                <span>Giriş Yap</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </form>
+
+            <!-- Hızlı Test Giriş Seçici Kartları -->
+            <div class="quick-login-section">
+              <div class="quick-login-title">
+                <span>HIZLI TEST GİRİŞİ (TEK TIKLA GİR)</span>
+                <span class="pass-hint">Şifre: 31316969</span>
+              </div>
+              
+              <div class="quick-login-grid">
+                <!-- Erdem -->
+                <div class="quick-user-card" onclick="quickSelectUser('erdemcarkit')">
+                  <div class="quick-user-left">
+                    <img src="./assets/avatar_erdem.png" class="quick-user-avatar" alt="Erdem" />
+                    <div class="quick-user-meta">
+                      <span class="quick-user-name">Enes Erdem Çarkıt</span>
+                      <span class="quick-user-handle">@erdemcarkit • Neurologic AI</span>
+                    </div>
+                  </div>
+                  <span class="quick-user-badge">Giriş &rarr;</span>
+                </div>
+
+                <!-- Ali Nihat -->
+                <div class="quick-user-card" onclick="quickSelectUser('aliniyya')">
+                  <div class="quick-user-left">
+                    <img src="./assets/avatar_ali.png" class="quick-user-avatar" alt="Ali Nihat" />
+                    <div class="quick-user-meta">
+                      <span class="quick-user-name">Ali Nihat Eryürek</span>
+                      <span class="quick-user-handle">@aliniyya • CloudScale Tech</span>
+                    </div>
+                  </div>
+                  <span class="quick-user-badge">Giriş &rarr;</span>
+                </div>
+
+                <!-- Batuhan -->
+                <div class="quick-user-card" onclick="quickSelectUser('bakugan')">
+                  <div class="quick-user-left">
+                    <img src="./assets/avatar_batuhan.jpg" class="quick-user-avatar" alt="Batuhan" />
+                    <div class="quick-user-meta">
+                      <span class="quick-user-name">Batuhan Akyazı</span>
+                      <span class="quick-user-handle">@bakugan • Core Hub</span>
+                    </div>
+                  </div>
+                  <span class="quick-user-badge">Giriş &rarr;</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div class="login-field">
-              <label for="login-password-input">Şifre</label>
-              <div class="login-input-wrapper">
-                <span class="login-input-icon">🔑</span>
-                <input type="password" id="login-password-input" class="login-input" placeholder="••••••••" required />
+          <!-- TAB 2: YENİ ÜYE KAYIT FORMU -->
+          <div id="register-form-container" style="display: none;">
+            <div class="login-form-header">
+              <h2 class="login-form-title">Yeni Üye Kaydı</h2>
+              <p class="login-form-desc">Teknokent ekosistemine katılmak için profilinizi oluşturun.</p>
+            </div>
+
+            <!-- Kayıt Hata Mesajı -->
+            <div id="reg-alert-banner" class="login-alert-banner"></div>
+
+            <form onsubmit="handleRegisterSubmit(event)">
+              <div class="login-field">
+                <label>Ad Soyad *</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">👤</span>
+                  <input type="text" id="reg-name-input" class="login-input" placeholder="Örn: Caner Demir" required />
+                </div>
               </div>
-            </div>
 
-            <button type="submit" class="login-submit-btn">
-              <span>Giriş Yap</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-          </form>
+              <div class="login-field">
+                <label>Kullanıcı Adı (Username) *</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">@</span>
+                  <input type="text" id="reg-username-input" class="login-input" placeholder="Örn: canerdemir" required autocomplete="username" />
+                </div>
+              </div>
 
-          <!-- Hızlı Test Giriş Seçici Kartları -->
-          <div class="quick-login-section">
-            <div class="quick-login-title">
-              <span>Hızlı Test Girişi</span>
-              <span class="pass-hint">Şifre: 31316969</span>
-            </div>
-            
-            <div class="quick-login-grid">
-              <!-- Erdem -->
-              <div class="quick-user-card" onclick="quickSelectUser('erdemcarkit')">
-                <div class="quick-user-left">
-                  <img src="./assets/avatar_erdem.jpg" class="quick-user-avatar" alt="Erdem" />
-                  <div class="quick-user-meta">
-                    <span class="quick-user-name">Enes Erdem Çarkıt</span>
-                    <span class="quick-user-handle">@erdemcarkit • Neurologic AI</span>
+              <div class="login-field">
+                <label>E-posta Adresi</label>
+                <div class="login-input-wrapper">
+                  <span class="login-input-icon">✉️</span>
+                  <input type="email" id="reg-email-input" class="login-input" placeholder="caner@teknokent.com" />
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="login-field">
+                  <label>Şifre Belirleyin *</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">🔑</span>
+                    <input type="password" id="reg-password-input" class="login-input" placeholder="En az 4 karakter" required />
                   </div>
                 </div>
-                <span class="quick-user-badge">Giriş Yap &rarr;</span>
-              </div>
 
-              <!-- Ali Nihat -->
-              <div class="quick-user-card" onclick="quickSelectUser('aliniyya')">
-                <div class="quick-user-left">
-                  <img src="./assets/avatar_ali.jpg" class="quick-user-avatar" alt="Ali Nihat" />
-                  <div class="quick-user-meta">
-                    <span class="quick-user-name">Ali Nihat Eryürek</span>
-                    <span class="quick-user-handle">@aliniyya • CloudScale Tech</span>
+                <div class="login-field">
+                  <label>Şifre Tekrar *</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">🔒</span>
+                    <input type="password" id="reg-password2-input" class="login-input" placeholder="Şifre tekrarı" required />
                   </div>
                 </div>
-                <span class="quick-user-badge">Giriş Yap &rarr;</span>
               </div>
 
-              <!-- Batuhan -->
-              <div class="quick-user-card" onclick="quickSelectUser('bakugan')">
-                <div class="quick-user-left">
-                  <img src="./assets/avatar_batuhan.jpg" class="quick-user-avatar" alt="Batuhan" />
-                  <div class="quick-user-meta">
-                    <span class="quick-user-name">Batuhan Akyazı</span>
-                    <span class="quick-user-handle">@bakugan • Core Hub</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="login-field">
+                  <label>Şirket / Startup Adı *</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">🏢</span>
+                    <input type="text" id="reg-company-input" class="login-input" placeholder="Örn: Nexo AI Solutions" required />
                   </div>
                 </div>
-                <span class="quick-user-badge">Giriş Yap &rarr;</span>
+
+                <div class="login-field">
+                  <label>Ünvan / Rol</label>
+                  <div class="login-input-wrapper">
+                    <span class="login-input-icon">💼</span>
+                    <input type="text" id="reg-title-input" class="login-input" placeholder="Örn: Kurucu & CTO" />
+                  </div>
+                </div>
               </div>
-            </div>
+
+              <div class="login-field">
+                <label>Teknokent Yerleşkesi</label>
+                <div class="login-input-wrapper">
+                  <select id="reg-campus-select" class="login-input">
+                    <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
+                    <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Avatar Seçimi -->
+              <div class="login-field">
+                <label>Profil Fotoğrafı Seçin</label>
+                <div class="reg-avatar-options">
+                  <img src="./assets/avatar_erdem.png" class="reg-avatar-choice selected" data-avatar="./assets/avatar_erdem.png" onclick="selectRegAvatar(this)" alt="Seçenek 1" />
+                  <img src="./assets/avatar_ali.png" class="reg-avatar-choice" data-avatar="./assets/avatar_ali.png" onclick="selectRegAvatar(this)" alt="Seçenek 2" />
+                  <img src="./assets/avatar_batuhan.jpg" class="reg-avatar-choice" data-avatar="./assets/avatar_batuhan.jpg" onclick="selectRegAvatar(this)" alt="Seçenek 3" />
+                  <img src="./assets/logo.jpg" class="reg-avatar-choice" data-avatar="./assets/logo.jpg" onclick="selectRegAvatar(this)" alt="Seçenek 4" />
+                </div>
+              </div>
+
+              <button type="submit" class="login-submit-btn" style="margin-top: 1rem;">
+                <span>Hesabı Oluştur & Giriş Yap</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </form>
           </div>
 
         </div>
@@ -195,6 +325,12 @@
 
         <!-- Nav Actions -->
         <nav class="nav-actions">
+          <!-- Real-Time WebSocket Connection Badge -->
+          <div id="ws-status-badge" class="ws-status-badge" title="Canlı Gerçek Zamanlı Bağlantı Durumu">
+            <div class="ws-status-dot"></div>
+            <span id="ws-status-text">Canlı (WebSocket)</span>
+          </div>
+
           <button class="nav-link-btn active" onclick="setFeedCategory('all')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -219,6 +355,21 @@
             <span class="nav-link-badge">⚡</span>
           </button>
 
+          <!-- Quick Account Switcher Menu -->
+          <div style="position: relative;">
+            <button class="nav-link-btn" onclick="toggleAccountSwitcher(event)" title="Hızlı Hesap Değiştirici">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Hesap Değiştir ▾</span>
+            </button>
+            <div id="account-switcher-dropdown" class="account-switcher-dropdown"></div>
+          </div>
+
+          <!-- Open In New Tab Button (for Testing Realtime Chat) -->
+          <button class="nav-link-btn" onclick="openNewTabForTesting()" title="Yeni Sekmede Aç (Çoklu Kullanıcı Testi)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            <span>Yeni Sekme</span>
+          </button>
+
           <!-- Theme Toggle -->
           <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
           </button>
@@ -226,7 +377,7 @@
           <!-- Active User Pill -->
           <div class="user-switcher-pill" onclick="openProfileModal()" title="Profil Ayarları">
             <div class="pill-avatar-wrapper">
-              <img id="nav-user-avatar" src="./assets/avatar_erdem.jpg" class="pill-avatar" alt="Profil" />
+              <img id="nav-user-avatar" src="./assets/avatar_erdem.png" class="pill-avatar" alt="Profil" />
               <div class="online-status-dot"></div>
             </div>
             <div class="pill-info">
@@ -254,7 +405,7 @@
           <div class="profile-card-header"></div>
           <div class="profile-card-body">
             <div class="profile-avatar-wrapper">
-              <img id="sidebar-user-avatar" src="./assets/avatar_erdem.jpg" class="profile-avatar-lg" alt="Kullanıcı Avatarı" />
+              <img id="sidebar-user-avatar" src="./assets/avatar_erdem.png" class="profile-avatar-lg" alt="Kullanıcı Avatarı" />
               <div class="online-status-dot" style="bottom: 4px; right: 4px; width: 14px; height: 14px;"></div>
             </div>
             <h2 id="sidebar-user-name" class="profile-name">Enes Erdem Çarkıt</h2>
@@ -344,7 +495,7 @@
         <!-- Post Composer -->
         <div class="composer-card">
           <div class="composer-top-row">
-            <img id="composer-active-avatar" src="./assets/avatar_erdem.jpg" class="composer-avatar" alt="Kullanıcı Avatarı" />
+            <img id="composer-active-avatar" src="./assets/avatar_erdem.png" class="composer-avatar" alt="Kullanıcı Avatarı" />
             <div class="composer-input-area">
               <div class="post-as-bar">
                 <span>Paylaşım kimliği:</span>
@@ -410,12 +561,12 @@
         <div class="card-base test-accounts-panel">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
             <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
-              🟢 Çevrimiçi Üyeler
+              👥 Ekosistem Üyeleri
             </span>
             <span class="test-badge">Canlı Sync</span>
           </div>
           <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 0.75rem;">
-            Doğrudan mesaj atmak için üyeye tıklayın (Diğer sekmeden giriş yapıp canlı konuşabilirsiniz):
+            Canlı sohbet başlatmak için tıklayın (Diğer sekmeler ve telefonlarla anlık eşzamanlıdır):
           </p>
           <div id="test-accounts-list"></div>
         </div>
@@ -468,8 +619,8 @@
       <div class="chat-dock-header" onclick="toggleChatDock()">
         <div class="chat-dock-title">
           <div class="chat-dock-avatar-stack">
-            <img src="./assets/avatar_erdem.jpg" alt="Erdem" />
-            <img src="./assets/avatar_ali.jpg" alt="Ali Nihat" />
+            <img src="./assets/avatar_erdem.png" alt="Erdem" />
+            <img src="./assets/avatar_ali.png" alt="Ali Nihat" />
             <img src="./assets/avatar_batuhan.jpg" alt="Batuhan" />
           </div>
           <span>Canlı Mesajlaşma (🟢 Online)</span>
@@ -483,7 +634,7 @@
 
       <div id="chat-dock-content" class="chat-dock-content">
         <div class="chat-dock-search">
-          <input type="text" class="chat-dock-search-input" placeholder="Teknokent üyelerinde ara..." />
+          <input type="text" id="chat-dock-search-input" class="chat-dock-search-input" placeholder="Teknokent üyelerinde ara..." oninput="filterChatContacts(this.value)" />
         </div>
         <div id="chat-contacts-list" class="chat-contact-list"></div>
       </div>
@@ -493,7 +644,7 @@
     <div id="active-conversation-window" class="active-conversation-window" style="display: none;">
       <div class="conversation-header">
         <div class="conversation-target-info">
-          <img id="chat-target-avatar" src="" class="conversation-target-avatar" />
+          <img id="chat-target-avatar" src="" class="conversation-target-avatar" alt="Avatar" />
           <div class="conversation-target-meta">
             <span id="chat-target-name" class="target-name">Üye</span>
             <span id="chat-target-status" class="target-status-text">🟢 Çevrimiçi</span>
@@ -504,8 +655,13 @@
         </div>
       </div>
 
+      <!-- Messages Body -->
       <div id="chat-messages-body" class="conversation-body"></div>
 
+      <!-- Realtime Typing Indicator -->
+      <div id="chat-typing-indicator" class="chat-typing-indicator"></div>
+
+      <!-- Quick Reply Suggestions -->
       <div class="quick-reply-suggestions">
         <button class="quick-reply-chip" onclick="sendQuickReply('Harika, yarın Teknokent kafesinde buluşalım! ☕️')">Kahve içelim ☕️</button>
         <button class="quick-reply-chip" onclick="sendQuickReply('Projeyi inceledim, çok iyi görünüyor! 🚀')">Çok iyi görünüyor 🚀</button>
@@ -521,6 +677,7 @@
     </div>
 
     <!-- Modals -->
+    <!-- Profile Edit Modal -->
     <div id="profile-edit-modal" class="modal-backdrop">
       <div class="modal-container">
         <div class="modal-header">
@@ -561,6 +718,7 @@
       </div>
     </div>
 
+    <!-- Company Register Modal -->
     <div id="company-register-modal" class="modal-backdrop">
       <div class="modal-container">
         <div class="modal-header">
@@ -602,14 +760,34 @@
       </div>
     </div>
 
+    <!-- Image Lightbox Modal -->
     <div id="image-lightbox-modal" class="modal-backdrop" onclick="closeLightbox()">
       <div style="max-width: 90vw; max-height: 90vh; position: relative;">
         <img id="lightbox-full-img" src="" style="max-width: 100%; max-height: 90vh; border-radius: var(--radius-md); object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.8);" />
       </div>
     </div>
 
+    <!-- Session Takeover Overlay (Non-blocking notification when another tab logs in) -->
+    <div id="session-takeover-overlay" class="session-takeover-overlay" style="display: none;">
+      <div class="session-takeover-card">
+        <div class="session-takeover-icon">🔒</div>
+        <div class="session-takeover-title">Oturum Başka Bir Sekmede Açıldı</div>
+        <div class="session-takeover-desc" id="session-takeover-desc">
+          Bu hesap şu anda başka bir sekme veya cihazda açıldı. "Aynı anda 1 kullanıcı oturumu" kuralı gereği bu pencere beklemede tutuluyor.
+        </div>
+        <div class="session-takeover-actions">
+          <button class="btn-primary" onclick="reclaimSession()">
+            <span>⚡ Bu Pencereye Geri Al</span>
+          </button>
+          <button class="btn-secondary" onclick="logout()">
+            <span>Çıkış Yap</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script src="app.js?v=2.1"></script>
+  <script src="app.js?v=3.5"></script>
 </body>
 </html>
