@@ -1,77 +1,72 @@
 /**
  * DIJITALPARK TEKNOKENT CONNECT
- * Core Application Logic, State Management & Real-time Simulation
+ * Core Application Logic, Authentication, Active Session Lock & True Real-time Synchronization
  */
 
 // Storage Keys
-const STORAGE_KEY = 'dijitalpark_connect_v1';
+const STORAGE_KEY = 'dijitalpark_connect_v2';
+const AUTH_KEY = 'dijitalpark_active_auth_v2';
+const SESSIONS_KEY = 'dijitalpark_active_sessions_v2';
 const THEME_KEY = 'dijitalpark_theme';
 
-// Default Seed Data
-const DEFAULT_STATE = {
-  activeUserId: 'user_enes',
-  users: {
-    user_enes: {
-      id: 'user_enes',
-      name: 'Enes Erdem Çarkıt',
-      title: 'Kurucu Ortak & Lead AI Engineer',
-      company: 'Neurologic AI',
-      campus: 'Dijitalpark Çekmeköy Yerleşkesi',
-      avatar: './assets/avatar_enes.jpg',
-      bio: 'Yapay zeka, derin öğrenme ve otonom ajan mimarileri üzerine Ar-Ge yürütüyoruz. Dijitalpark Teknokent Çekmeköy Yerleşkesi 3. Kat B304 ofisindeyiz.',
-      skills: ['Yapay Zeka', 'Python', 'LLM Agents', 'PyTorch', 'Ar-Ge'],
-      postsCount: 18,
-      connectionsCount: 540,
-      profileViews: 1420,
-      online: true,
-      verified: true
-    },
-    user_ali: {
-      id: 'user_ali',
-      name: 'Ali Nihat Eryürek',
-      title: 'Senior Cloud & Systems Architect',
-      company: 'CloudScale Tech',
-      campus: 'Dijitalpark Ataşehir Yerleşkesi',
-      avatar: './assets/avatar_ali.jpg',
-      bio: 'Yüksek ölçekli bulut mimarileri, Kubernetes, mikroservisler ve DevOps optimizasyonları. Teknokent firmalarıyla açık kaynak ve ortak Ar-Ge projelerine her zaman açığım.',
-      skills: ['Kubernetes', 'Cloud Native', 'Go', 'AWS/GCP', 'DevOps'],
-      postsCount: 12,
-      connectionsCount: 390,
-      profileViews: 980,
-      online: true,
-      verified: true
-    },
-    user_batuhan: {
-      id: 'user_batuhan',
-      name: 'Batuhan Akyazı',
-      title: 'Head of Product & Growth Partner',
-      company: 'Core Innovation Hub',
-      campus: 'Dijitalpark Çekmeköy Yerleşkesi',
-      avatar: './assets/avatar_batuhan.jpg',
-      bio: 'B2B SaaS büyüme stratejileri, ürün yönetimi ve girişim hızlandırma. Teknokent girişimcilerine mentörlük sağlıyor ve küresel açılım destekleri sunuyorum.',
-      skills: ['Product Growth', 'B2B SaaS', 'Girişimcilik', 'UX Strategy'],
-      postsCount: 24,
-      connectionsCount: 710,
-      profileViews: 2350,
-      online: true,
-      verified: true
-    },
-    user_mentor: {
-      id: 'user_mentor',
-      name: 'Dijitalpark Kuluçka & Girişim Koordinatörlüğü',
-      title: 'Resmi Destek & Mentorluk Masası',
-      company: 'Dijitalpark Teknokent Yönetim A.Ş.',
-      campus: 'Çekmeköy & Ataşehir Yerleşkeleri',
-      avatar: './assets/logo.jpg',
-      bio: 'Ar-Ge teşvikleri, vergi muafiyetleri, TÜBİTAK 1507/1501 ve uluslararası Bridge to Balkans programları danışma kanalı.',
-      skills: ['Ar-Ge Teşvikleri', 'Kuluçka', 'TÜBİTAK', 'Global Açılım'],
-      postsCount: 45,
-      connectionsCount: 1200,
-      profileViews: 4900,
-      online: true,
-      verified: true
-    }
+// Registered Accounts
+const ACCOUNTS = {
+  erdemcarkit: {
+    id: 'user_enes',
+    username: 'erdemcarkit',
+    password: '31316969',
+    name: 'Enes Erdem Çarkıt',
+    title: 'Kurucu Ortak & Lead AI Engineer',
+    company: 'Neurologic AI',
+    campus: 'Dijitalpark Çekmeköy Yerleşkesi',
+    avatar: './assets/avatar_erdem.jpg',
+    bio: 'Yapay zeka, derin öğrenme ve otonom ajan mimarileri üzerine Ar-Ge yürütüyoruz. Dijitalpark Teknokent Çekmeköy Yerleşkesi 3. Kat B304 ofisindeyiz.',
+    skills: ['Yapay Zeka', 'Python', 'LLM Agents', 'PyTorch', 'Ar-Ge'],
+    postsCount: 18,
+    connectionsCount: 540,
+    profileViews: 1420,
+    online: true,
+    verified: true
   },
+  aliniyya: {
+    id: 'user_ali',
+    username: 'aliniyya',
+    password: '31316969',
+    name: 'Ali Nihat Eryürek',
+    title: 'Senior Cloud & Systems Architect',
+    company: 'CloudScale Tech',
+    campus: 'Dijitalpark Ataşehir Yerleşkesi',
+    avatar: './assets/avatar_ali.jpg',
+    bio: 'Yüksek ölçekli bulut mimarileri, Kubernetes, mikroservisler ve DevOps optimizasyonları. Teknokent firmalarıyla açık kaynak ve ortak Ar-Ge projelerine her zaman açığım.',
+    skills: ['Kubernetes', 'Cloud Native', 'Go', 'AWS/GCP', 'DevOps'],
+    postsCount: 12,
+    connectionsCount: 390,
+    profileViews: 980,
+    online: true,
+    verified: true
+  },
+  bakugan: {
+    id: 'user_batuhan',
+    username: 'bakugan',
+    password: '31316969',
+    name: 'Batuhan Akyazı',
+    title: 'Head of Product & Growth Partner',
+    company: 'Core Innovation Hub',
+    campus: 'Dijitalpark Çekmeköy Yerleşkesi',
+    avatar: './assets/avatar_batuhan.jpg',
+    bio: 'B2B SaaS büyüme stratejileri, ürün yönetimi ve girişim hızlandırma. Teknokent girişimcilerine mentörlük sağlıyor ve küresel açılım destekleri sunuyorum.',
+    skills: ['Product Growth', 'B2B SaaS', 'Girişimcilik', 'UX Strategy'],
+    postsCount: 24,
+    connectionsCount: 710,
+    profileViews: 2350,
+    online: true,
+    verified: true
+  }
+};
+
+// Default Initial State
+const DEFAULT_STATE = {
+  users: JSON.parse(JSON.stringify(ACCOUNTS)),
   companies: [
     {
       id: 'comp_1',
@@ -117,7 +112,7 @@ const DEFAULT_STATE = {
   posts: [
     {
       id: 'post_1',
-      authorId: 'user_enes',
+      authorUsername: 'erdemcarkit',
       authorType: 'user',
       timestamp: '25 dakika önce',
       createdAt: Date.now() - 25 * 60 * 1000,
@@ -125,26 +120,26 @@ const DEFAULT_STATE = {
       tags: ['YapayZeka', 'ArGe', 'AkıllıKampüs', 'Dijitalpark'],
       category: 'arge',
       image: './assets/post_office.jpg',
-      likes: ['user_ali', 'user_batuhan', 'user_mentor'],
+      likes: ['aliniyya', 'bakugan'],
       reposts: 4,
       comments: [
         {
           id: 'comm_1',
-          authorId: 'user_ali',
+          authorUsername: 'aliniyya',
           time: '18 dk önce',
-          text: 'Tebrikler Enes! Laboratuvar gerçekten muazzam olmuş. Bulut gecikme sürelerini düşürmek için bizim micro-gateway altyapısıyla entegre edebiliriz, öğleden sonra uğruyorum!'
+          text: 'Tebrikler Erdem! Laboratuvar gerçekten muazzam olmuş. Bulut gecikme sürelerini düşürmek için bizim micro-gateway altyapısıyla entegre edebiliriz, öğleden sonra uğruyorum!'
         },
         {
           id: 'comm_2',
-          authorId: 'user_batuhan',
+          authorUsername: 'bakugan',
           time: '10 dk önce',
-          text: 'Harika bir hamle Enes. Cuma günü düzenleyeceğimiz Teknokent Girişimcilik Demo Günü için de bir sunum planlayalım derim!'
+          text: 'Harika bir hamle Erdem. Cuma günü düzenleyeceğimiz Teknokent Girişimcilik Demo Günü için de bir sunum planlayalım derim!'
         }
       ]
     },
     {
       id: 'post_2',
-      authorId: 'user_batuhan',
+      authorUsername: 'bakugan',
       authorType: 'user',
       timestamp: '1 saat önce',
       createdAt: Date.now() - 60 * 60 * 1000,
@@ -152,12 +147,12 @@ const DEFAULT_STATE = {
       tags: ['Girişimcilik', 'Lansman', 'Yatırım', 'BridgeToBalkans'],
       category: 'startup',
       image: './assets/post_team.jpg',
-      likes: ['user_enes', 'user_ali', 'user_mentor'],
+      likes: ['erdemcarkit', 'aliniyya'],
       reposts: 7,
       comments: [
         {
           id: 'comm_3',
-          authorId: 'user_enes',
+          authorUsername: 'erdemcarkit',
           time: '45 dk önce',
           text: 'Tüm ekipleri gönülden kutlarım Batuhan! Ekosistemin enerjisi her geçen gün katlanarak artıyor.'
         }
@@ -165,7 +160,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'post_3',
-      authorId: 'user_ali',
+      authorUsername: 'aliniyya',
       authorType: 'user',
       timestamp: '3 saat önce',
       createdAt: Date.now() - 3 * 60 * 60 * 1000,
@@ -173,135 +168,438 @@ const DEFAULT_STATE = {
       tags: ['CloudNative', 'SiberGüvenlik', 'DevOps', 'Etkinlik'],
       category: 'etkinlik',
       image: null,
-      likes: ['user_enes'],
+      likes: ['erdemcarkit'],
       reposts: 2,
       comments: []
     }
   ],
   messages: {
-    // Thread key format: "userId1_userId2" (sorted alphabetically)
-    'user_ali_user_enes': [
-      { senderId: 'user_ali', text: 'Selam Enes, yeni AI modeli testleri nasıl gidiyor?', time: '14:20' },
-      { senderId: 'user_enes', text: 'Selam Ali! Gayet başarılı, biraz önce yeni laboratuvardan post paylaştım.', time: '14:22' },
-      { senderId: 'user_ali', text: 'Gördüm az önce yorum da yazdım. Çekmeköy kampüsüne gelince kahve içelim.', time: '14:25' }
+    'aliniyya_erdemcarkit': [
+      { sender: 'aliniyya', text: 'Selam Erdem, yeni AI modeli testleri nasıl gidiyor?', time: '14:20' },
+      { sender: 'erdemcarkit', text: 'Selam Ali! Gayet başarılı, biraz önce yeni laboratuvardan post paylaştım.', time: '14:22' },
+      { sender: 'aliniyya', text: 'Gördüm az önce yorum da yazdım. Çekmeköy kampüsüne gelince kahve içelim.', time: '14:25' }
     ],
-    'user_batuhan_user_enes': [
-      { senderId: 'user_batuhan', text: 'Enes selam, Cuma günkü Teknokent Demo Day için 10 dakikalık bir slot ayırdım sana.', time: '11:15' },
-      { senderId: 'user_enes', text: 'Harika olur Batuhan! Prototipi canlı demoda çalıştırabiliriz.', time: '11:18' },
-      { senderId: 'user_batuhan', text: 'Süper, sunum başlığını bana akşama kadar iletirsen programa ekliyorum.', time: '11:20' }
+    'bakugan_erdemcarkit': [
+      { sender: 'bakugan', text: 'Erdem selam, Cuma günkü Teknokent Demo Day için 10 dakikalık bir slot ayırdım sana.', time: '11:15' },
+      { sender: 'erdemcarkit', text: 'Harika olur Batuhan! Prototipi canlı demoda çalıştırabiliriz.', time: '11:18' }
     ],
-    'user_ali_user_batuhan': [
-      { senderId: 'user_batuhan', text: 'Ali selam, Ataşehir kampüsündeki workshop için salon hazır mı?', time: 'Dün' },
-      { senderId: 'user_ali', text: 'Evet Batuhan, yönetimle konuştuk A Blok Konferans Salonu ayrıldı.', time: 'Dün' }
-    ],
-    'user_enes_user_mentor': [
-      { senderId: 'user_mentor', text: 'Sayın Enes Erdem Çarkıt, Neurologic AI firması için TÜBİTAK 1507 Ar-Ge rapor onayınız sisteme yüklendi.', time: 'Dün' },
-      { senderId: 'user_enes', text: 'Bilgilendirme için teşekkürler, inceleyip portal üzerinden imzalayacağım.', time: 'Dün' }
+    'aliniyya_bakugan': [
+      { sender: 'bakugan', text: 'Ali selam, Ataşehir kampüsündeki workshop için salon hazır mı?', time: 'Dün' },
+      { sender: 'aliniyya', text: 'Evet Batuhan, yönetimle konuştuk A Blok Konferans Salonu ayrıldı.', time: 'Dün' }
     ]
   }
 };
 
-// Global App State
-let appState = loadState();
-let activeChatPartnerId = 'user_ali';
+// Global Runtime State
+let appState = loadAppState();
+let currentAuthUser = null;
+let currentSessionId = 'sess_' + Math.random().toString(36).substring(2, 9) + Date.now();
+let heartbeatInterval = null;
+let activeChatPartner = 'aliniyya';
 let isChatDockOpen = true;
 let currentFeedCategory = 'all';
 
-// Initialize State
-function loadState() {
+// BroadcastChannel for TRUE REAL-TIME MULTI-TAB & MULTI-USER SYNCHRONIZATION
+let realTimeChannel = null;
+try {
+  realTimeChannel = new BroadcastChannel('dijitalpark_realtime_channel_v2');
+  realTimeChannel.onmessage = handleRealTimeEvent;
+} catch (e) {
+  console.warn('BroadcastChannel not supported in this environment, falling back to storage listener', e);
+}
+
+// Fallback Cross-Tab Storage Listener
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) {
+    appState = loadAppState();
+    if (currentAuthUser) {
+      renderFeed();
+      renderChatDock();
+      renderActiveChatWindow();
+      renderOnlineMembersList();
+    }
+  } else if (e.key === SESSIONS_KEY) {
+    checkActiveSessionHealth();
+  }
+});
+
+function loadAppState() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      return JSON.parse(saved);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Ensure default users exist with latest photos
+      for (const key in ACCOUNTS) {
+        if (!parsed.users[key] || !parsed.users[key].avatar) {
+          parsed.users[key] = JSON.parse(JSON.stringify(ACCOUNTS[key]));
+        } else {
+          // Always ensure latest avatar path
+          parsed.users[key].avatar = ACCOUNTS[key].avatar;
+        }
+      }
+      return parsed;
     }
   } catch (e) {
-    console.warn('LocalStorage error, using defaults', e);
+    console.warn('Storage read error', e);
   }
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
 }
 
-function saveState() {
+function saveAppState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
   } catch (e) {
-    console.error('Save state failed', e);
-  }
-}
-
-// Reset data helper
-function resetDataToDefault() {
-  if (confirm('Tüm verileri varsayılan örnek verilere sıfırlamak istiyor musunuz?')) {
-    localStorage.removeItem(STORAGE_KEY);
-    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-    saveState();
-    location.reload();
+    console.error('Storage save failed', e);
   }
 }
 
 // -----------------------------------------------------------------------------
-// APP INITIALIZATION
+// APP STARTUP & AUTHENTICATION
 // -----------------------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  renderApp();
   setupEventListeners();
+
+  // Check existing session
+  const savedUsername = localStorage.getItem(AUTH_KEY);
+  if (savedUsername && ACCOUNTS[savedUsername]) {
+    // Check if session is already occupied elsewhere
+    if (isAccountActiveElsewhere(savedUsername)) {
+      showLoginScreen(`⚠️ "@${savedUsername}" hesabı şu anda başka bir sekmede aktif. Oturum açmak için giriş yapın.`);
+    } else {
+      performLogin(savedUsername, ACCOUNTS[savedUsername].password, false);
+    }
+  } else {
+    showLoginScreen();
+  }
 });
 
-function initTheme() {
-  const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
+function showLoginScreen(alertMsg) {
+  const loginScreen = document.getElementById('login-screen');
+  const mainApp = document.getElementById('main-app-screen');
+  const alertBox = document.getElementById('login-alert-banner');
+
+  if (loginScreen) loginScreen.style.display = 'flex';
+  if (mainApp) mainApp.style.display = 'none';
+
+  if (alertBox) {
+    if (alertMsg) {
+      alertBox.textContent = alertMsg;
+      alertBox.style.display = 'block';
+    } else {
+      alertBox.style.display = 'none';
+    }
+  }
+
+  // Clear active heartbeat if any
+  if (heartbeatInterval) clearInterval(heartbeatInterval);
+  currentAuthUser = null;
+  localStorage.removeItem(AUTH_KEY);
 }
 
-function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || 'dark';
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem(THEME_KEY, next);
-  updateThemeIcon(next);
-}
+function showMainApp() {
+  const loginScreen = document.getElementById('login-screen');
+  const mainApp = document.getElementById('main-app-screen');
 
-function updateThemeIcon(theme) {
-  const btn = document.getElementById('theme-toggle-btn');
-  if (!btn) return;
-  btn.innerHTML = theme === 'dark' 
-    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
-    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-}
+  if (loginScreen) loginScreen.style.display = 'none';
+  if (mainApp) mainApp.style.display = 'block';
 
-// -----------------------------------------------------------------------------
-// RENDER VIEWS
-// -----------------------------------------------------------------------------
-
-function renderApp() {
   renderNavbar();
   renderProfileCard();
   renderComposer();
   renderFeed();
-  renderTestAccountsWidget();
+  renderOnlineMembersList();
   renderCompaniesList();
   renderChatDock();
   renderActiveChatWindow();
 }
 
-// Render Top Navbar Pill
+// Single active user rule (Tek kullanıcı oturum kontrolü)
+function isAccountActiveElsewhere(username) {
+  try {
+    const rawSessions = localStorage.getItem(SESSIONS_KEY);
+    if (!rawSessions) return false;
+    const sessions = JSON.parse(rawSessions);
+    const session = sessions[username];
+    if (session && session.sessionId !== currentSessionId) {
+      // Check if heartbeat is alive within last 12 seconds
+      if (Date.now() - session.timestamp < 12000) {
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
+
+function registerActiveSession(username) {
+  try {
+    let sessions = {};
+    const raw = localStorage.getItem(SESSIONS_KEY);
+    if (raw) sessions = JSON.parse(raw);
+
+    sessions[username] = {
+      sessionId: currentSessionId,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+
+    // Broadcast session lock
+    broadcastEvent({
+      type: 'SESSION_LOCK',
+      username: username,
+      sessionId: currentSessionId
+    });
+
+    // Start Heartbeat every 4 seconds
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    heartbeatInterval = setInterval(() => {
+      if (!currentAuthUser) return;
+      try {
+        let currentSessions = {};
+        const r = localStorage.getItem(SESSIONS_KEY);
+        if (r) currentSessions = JSON.parse(r);
+        currentSessions[currentAuthUser] = {
+          sessionId: currentSessionId,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(currentSessions));
+      } catch (e) {}
+    }, 4000);
+  } catch (e) {}
+}
+
+function releaseActiveSession(username) {
+  try {
+    const raw = localStorage.getItem(SESSIONS_KEY);
+    if (raw) {
+      let sessions = JSON.parse(raw);
+      if (sessions[username] && sessions[username].sessionId === currentSessionId) {
+        delete sessions[username];
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+      }
+    }
+  } catch (e) {}
+}
+
+function checkActiveSessionHealth() {
+  if (!currentAuthUser) return;
+  try {
+    const raw = localStorage.getItem(SESSIONS_KEY);
+    if (raw) {
+      const sessions = JSON.parse(raw);
+      const session = sessions[currentAuthUser];
+      // If another tab took over this user session
+      if (session && session.sessionId !== currentSessionId) {
+        alert(`Oturumunuz başka bir pencere veya cihazda açıldığı için sonlandırıldı.`);
+        logout();
+      }
+    }
+  } catch (e) {}
+}
+
+// -----------------------------------------------------------------------------
+// LOGIN / LOGOUT HANDLERS
+// -----------------------------------------------------------------------------
+
+function handleLoginSubmit(event) {
+  if (event) event.preventDefault();
+  const usernameInput = document.getElementById('login-username-input');
+  const passwordInput = document.getElementById('login-password-input');
+
+  const username = usernameInput ? usernameInput.value.trim().toLowerCase() : '';
+  const password = passwordInput ? passwordInput.value.trim() : '';
+
+  if (!username || !password) {
+    showLoginAlert('Lütfen kullanıcı adı ve şifrenizi girin!');
+    return;
+  }
+
+  performLogin(username, password, false);
+}
+
+function quickSelectUser(username) {
+  const usernameInput = document.getElementById('login-username-input');
+  const passwordInput = document.getElementById('login-password-input');
+  if (usernameInput) usernameInput.value = username;
+  if (passwordInput) passwordInput.value = '31316969';
+
+  performLogin(username, '31316969', false);
+}
+
+function performLogin(username, password, forceTakeover) {
+  const account = ACCOUNTS[username];
+  if (!account) {
+    showLoginAlert(`Geçersiz kullanıcı adı! Kayıtlı hesaplar: erdemcarkit, aliniyya, bakugan`);
+    return;
+  }
+
+  if (password !== account.password) {
+    showLoginAlert(`Hatalı şifre! (Belirlenen şifre: 31316969)`);
+    return;
+  }
+
+  // Check single active user constraint
+  if (!forceTakeover && isAccountActiveElsewhere(username)) {
+    const alertBox = document.getElementById('login-alert-banner');
+    if (alertBox) {
+      alertBox.innerHTML = `
+        <div style="margin-bottom: 0.5rem;">⚠️ <strong>@${username}</strong> hesabı şu anda başka bir sekmede aktif! Aynı anda sadece 1 kişi oturum açabilir.</div>
+        <button onclick="performLogin('${username}', '${password}', true)" style="background:var(--brand-red); color:#fff; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; cursor:pointer;">
+          Oturumu Devral (Diğerini Kapat)
+        </button>
+      `;
+      alertBox.style.display = 'block';
+    }
+    return;
+  }
+
+  // Login successful
+  currentAuthUser = username;
+  localStorage.setItem(AUTH_KEY, username);
+  registerActiveSession(username);
+
+  // Set default partner for chat
+  const otherUsers = Object.keys(ACCOUNTS).filter(u => u !== username);
+  activeChatPartner = otherUsers[0] || 'aliniyya';
+
+  showMainApp();
+  showToast(`Hoş geldin, ${account.name}! 👋`);
+}
+
+function logout() {
+  if (currentAuthUser) {
+    releaseActiveSession(currentAuthUser);
+    broadcastEvent({
+      type: 'USER_LOGOUT',
+      username: currentAuthUser
+    });
+  }
+  if (heartbeatInterval) clearInterval(heartbeatInterval);
+  currentAuthUser = null;
+  localStorage.removeItem(AUTH_KEY);
+  showLoginScreen('Başarıyla çıkış yapıldı.');
+}
+
+function showLoginAlert(msg) {
+  const alertBox = document.getElementById('login-alert-banner');
+  if (alertBox) {
+    alertBox.textContent = msg;
+    alertBox.style.display = 'block';
+  }
+}
+
+// -----------------------------------------------------------------------------
+// REAL-TIME EVENT BUS (BROADCAST & STORAGE SYNC)
+// -----------------------------------------------------------------------------
+
+function broadcastEvent(payload) {
+  if (realTimeChannel) {
+    try {
+      realTimeChannel.postMessage(payload);
+    } catch (e) {
+      console.warn('Broadcast failed', e);
+    }
+  }
+}
+
+function handleRealTimeEvent(event) {
+  const data = event.data;
+  if (!data) return;
+
+  if (data.type === 'CHAT_MESSAGE') {
+    handleIncomingMessage(data);
+  } else if (data.type === 'NEW_POST') {
+    handleIncomingPost(data);
+  } else if (data.type === 'POST_LIKE' || data.type === 'POST_COMMENT') {
+    appState = loadAppState();
+    renderFeed();
+  } else if (data.type === 'SESSION_LOCK') {
+    if (currentAuthUser && currentAuthUser === data.username && data.sessionId !== currentSessionId) {
+      alert(`Oturumunuz başka bir pencerede devralındı.`);
+      logout();
+    }
+  } else if (data.type === 'USER_LOGOUT') {
+    appState = loadAppState();
+    renderOnlineMembersList();
+    renderChatDock();
+  }
+}
+
+function handleIncomingMessage(msgData) {
+  // Reload state from local storage to have the message
+  appState = loadAppState();
+
+  // If this message is intended for or involves the current user
+  if (currentAuthUser && (msgData.sender === currentAuthUser || msgData.recipient === currentAuthUser)) {
+    playChimeSound();
+
+    renderChatDock();
+    renderActiveChatWindow();
+
+    // If message is from someone else, show toast notification
+    if (msgData.sender !== currentAuthUser) {
+      const senderAcc = ACCOUNTS[msgData.sender] || { name: msgData.sender };
+      showToast(`💬 @${msgData.sender}: "${msgData.text.substring(0, 32)}..."`);
+    }
+  }
+}
+
+function handleIncomingPost(postData) {
+  appState = loadAppState();
+  renderFeed();
+  if (currentAuthUser && postData.authorUsername !== currentAuthUser) {
+    showToast(`📢 @${postData.authorUsername} yeni bir gönderi paylaştı!`);
+  }
+}
+
+// Pleasant Native Web Audio Chime (Zero External Files)
+function playChimeSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.36);
+  } catch (e) {
+    // audio context may be muted or blocked by browser gesture
+  }
+}
+
+// -----------------------------------------------------------------------------
+// UI RENDERING: NAVBAR, PROFILES, FEED, COMPANIES
+// -----------------------------------------------------------------------------
+
 function renderNavbar() {
-  const activeUser = appState.users[appState.activeUserId];
-  if (!activeUser) return;
+  if (!currentAuthUser) return;
+  const user = ACCOUNTS[currentAuthUser];
+  if (!user) return;
 
   const pillAvatar = document.getElementById('nav-user-avatar');
   const pillName = document.getElementById('nav-user-name');
   const pillRole = document.getElementById('nav-user-role');
 
-  if (pillAvatar) pillAvatar.src = activeUser.avatar;
-  if (pillName) pillName.textContent = activeUser.name;
-  if (pillRole) pillRole.textContent = activeUser.company;
+  if (pillAvatar) pillAvatar.src = user.avatar;
+  if (pillName) pillName.textContent = user.name;
+  if (pillRole) pillRole.textContent = `@${user.username}`;
 }
 
-// Render Left Sidebar Profile Card
 function renderProfileCard() {
-  const user = appState.users[appState.activeUserId];
+  if (!currentAuthUser) return;
+  const user = ACCOUNTS[currentAuthUser];
   if (!user) return;
 
   const avatar = document.getElementById('sidebar-user-avatar');
@@ -313,17 +611,17 @@ function renderProfileCard() {
   const statViews = document.getElementById('stat-views-count');
 
   if (avatar) avatar.src = user.avatar;
-  if (name) name.innerHTML = `${user.name} <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>`;
-  if (headline) headline.textContent = user.title;
+  if (name) name.innerHTML = `${user.name} <span class="verified-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>`;
+  if (headline) headline.textContent = `${user.title} • @${user.username}`;
   if (campusBadge) campusBadge.innerHTML = `📍 ${user.campus}`;
-  if (statPosts) statPosts.textContent = user.postsCount;
-  if (statConnections) statConnections.textContent = user.connectionsCount;
-  if (statViews) statViews.textContent = user.profileViews;
+  if (statPosts) statPosts.textContent = user.postsCount || 18;
+  if (statConnections) statConnections.textContent = user.connectionsCount || 540;
+  if (statViews) statViews.textContent = user.profileViews || '1.4K';
 }
 
-// Render Post Composer
 function renderComposer() {
-  const user = appState.users[appState.activeUserId];
+  if (!currentAuthUser) return;
+  const user = ACCOUNTS[currentAuthUser];
   if (!user) return;
 
   const composerAvatar = document.getElementById('composer-active-avatar');
@@ -332,83 +630,81 @@ function renderComposer() {
   const postAsSelect = document.getElementById('post-as-select');
   if (postAsSelect) {
     postAsSelect.innerHTML = `
-      <option value="user">${user.name} (Kişisel Profil)</option>
-      <option value="company">${user.company} (Şirket Hesabı Adına)</option>
+      <option value="user">${user.name} (@${user.username})</option>
+      <option value="company">${user.company} (Şirket Adına)</option>
     `;
   }
 }
 
-// Render Feed Posts
 function renderFeed() {
-  const feedContainer = document.getElementById('feed-posts-container');
-  if (!feedContainer) return;
+  const container = document.getElementById('feed-posts-container');
+  if (!container) return;
 
-  let filteredPosts = [...appState.posts];
+  let filtered = [...appState.posts];
   if (currentFeedCategory !== 'all') {
-    filteredPosts = filteredPosts.filter(p => p.category === currentFeedCategory);
+    filtered = filtered.filter(p => p.category === currentFeedCategory);
   }
 
-  // Sort newest first
-  filteredPosts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-  if (filteredPosts.length === 0) {
-    feedContainer.innerHTML = `
+  if (filtered.length === 0) {
+    container.innerHTML = `
       <div class="card-base" style="padding: 2.5rem; text-align: center; color: var(--text-secondary);">
-        <p style="font-size: 1.1rem; font-weight: 700;">Bu kategoride henüz gönderi yok.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem;">İlk paylaşımı siz yaparak Teknokent ekosistemine ilham verin!</p>
+        <p style="font-weight: 700; font-size: 1.1rem;">Bu kategoride henüz gönderi yok.</p>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem;">İlk paylaşımı yaparak Teknokent ekosistemine ilham verin!</p>
       </div>
     `;
     return;
   }
 
-  feedContainer.innerHTML = filteredPosts.map(post => {
-    const isCompanyPost = post.authorType === 'company';
+  container.innerHTML = filtered.map(post => {
+    const isCompany = post.authorType === 'company';
     let authorName = '';
+    let authorHandle = '';
     let authorTitle = '';
     let authorAvatar = '';
     let campus = '';
-    let isOnline = false;
 
-    if (isCompanyPost) {
+    if (isCompany) {
       authorName = post.companyName || 'Şirket';
+      authorHandle = 'kurumsal';
       authorTitle = 'Teknokent Ar-Ge Şirketi';
       authorAvatar = './assets/logo.jpg';
       campus = 'Dijitalpark Teknokent';
-      isOnline = true;
     } else {
-      const author = appState.users[post.authorId] || {
+      const acc = ACCOUNTS[post.authorUsername] || {
         name: 'Teknokent Üyesi',
+        username: 'uye',
         title: 'Girişimci',
         avatar: './assets/avatar_enes.jpg',
-        campus: 'Dijitalpark Çekmeköy',
-        online: true
+        campus: 'Dijitalpark Çekmeköy'
       };
-      authorName = author.name;
-      authorTitle = author.title;
-      authorAvatar = author.avatar;
-      campus = author.campus;
-      isOnline = author.online;
+      authorName = acc.name;
+      authorHandle = acc.username;
+      authorTitle = acc.title;
+      authorAvatar = acc.avatar;
+      campus = acc.campus;
     }
 
-    const isLiked = post.likes && post.likes.includes(appState.activeUserId);
+    const isLiked = post.likes && post.likes.includes(currentAuthUser);
     const likeCount = post.likes ? post.likes.length : 0;
     const commentCount = post.comments ? post.comments.length : 0;
 
-    // Format content with hashtags
     const formattedContent = escapeHtml(post.content).replace(/#([a-zA-Z0-9ığüşöçİĞÜŞÖÇ_]+)/g, '<a href="javascript:void(0)" class="hashtag">#$1</a>');
 
     return `
       <article class="card-base post-card" id="post-${post.id}">
         <div class="post-header">
-          <div class="post-author-wrapper" onclick="openAuthorProfile('${post.authorId}')">
+          <div class="post-author-wrapper">
             <div class="post-avatar-box">
               <img src="${authorAvatar}" class="post-avatar" alt="${authorName}" />
-              ${isOnline ? '<div class="online-status-dot"></div>' : ''}
+              <div class="online-status-dot"></div>
             </div>
             <div class="post-author-meta">
               <div class="post-author-name-row">
                 <span class="post-author-name">${authorName}</span>
-                <span class="verified-badge" title="Doğrulanmış Teknokent Üyesi">
+                <span style="font-size:0.75rem; color:var(--text-muted);">@${authorHandle}</span>
+                <span class="verified-badge">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                 </span>
               </div>
@@ -457,10 +753,9 @@ function renderFeed() {
           </button>
         </div>
 
-        <!-- Comments Container -->
         <div class="comments-wrapper" id="comments-${post.id}">
           <div class="comment-input-row">
-            <img src="${appState.users[appState.activeUserId].avatar}" class="comment-avatar-mini" />
+            <img src="${ACCOUNTS[currentAuthUser]?.avatar}" class="comment-avatar-mini" />
             <div class="comment-input-box">
               <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Düşüncenizi paylaşın..." onkeypress="handleCommentKeyPress(event, '${post.id}')" />
               <button class="comment-send-btn" onclick="submitComment('${post.id}')">
@@ -471,7 +766,7 @@ function renderFeed() {
 
           <div class="comments-list" id="comments-list-${post.id}">
             ${(post.comments || []).map(c => {
-              const commenter = appState.users[c.authorId] || { name: 'Üye', avatar: './assets/avatar_enes.jpg' };
+              const commenter = ACCOUNTS[c.authorUsername] || { name: c.authorUsername, avatar: './assets/avatar_enes.jpg' };
               return `
                 <div class="comment-item">
                   <img src="${commenter.avatar}" class="comment-avatar-mini" />
@@ -492,38 +787,37 @@ function renderFeed() {
   }).join('');
 }
 
-// Render Test Accounts Switcher (Requested explicitly by User for Enes, Ali, Batuhan)
-function renderTestAccountsWidget() {
+// Right Sidebar: Online Members & Fast Direct Message
+function renderOnlineMembersList() {
   const container = document.getElementById('test-accounts-list');
-  if (!container) return;
+  if (!container || !currentAuthUser) return;
 
-  const testUserIds = ['user_enes', 'user_ali', 'user_batuhan'];
+  const users = Object.keys(ACCOUNTS);
 
-  container.innerHTML = testUserIds.map(id => {
-    const user = appState.users[id];
-    const isActive = appState.activeUserId === id;
+  container.innerHTML = users.map(uName => {
+    const acc = ACCOUNTS[uName];
+    const isMe = uName === currentAuthUser;
 
     return `
-      <div class="test-user-item ${isActive ? 'active-test-user' : ''}" onclick="switchActiveUser('${id}')">
+      <div class="test-user-item ${isMe ? 'active-test-user' : ''}" onclick="${isMe ? '' : `openChatWith('${uName}')`}">
         <div class="test-user-info">
           <div style="position:relative;">
-            <img src="${user.avatar}" class="test-user-avatar" alt="${user.name}" />
+            <img src="${acc.avatar}" class="test-user-avatar" alt="${acc.name}" />
             <div class="online-status-dot"></div>
           </div>
           <div class="test-user-names">
-            <span class="test-name">${user.name}</span>
-            <span class="test-title">${user.company}</span>
+            <span class="test-name">${acc.name} ${isMe ? '(Siz)' : ''}</span>
+            <span class="test-title">@${acc.username} • ${acc.company}</span>
           </div>
         </div>
-        <button class="switch-pill-btn">
-          ${isActive ? '✓ Aktif' : 'Geçiş Yap'}
+        <button class="switch-pill-btn" style="${isMe ? 'background:var(--brand-online);' : ''}">
+          ${isMe ? 'Aktif' : '💬 Mesaj'}
         </button>
       </div>
     `;
   }).join('');
 }
 
-// Render Teknokent Companies
 function renderCompaniesList() {
   const container = document.getElementById('companies-list-container');
   if (!container) return;
@@ -535,7 +829,7 @@ function renderCompaniesList() {
           <div class="company-icon-box">${comp.logoEmoji || '🏢'}</div>
           <div>
             <div class="company-name">${comp.name}</div>
-            <div class="company-sector">${comp.sector} • ${comp.campus.split(' - ')[0]}</div>
+            <div class="company-sector">${comp.sector}</div>
           </div>
         </div>
         <button class="btn-follow ${comp.isFollowing ? 'following' : ''}" onclick="toggleFollowCompany('${comp.id}')">
@@ -547,28 +841,26 @@ function renderCompaniesList() {
 }
 
 // -----------------------------------------------------------------------------
-// CHAT / MESSAGING (LINKEDIN DOCK & POPUP SYSTEM)
+// REAL-TIME CHAT & MESSAGING SYSTEM
 // -----------------------------------------------------------------------------
 
 function renderChatDock() {
-  const dock = document.getElementById('linkedin-chat-dock');
-  const contactsContainer = document.getElementById('chat-contacts-list');
-  if (!dock || !contactsContainer) return;
+  const container = document.getElementById('chat-contacts-list');
+  if (!container || !currentAuthUser) return;
 
-  const activeUser = appState.users[appState.activeUserId];
-  const allUserIds = Object.keys(appState.users).filter(id => id !== appState.activeUserId);
+  const otherUsers = Object.keys(ACCOUNTS).filter(u => u !== currentAuthUser);
 
-  contactsContainer.innerHTML = allUserIds.map(partnerId => {
-    const partner = appState.users[partnerId];
-    const threadKey = getThreadKey(appState.activeUserId, partnerId);
+  container.innerHTML = otherUsers.map(partnerUName => {
+    const partner = ACCOUNTS[partnerUName];
+    const threadKey = getThreadKey(currentAuthUser, partnerUName);
     const messages = appState.messages[threadKey] || [];
-    const lastMsg = messages.length > 0 ? messages[messages.length - 1] : { text: 'Sohbet başlatın...', time: '' };
+    const lastMsg = messages.length > 0 ? messages[messages.length - 1] : { text: 'Canlı sohbet başlatın...', time: '' };
 
     return `
-      <div class="chat-contact-row" onclick="openChatWith('${partnerId}')">
+      <div class="chat-contact-row" onclick="openChatWith('${partnerUName}')">
         <div class="contact-avatar-wrapper">
           <img src="${partner.avatar}" class="contact-avatar" />
-          ${partner.online ? '<div class="online-status-dot"></div>' : ''}
+          <div class="online-status-dot"></div>
         </div>
         <div class="contact-info">
           <div class="contact-top-line">
@@ -586,36 +878,32 @@ function renderActiveChatWindow() {
   const chatWindow = document.getElementById('active-conversation-window');
   if (!chatWindow) return;
 
-  if (!activeChatPartnerId) {
+  if (!activeChatPartner || !currentAuthUser) {
     chatWindow.style.display = 'none';
     return;
   }
 
   chatWindow.style.display = 'flex';
-  const partner = appState.users[activeChatPartnerId];
+  const partner = ACCOUNTS[activeChatPartner];
   if (!partner) return;
 
-  // Header info
   const targetAvatar = document.getElementById('chat-target-avatar');
   const targetName = document.getElementById('chat-target-name');
   const targetStatus = document.getElementById('chat-target-status');
 
   if (targetAvatar) targetAvatar.src = partner.avatar;
-  if (targetName) targetName.textContent = partner.name;
+  if (targetName) targetName.textContent = `${partner.name} (@${partner.username})`;
   if (targetStatus) {
-    targetStatus.innerHTML = partner.online 
-      ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> Şu an aktif'
-      : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748B;"></span> Çevrimdışı';
+    targetStatus.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;"></span> Şu an aktif (Canlı)';
   }
 
-  // Messages body
-  const threadKey = getThreadKey(appState.activeUserId, activeChatPartnerId);
+  const threadKey = getThreadKey(currentAuthUser, activeChatPartner);
   const messages = appState.messages[threadKey] || [];
   const body = document.getElementById('chat-messages-body');
 
   if (body) {
     body.innerHTML = messages.map(msg => {
-      const isOutgoing = msg.senderId === appState.activeUserId;
+      const isOutgoing = msg.sender === currentAuthUser;
       return `
         <div class="chat-bubble ${isOutgoing ? 'outgoing' : 'incoming'}">
           ${escapeHtml(msg.text)}
@@ -624,7 +912,6 @@ function renderActiveChatWindow() {
       `;
     }).join('');
 
-    // Scroll to bottom
     body.scrollTop = body.scrollHeight;
   }
 }
@@ -633,14 +920,24 @@ function getThreadKey(userA, userB) {
   return [userA, userB].sort().join('_');
 }
 
+function openChatWith(username) {
+  activeChatPartner = username;
+  renderActiveChatWindow();
+}
+
+function closeActiveChat() {
+  activeChatPartner = null;
+  const chatWindow = document.getElementById('active-conversation-window');
+  if (chatWindow) chatWindow.style.display = 'none';
+}
+
 function toggleChatDock() {
-  const dock = document.getElementById('linkedin-chat-dock');
   const content = document.getElementById('chat-dock-content');
-  if (!dock || !content) return;
+  const icon = document.getElementById('dock-toggle-icon');
+  if (!content) return;
 
   isChatDockOpen = !isChatDockOpen;
   content.style.display = isChatDockOpen ? 'block' : 'none';
-  const icon = document.getElementById('dock-toggle-icon');
   if (icon) {
     icon.innerHTML = isChatDockOpen 
       ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>'
@@ -648,86 +945,53 @@ function toggleChatDock() {
   }
 }
 
-function openChatWith(partnerId) {
-  activeChatPartnerId = partnerId;
-  renderActiveChatWindow();
-}
-
-function closeActiveChat() {
-  activeChatPartnerId = null;
-  const chatWindow = document.getElementById('active-conversation-window');
-  if (chatWindow) chatWindow.style.display = 'none';
-}
-
 function sendChatMessage(textOverride) {
+  if (!currentAuthUser || !activeChatPartner) return;
+
   const input = document.getElementById('chat-message-input');
   const text = textOverride || (input ? input.value.trim() : '');
-  if (!text || !activeChatPartnerId) return;
+  if (!text) return;
 
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-  const threadKey = getThreadKey(appState.activeUserId, activeChatPartnerId);
+  const threadKey = getThreadKey(currentAuthUser, activeChatPartner);
   if (!appState.messages[threadKey]) {
     appState.messages[threadKey] = [];
   }
 
-  appState.messages[threadKey].push({
-    senderId: appState.activeUserId,
+  const messageObj = {
+    sender: currentAuthUser,
+    recipient: activeChatPartner,
     text: text,
-    time: timeStr
-  });
+    time: timeStr,
+    timestamp: Date.now()
+  };
 
-  saveState();
+  appState.messages[threadKey].push(messageObj);
+  saveAppState();
+
   if (input) input.value = '';
   renderActiveChatWindow();
   renderChatDock();
 
-  // Simulated instant auto-reply for realistic interactive demo feel
-  const currentPartner = activeChatPartnerId;
-  const currentActive = appState.activeUserId;
-
-  setTimeout(() => {
-    if (activeChatPartnerId === currentPartner && appState.activeUserId === currentActive) {
-      simulatePartnerReply(currentPartner, currentActive, text);
-    }
-  }, 1200);
+  // BROADCAST TO ALL OTHER OPEN TABS/BROWSERS IN REAL TIME!
+  broadcastEvent({
+    type: 'CHAT_MESSAGE',
+    sender: currentAuthUser,
+    recipient: activeChatPartner,
+    text: text,
+    time: timeStr,
+    timestamp: Date.now()
+  });
 }
 
 function sendQuickReply(text) {
   sendChatMessage(text);
 }
 
-function simulatePartnerReply(partnerId, targetUserId, userMessage) {
-  const threadKey = getThreadKey(targetUserId, partnerId);
-  const now = new Date();
-  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-  let replyText = "Harika, Teknokent kafesinde konuşalım!";
-  if (partnerId === 'user_enes') {
-    replyText = "Mesajın için teşekkürler! AI modelimiz üzerindeki testler bitince hemen geri dönüş yapıyorum.";
-  } else if (partnerId === 'user_ali') {
-    replyText = "Kesinlikle katılıyorum. Cloud altyapısında bu yapıyı kuralım, verimlilik ciddi oranda artar.";
-  } else if (partnerId === 'user_batuhan') {
-    replyText = "Süper fikir! Bunu Cuma günkü Teknokent yatırımcı sunumuna ekleyebiliriz.";
-  } else if (partnerId === 'user_mentor') {
-    replyText = "Talebiniz Teknokent Proje Yönetim Ofisine iletilmiştir. İyi çalışmalar dileriz!";
-  }
-
-  appState.messages[threadKey].push({
-    senderId: partnerId,
-    text: replyText,
-    time: timeStr
-  });
-
-  saveState();
-  renderActiveChatWindow();
-  renderChatDock();
-  showToast(`${appState.users[partnerId].name} mesaj gönderdi: "${replyText.substring(0, 30)}..."`);
-}
-
 // -----------------------------------------------------------------------------
-// POST CREATION & FEED INTERACTIONS
+// POST CREATION & INTERACTIONS
 // -----------------------------------------------------------------------------
 
 let selectedPostImage = null;
@@ -775,6 +1039,7 @@ function addHashtagToComposer(tag) {
 }
 
 function submitNewPost() {
+  if (!currentAuthUser) return;
   const textarea = document.getElementById('post-composer-text');
   const content = textarea ? textarea.value.trim() : '';
 
@@ -785,16 +1050,15 @@ function submitNewPost() {
 
   const postAsSelect = document.getElementById('post-as-select');
   const postAs = postAsSelect ? postAsSelect.value : 'user';
-  const activeUser = appState.users[appState.activeUserId];
+  const user = ACCOUNTS[currentAuthUser];
 
-  // Extract hashtags
   const hashtags = (content.match(/#([a-zA-Z0-9ığüşöçİĞÜŞÖÇ_]+)/g) || []).map(t => t.replace('#', ''));
 
   const newPost = {
     id: 'post_' + Date.now(),
-    authorId: appState.activeUserId,
+    authorUsername: currentAuthUser,
     authorType: postAs,
-    companyName: postAs === 'company' ? activeUser.company : null,
+    companyName: postAs === 'company' ? user.company : null,
     timestamp: 'Şimdi',
     createdAt: Date.now(),
     content: content,
@@ -807,33 +1071,46 @@ function submitNewPost() {
   };
 
   appState.posts.unshift(newPost);
-  activeUser.postsCount = (activeUser.postsCount || 0) + 1;
-  saveState();
+  user.postsCount = (user.postsCount || 0) + 1;
+  saveAppState();
 
-  // Reset composer
   if (textarea) textarea.value = '';
   removeComposerImage();
 
   renderProfileCard();
   renderFeed();
-  showToast('Gönderiniz Teknokent akışında yayınlandı! 🚀');
+  showToast('Gönderiniz canlı akışta yayınlandı! 🚀');
+
+  // Broadcast new post in real-time
+  broadcastEvent({
+    type: 'NEW_POST',
+    authorUsername: currentAuthUser,
+    postId: newPost.id
+  });
 }
 
 function toggleLike(postId) {
+  if (!currentAuthUser) return;
   const post = appState.posts.find(p => p.id === postId);
   if (!post) return;
 
   if (!post.likes) post.likes = [];
-  const idx = post.likes.indexOf(appState.activeUserId);
+  const idx = post.likes.indexOf(currentAuthUser);
 
   if (idx > -1) {
     post.likes.splice(idx, 1);
   } else {
-    post.likes.push(appState.activeUserId);
+    post.likes.push(currentAuthUser);
   }
 
-  saveState();
+  saveAppState();
   renderFeed();
+
+  broadcastEvent({
+    type: 'POST_LIKE',
+    postId: postId,
+    byUser: currentAuthUser
+  });
 }
 
 function toggleCommentsSection(postId) {
@@ -843,12 +1120,11 @@ function toggleCommentsSection(postId) {
 }
 
 function handleCommentKeyPress(event, postId) {
-  if (event.key === 'Enter') {
-    submitComment(postId);
-  }
+  if (event.key === 'Enter') submitComment(postId);
 }
 
 function submitComment(postId) {
+  if (!currentAuthUser) return;
   const input = document.getElementById(`comment-input-${postId}`);
   const text = input ? input.value.trim() : '';
   if (!text) return;
@@ -859,25 +1135,30 @@ function submitComment(postId) {
   if (!post.comments) post.comments = [];
   post.comments.push({
     id: 'comm_' + Date.now(),
-    authorId: appState.activeUserId,
+    authorUsername: currentAuthUser,
     time: 'Şimdi',
     text: text
   });
 
-  saveState();
+  saveAppState();
   if (input) input.value = '';
   renderFeed();
 
-  // Keep comment box open
   const commentsWrapper = document.getElementById(`comments-${postId}`);
   if (commentsWrapper) commentsWrapper.classList.add('show');
+
+  broadcastEvent({
+    type: 'POST_COMMENT',
+    postId: postId,
+    authorUsername: currentAuthUser
+  });
 }
 
 function repost(postId) {
   const post = appState.posts.find(p => p.id === postId);
   if (!post) return;
   post.reposts = (post.reposts || 0) + 1;
-  saveState();
+  saveAppState();
   renderFeed();
   showToast('Gönderi profilinizde yeniden paylaşıldı! 🔄');
 }
@@ -895,42 +1176,23 @@ function setFeedCategory(category) {
   renderFeed();
 }
 
-// -----------------------------------------------------------------------------
-// USER SWITCHING & PROFILE MANAGEMENT
-// -----------------------------------------------------------------------------
-
-function switchActiveUser(userId) {
-  if (!appState.users[userId]) return;
-  appState.activeUserId = userId;
-  saveState();
-
-  renderNavbar();
-  renderProfileCard();
-  renderComposer();
-  renderFeed();
-  renderTestAccountsWidget();
-  renderChatDock();
-  renderActiveChatWindow();
-
-  showToast(`Aktif kullanıcı değiştirildi: ${appState.users[userId].name}`);
-}
-
 function toggleFollowCompany(companyId) {
   const comp = appState.companies.find(c => c.id === companyId);
   if (!comp) return;
   comp.isFollowing = !comp.isFollowing;
-  saveState();
+  saveAppState();
   renderCompaniesList();
   showToast(comp.isFollowing ? `${comp.name} takip ediliyor!` : `${comp.name} takipten çıkarıldı.`);
 }
 
 // -----------------------------------------------------------------------------
-// MODALS (PROFILE CREATION & COMPANY ACCOUNT)
+// MODALS
 // -----------------------------------------------------------------------------
 
 function openProfileModal() {
+  if (!currentAuthUser) return;
   const modal = document.getElementById('profile-edit-modal');
-  const user = appState.users[appState.activeUserId];
+  const user = ACCOUNTS[currentAuthUser];
   if (!modal || !user) return;
 
   document.getElementById('edit-profile-name').value = user.name || '';
@@ -948,7 +1210,8 @@ function closeProfileModal() {
 }
 
 function saveProfileEdits() {
-  const user = appState.users[appState.activeUserId];
+  if (!currentAuthUser) return;
+  const user = ACCOUNTS[currentAuthUser];
   if (!user) return;
 
   user.name = document.getElementById('edit-profile-name').value.trim() || user.name;
@@ -957,13 +1220,13 @@ function saveProfileEdits() {
   user.campus = document.getElementById('edit-profile-campus').value;
   user.bio = document.getElementById('edit-profile-bio').value.trim() || user.bio;
 
-  saveState();
+  saveAppState();
   closeProfileModal();
   renderNavbar();
   renderProfileCard();
-  renderTestAccountsWidget();
+  renderOnlineMembersList();
   renderFeed();
-  showToast('Profil bilgileriniz güncellendi! ✅');
+  showToast('Profiliniz güncellendi! ✅');
 }
 
 function openCompanyModal() {
@@ -994,22 +1257,16 @@ function registerNewCompany() {
     sector: sector,
     campus: campus,
     size: size,
-    founder: appState.users[appState.activeUserId].name,
+    founder: ACCOUNTS[currentAuthUser]?.name || 'Teknokent Üyesi',
     logoEmoji: emoji,
     isFollowing: true
   };
 
   appState.companies.push(newCompany);
-  saveState();
+  saveAppState();
   closeCompanyModal();
   renderCompaniesList();
-  showToast(`"${name}" Şirket hesabı başarıyla oluşturuldu! 🎉`);
-}
-
-function openAuthorProfile(userId) {
-  if (appState.users[userId]) {
-    switchActiveUser(userId);
-  }
+  showToast(`"${name}" Şirket hesabı oluşturuldu! 🎉`);
 }
 
 function openImageLightbox(imgSrc) {
@@ -1027,11 +1284,10 @@ function closeLightbox() {
 }
 
 // -----------------------------------------------------------------------------
-// EVENT LISTENERS & HELPERS
+// EVENT LISTENERS & UTILITIES
 // -----------------------------------------------------------------------------
 
 function setupEventListeners() {
-  // Chat enter key
   const chatInput = document.getElementById('chat-message-input');
   if (chatInput) {
     chatInput.addEventListener('keypress', (e) => {
@@ -1039,7 +1295,6 @@ function setupEventListeners() {
     });
   }
 
-  // Search input filter
   const searchInput = document.getElementById('main-search-input');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -1048,25 +1303,41 @@ function setupEventListeners() {
         renderFeed();
         return;
       }
-      const feedContainer = document.getElementById('feed-posts-container');
+      const container = document.getElementById('feed-posts-container');
       const filtered = appState.posts.filter(p => 
         p.content.toLowerCase().includes(q) || 
         (p.tags && p.tags.some(t => t.toLowerCase().includes(q))) ||
-        (appState.users[p.authorId] && appState.users[p.authorId].name.toLowerCase().includes(q))
+        (ACCOUNTS[p.authorUsername] && ACCOUNTS[p.authorUsername].name.toLowerCase().includes(q))
       );
-      renderCustomFeed(filtered);
+      
+      const oldPosts = appState.posts;
+      appState.posts = filtered;
+      renderFeed();
+      appState.posts = oldPosts;
     });
   }
 }
 
-function renderCustomFeed(posts) {
-  const feedContainer = document.getElementById('feed-posts-container');
-  if (!feedContainer) return;
-  // reuse renderFeed logic with custom array
-  const oldPosts = appState.posts;
-  appState.posts = posts;
-  renderFeed();
-  appState.posts = oldPosts;
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById('theme-toggle-btn');
+  if (!btn) return;
+  btn.innerHTML = theme === 'dark' 
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
 }
 
 function showToast(msg) {
@@ -1080,7 +1351,7 @@ function showToast(msg) {
 
   const toast = document.createElement('div');
   toast.className = 'toast-msg';
-  toast.innerHTML = `<span>✨</span><span>${escapeHtml(msg)}</span>`;
+  toast.innerHTML = `<span>⚡</span><span>${escapeHtml(msg)}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -1088,6 +1359,15 @@ function showToast(msg) {
     toast.style.transition = 'opacity 0.4s ease';
     setTimeout(() => toast.remove(), 400);
   }, 3200);
+}
+
+function resetDataToDefault() {
+  if (confirm('Tüm verileri ve oturumları sıfırlamak istiyor musunuz?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(SESSIONS_KEY);
+    location.reload();
+  }
 }
 
 function escapeHtml(str) {

@@ -6,507 +6,610 @@
   <title>Dijitalpark Teknokent Connect | Startup & Şirket İnovasyon Ağı</title>
   <meta name="description" content="Dijitalpark Teknokent bünyesindeki Ar-Ge firmaları, startuplar ve girişimciler için Twitter ve LinkedIn tarzı profesyonel etkileşim ve iş ağı platformu.">
   
-  <!-- Google Fonts: Plus Jakarta Sans for ultra-modern tech aesthetic -->
+  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.1">
   <link rel="icon" type="image/jpeg" href="./assets/logo.jpg">
 </head>
 <body>
 
   <!-- ==========================================================================
-       TOP NAVBAR
+       1. LOGIN SCREEN (SPLIT VIEW: BRAND ON LEFT, LOGIN ON RIGHT)
        ========================================================================== -->
-  <header class="top-navbar">
-    <div class="nav-container">
-      <!-- Brand Logo & Title -->
-      <div class="brand-wrapper" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-        <img src="./assets/logo.jpg" alt="Dijitalpark Teknokent Logo" class="brand-logo-img" />
-        <div class="brand-text">
-          <div class="brand-title">
-            DİJİTALPARK <span class="red-accent">CONNECT</span>
+  <div id="login-screen">
+    <div class="login-split-container">
+      
+      <!-- Sol Taraf: Marka & Ekosistem Tanıtımı -->
+      <div class="login-left-brand">
+        <div class="login-brand-header">
+          <img src="./assets/logo.jpg" class="login-brand-logo" alt="Dijitalpark Logo" />
+          <div>
+            <div class="login-brand-title">DİJİTALPARK <span>TEKNOKENT</span></div>
+            <div class="login-brand-subtitle">Teknoloji Geliştirme Bölgesi</div>
           </div>
-          <div class="brand-subtitle">Teknoloji Geliştirme Bölgesi</div>
+        </div>
+
+        <div class="login-hero-content">
+          <h1 class="login-hero-heading">Teknokent Ekosisteminin Yeni Nesil İletişim Ağı.</h1>
+          <p class="login-hero-desc">
+            Çekmeköy ve Ataşehir yerleşkelerindeki Ar-Ge firmaları, kuluçka girişimcileri ve mühendisler için tasarlanmış gerçek zamanlı iş birliği platformu.
+          </p>
+
+          <div class="login-features-grid">
+            <div class="login-feature-card">
+              <span class="login-feature-icon">⚡</span>
+              <div class="login-feature-text">
+                <span class="login-feature-title">Canlı Sohbet</span>
+                <span class="login-feature-sub">Gerçek zamanlı LinkedIn tarzı mesajlaşma</span>
+              </div>
+            </div>
+
+            <div class="login-feature-card">
+              <span class="login-feature-icon">🏢</span>
+              <div class="login-feature-text">
+                <span class="login-feature-title">400+ Ar-Ge Firması</span>
+                <span class="login-feature-sub">Ekosistem içi iş birliği ve networking</span>
+              </div>
+            </div>
+
+            <div class="login-feature-card">
+              <span class="login-feature-icon">📍</span>
+              <div class="login-feature-text">
+                <span class="login-feature-title">2 Yerleşke</span>
+                <span class="login-feature-sub">Çekmeköy & Ataşehir kampüsleri</span>
+              </div>
+            </div>
+
+            <div class="login-feature-card">
+              <span class="login-feature-icon">🔒</span>
+              <div class="login-feature-text">
+                <span class="login-feature-title">Tekil Oturum Koruması</span>
+                <span class="login-feature-sub">Aynı anda 1 kullanıcı kuralı</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-left-footer">
+          <span>Dijitalpark Teknokent Yönetim A.Ş. © 2026</span>
+          <span>Sürüm 2.4 (Canlı Sync)</span>
         </div>
       </div>
 
-      <!-- Search Input -->
-      <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="main-search-input" class="search-input" placeholder="Gönderi, girişim, teknoloji veya #etiket ara..." />
+      <!-- Sağ Taraf: Giriş Formu & Hızlı Test Seçici -->
+      <div class="login-right-form-col">
+        <div class="login-form-card">
+          <div class="login-form-header">
+            <h2 class="login-form-title">Giriş Yap</h2>
+            <p class="login-form-desc">Teknokent üyelik bilgilerinizle oturum açın.</p>
+          </div>
+
+          <!-- Alert / Oturum Uyarı Alanı -->
+          <div id="login-alert-banner" class="login-alert-banner"></div>
+
+          <form onsubmit="handleLoginSubmit(event)">
+            <div class="login-field">
+              <label for="login-username-input">Kullanıcı Adı</label>
+              <div class="login-input-wrapper">
+                <span class="login-input-icon">@</span>
+                <input type="text" id="login-username-input" class="login-input" placeholder="erdemcarkit / aliniyya / bakugan" required />
+              </div>
+            </div>
+
+            <div class="login-field">
+              <label for="login-password-input">Şifre</label>
+              <div class="login-input-wrapper">
+                <span class="login-input-icon">🔑</span>
+                <input type="password" id="login-password-input" class="login-input" placeholder="••••••••" required />
+              </div>
+            </div>
+
+            <button type="submit" class="login-submit-btn">
+              <span>Giriş Yap</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </form>
+
+          <!-- Hızlı Test Giriş Seçici Kartları -->
+          <div class="quick-login-section">
+            <div class="quick-login-title">
+              <span>Hızlı Test Girişi</span>
+              <span class="pass-hint">Şifre: 31316969</span>
+            </div>
+            
+            <div class="quick-login-grid">
+              <!-- Erdem -->
+              <div class="quick-user-card" onclick="quickSelectUser('erdemcarkit')">
+                <div class="quick-user-left">
+                  <img src="./assets/avatar_erdem.jpg" class="quick-user-avatar" alt="Erdem" />
+                  <div class="quick-user-meta">
+                    <span class="quick-user-name">Enes Erdem Çarkıt</span>
+                    <span class="quick-user-handle">@erdemcarkit • Neurologic AI</span>
+                  </div>
+                </div>
+                <span class="quick-user-badge">Giriş Yap &rarr;</span>
+              </div>
+
+              <!-- Ali Nihat -->
+              <div class="quick-user-card" onclick="quickSelectUser('aliniyya')">
+                <div class="quick-user-left">
+                  <img src="./assets/avatar_ali.jpg" class="quick-user-avatar" alt="Ali Nihat" />
+                  <div class="quick-user-meta">
+                    <span class="quick-user-name">Ali Nihat Eryürek</span>
+                    <span class="quick-user-handle">@aliniyya • CloudScale Tech</span>
+                  </div>
+                </div>
+                <span class="quick-user-badge">Giriş Yap &rarr;</span>
+              </div>
+
+              <!-- Batuhan -->
+              <div class="quick-user-card" onclick="quickSelectUser('bakugan')">
+                <div class="quick-user-left">
+                  <img src="./assets/avatar_batuhan.jpg" class="quick-user-avatar" alt="Batuhan" />
+                  <div class="quick-user-meta">
+                    <span class="quick-user-name">Batuhan Akyazı</span>
+                    <span class="quick-user-handle">@bakugan • Core Hub</span>
+                  </div>
+                </div>
+                <span class="quick-user-badge">Giriş Yap &rarr;</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Nav Actions -->
-      <nav class="nav-actions">
-        <button class="nav-link-btn active" onclick="setFeedCategory('all')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span>Akış</span>
-        </button>
-
-        <button class="nav-link-btn" onclick="openCompanyModal()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-          </svg>
-          <span>Şirket Ekle</span>
-        </button>
-
-        <button class="nav-link-btn" onclick="toggleChatDock()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span>Mesajlar</span>
-          <span class="nav-link-badge">3</span>
-        </button>
-
-        <!-- Theme Toggle -->
-        <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
-          <!-- Populated by JS -->
-        </button>
-
-        <!-- Active User Pill / Switcher -->
-        <div class="user-switcher-pill" onclick="openProfileModal()" title="Profil Ayarları & Düzenle">
-          <div class="pill-avatar-wrapper">
-            <img id="nav-user-avatar" src="./assets/avatar_enes.jpg" class="pill-avatar" alt="Profil" />
-            <div class="online-status-dot"></div>
-          </div>
-          <div class="pill-info">
-            <span id="nav-user-name" class="pill-name">Enes Erdem Çarkıt</span>
-            <span id="nav-user-role" class="pill-role">Neurologic AI</span>
-          </div>
-        </div>
-      </nav>
     </div>
-  </header>
+  </div>
 
   <!-- ==========================================================================
-       MAIN CONTENT GRID
+       2. MAIN APP SCREEN (VISIBLE AFTER LOGIN)
        ========================================================================== -->
-  <main class="app-main-layout">
+  <div id="main-app-screen" style="display: none;">
     
-    <!-- ==================== LEFT SIDEBAR ==================== -->
-    <aside class="left-sidebar">
-      <!-- User Profile Summary Card -->
-      <div class="card-base profile-summary-card">
-        <div class="profile-card-header"></div>
-        <div class="profile-card-body">
-          <div class="profile-avatar-wrapper">
-            <img id="sidebar-user-avatar" src="./assets/avatar_enes.jpg" class="profile-avatar-lg" alt="Kullanıcı Profil Resmi" />
-            <div class="online-status-dot" style="bottom: 4px; right: 4px; width: 14px; height: 14px;"></div>
-          </div>
-          <h2 id="sidebar-user-name" class="profile-name">Enes Erdem Çarkıt</h2>
-          <p id="sidebar-user-headline" class="profile-headline">Kurucu Ortak & Lead AI Engineer</p>
-          <div id="sidebar-user-campus" class="profile-badge-tag">📍 Dijitalpark Çekmeköy</div>
-
-          <div class="profile-stats-row">
-            <div class="profile-stat-item">
-              <span id="stat-posts-count" class="stat-value">18</span>
-              <span class="stat-label">Gönderi</span>
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+      <div class="nav-container">
+        <!-- Brand Logo & Title -->
+        <div class="brand-wrapper" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+          <img src="./assets/logo.jpg" alt="Dijitalpark Teknokent Logo" class="brand-logo-img" />
+          <div class="brand-text">
+            <div class="brand-title">
+              DİJİTALPARK <span class="red-accent">CONNECT</span>
             </div>
-            <div class="profile-stat-item">
-              <span id="stat-connections-count" class="stat-value">540</span>
-              <span class="stat-label">Bağlantı</span>
+            <div class="brand-subtitle">Teknoloji Geliştirme Bölgesi</div>
+          </div>
+        </div>
+
+        <!-- Search Input -->
+        <div class="search-box-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="main-search-input" class="search-input" placeholder="Gönderi, girişim veya #etiket ara..." />
+        </div>
+
+        <!-- Nav Actions -->
+        <nav class="nav-actions">
+          <button class="nav-link-btn active" onclick="setFeedCategory('all')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Akış</span>
+          </button>
+
+          <button class="nav-link-btn" onclick="openCompanyModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Şirket Ekle</span>
+          </button>
+
+          <button class="nav-link-btn" onclick="toggleChatDock()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Canlı Sohbet</span>
+            <span class="nav-link-badge">⚡</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
+          </button>
+
+          <!-- Active User Pill -->
+          <div class="user-switcher-pill" onclick="openProfileModal()" title="Profil Ayarları">
+            <div class="pill-avatar-wrapper">
+              <img id="nav-user-avatar" src="./assets/avatar_erdem.jpg" class="pill-avatar" alt="Profil" />
+              <div class="online-status-dot"></div>
             </div>
-            <div class="profile-stat-item">
-              <span id="stat-views-count" class="stat-value">1.4K</span>
-              <span class="stat-label">Görüntülenme</span>
+            <div class="pill-info">
+              <span id="nav-user-name" class="pill-name">Enes Erdem Çarkıt</span>
+              <span id="nav-user-role" class="pill-role">@erdemcarkit</span>
             </div>
           </div>
 
-          <div class="profile-card-actions">
-            <button class="btn-secondary" onclick="openProfileModal()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-              <span>Profili Düzenle</span>
-            </button>
-            <button class="btn-primary" onclick="openCompanyModal()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>Şirket Hesabı Aç</span>
-            </button>
-          </div>
-        </div>
+          <!-- Çıkış Yap (Logout) -->
+          <button class="nav-logout-btn" onclick="logout()" title="Hesaptan Çıkış Yap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Çıkış</span>
+          </button>
+        </nav>
       </div>
+    </header>
 
-      <!-- Left Navigation Filters -->
-      <div class="card-base sidebar-nav-card">
-        <div class="sidebar-menu-title">Teknokent Odakları</div>
-        <div class="sidebar-menu-item active" onclick="setFeedCategory('all')">
-          <div class="sidebar-menu-item-left">
-            <span>🌐</span>
-            <span>Tüm Ekosistem Akışı</span>
-          </div>
-          <span class="menu-count-badge">Canlı</span>
-        </div>
-        <div class="sidebar-menu-item" onclick="setFeedCategory('arge')">
-          <div class="sidebar-menu-item-left">
-            <span>🔬</span>
-            <span>Ar-Ge & Yapay Zeka</span>
-          </div>
-          <span class="menu-count-badge">Yeni</span>
-        </div>
-        <div class="sidebar-menu-item" onclick="setFeedCategory('startup')">
-          <div class="sidebar-menu-item-left">
-            <span>🚀</span>
-            <span>Girişimler & Yatırım</span>
-          </div>
-          <span class="menu-count-badge">Popüler</span>
-        </div>
-        <div class="sidebar-menu-item" onclick="setFeedCategory('etkinlik')">
-          <div class="sidebar-menu-item-left">
-            <span>📢</span>
-            <span>Etkinlik & Atölyeler</span>
-          </div>
-          <span class="menu-count-badge">Bu Hafta</span>
-        </div>
-      </div>
-
-      <!-- Yerleşkeler Info Card -->
-      <div class="card-base" style="padding: 1.15rem; font-size: 0.8rem; color: var(--text-secondary);">
-        <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-          <span style="color: var(--brand-red);">📍</span> Dijitalpark Kampüsleri
-        </div>
-        <div style="margin-bottom: 0.5rem; line-height: 1.4;">
-          <strong>Çekmeköy Yerleşkesi:</strong> Taşdelen Mah. Barış Cad. No:1 Çekmeköy / İstanbul
-        </div>
-        <div style="margin-bottom: 0.8rem; line-height: 1.4;">
-          <strong>Ataşehir Yerleşkesi:</strong> Örnek Mah. Ercüment Batanay Sok. No:14 Ataşehir / İstanbul
-        </div>
-        <a href="https://www.dijitalparkteknokent.com.tr" target="_blank" style="color: var(--brand-turq); font-weight: 700; text-decoration: underline;">
-          Resmi Teknokent Portalı &rarr;
-        </a>
-      </div>
-    </aside>
-
-    <!-- ==================== FEED CENTER ==================== -->
-    <section class="feed-center-column">
+    <!-- Main Content Layout -->
+    <main class="app-main-layout">
       
-      <!-- Gönderi Oluşturucu (Composer) -->
-      <div class="composer-card">
-        <div class="composer-top-row">
-          <img id="composer-active-avatar" src="./assets/avatar_enes.jpg" class="composer-avatar" alt="Kullanıcı Avatarı" />
-          <div class="composer-input-area">
-            
-            <!-- Gönderen Seçimi (Kişisel vs Şirket) -->
-            <div class="post-as-bar">
-              <span>Paylaşım kimliği:</span>
-              <select id="post-as-select" class="post-as-select">
-                <!-- Populated dynamically -->
-              </select>
+      <!-- Left Sidebar -->
+      <aside class="left-sidebar">
+        <!-- Profile Card -->
+        <div class="card-base profile-summary-card">
+          <div class="profile-card-header"></div>
+          <div class="profile-card-body">
+            <div class="profile-avatar-wrapper">
+              <img id="sidebar-user-avatar" src="./assets/avatar_erdem.jpg" class="profile-avatar-lg" alt="Kullanıcı Avatarı" />
+              <div class="online-status-dot" style="bottom: 4px; right: 4px; width: 14px; height: 14px;"></div>
+            </div>
+            <h2 id="sidebar-user-name" class="profile-name">Enes Erdem Çarkıt</h2>
+            <p id="sidebar-user-headline" class="profile-headline">Kurucu Ortak & Lead AI Engineer</p>
+            <div id="sidebar-user-campus" class="profile-badge-tag">📍 Dijitalpark Çekmeköy</div>
+
+            <div class="profile-stats-row">
+              <div class="profile-stat-item">
+                <span id="stat-posts-count" class="stat-value">18</span>
+                <span class="stat-label">Gönderi</span>
+              </div>
+              <div class="profile-stat-item">
+                <span id="stat-connections-count" class="stat-value">540</span>
+                <span class="stat-label">Bağlantı</span>
+              </div>
+              <div class="profile-stat-item">
+                <span id="stat-views-count" class="stat-value">1.4K</span>
+                <span class="stat-label">Görüntülenme</span>
+              </div>
             </div>
 
-            <textarea id="post-composer-text" class="composer-textarea" placeholder="Teknokent ekosistemiyle yeni bir Ar-Ge gelişmesi, proje, iş birliği veya duyuru paylaşın..."></textarea>
+            <div class="profile-card-actions">
+              <button class="btn-secondary" onclick="openProfileModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>Profili Düzenle</span>
+              </button>
+              <button class="btn-primary" onclick="openCompanyModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Şirket Hesabı Aç</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Görsel Önizleme Alanı -->
-        <div id="composer-preview-box" class="composer-img-preview-box">
-          <img id="composer-preview-img" src="" class="composer-img-preview" alt="Yüklenecek Görsel" />
-          <div class="remove-img-btn" onclick="removeComposerImage()" title="Görseli Kaldır">✕</div>
+        <!-- Filter Categories -->
+        <div class="card-base sidebar-nav-card">
+          <div class="sidebar-menu-title">Teknokent Odakları</div>
+          <div class="sidebar-menu-item active" onclick="setFeedCategory('all')">
+            <div class="sidebar-menu-item-left">
+              <span>🌐</span>
+              <span>Tüm Ekosistem Akışı</span>
+            </div>
+            <span class="menu-count-badge">Canlı</span>
+          </div>
+          <div class="sidebar-menu-item" onclick="setFeedCategory('arge')">
+            <div class="sidebar-menu-item-left">
+              <span>🔬</span>
+              <span>Ar-Ge & Yapay Zeka</span>
+            </div>
+            <span class="menu-count-badge">Yeni</span>
+          </div>
+          <div class="sidebar-menu-item" onclick="setFeedCategory('startup')">
+            <div class="sidebar-menu-item-left">
+              <span>🚀</span>
+              <span>Girişimler & Yatırım</span>
+            </div>
+            <span class="menu-count-badge">Popüler</span>
+          </div>
+          <div class="sidebar-menu-item" onclick="setFeedCategory('etkinlik')">
+            <div class="sidebar-menu-item-left">
+              <span>📢</span>
+              <span>Etkinlik & Atölyeler</span>
+            </div>
+            <span class="menu-count-badge">Bu Hafta</span>
+          </div>
         </div>
 
-        <!-- Hızlı Etiketler -->
-        <div class="hashtag-chips">
-          <span class="hashtag-chip" onclick="addHashtagToComposer('YapayZeka')">+ #YapayZeka</span>
-          <span class="hashtag-chip" onclick="addHashtagToComposer('ArGe')">+ #ArGe</span>
-          <span class="hashtag-chip" onclick="addHashtagToComposer('Girişimcilik')">+ #Girişimcilik</span>
-          <span class="hashtag-chip" onclick="addHashtagToComposer('Yatırım')">+ #Yatırım</span>
-          <span class="hashtag-chip" onclick="addHashtagToComposer('AkıllıKampüs')">+ #AkıllıKampüs</span>
+        <!-- Campus Info -->
+        <div class="card-base" style="padding: 1.15rem; font-size: 0.8rem; color: var(--text-secondary);">
+          <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span style="color: var(--brand-red);">📍</span> Dijitalpark Kampüsleri
+          </div>
+          <div style="margin-bottom: 0.4rem; line-height: 1.4;">
+            <strong>Çekmeköy:</strong> Taşdelen Mah. Barış Cad. No:1
+          </div>
+          <div style="margin-bottom: 0.6rem; line-height: 1.4;">
+            <strong>Ataşehir:</strong> Örnek Mah. Ercüment Batanay Sok. No:14
+          </div>
+          <a href="https://www.dijitalparkteknokent.com.tr" target="_blank" style="color: var(--brand-turq); font-weight: 700; text-decoration: underline;">
+            Resmi Teknokent Portalı &rarr;
+          </a>
         </div>
+      </aside>
 
-        <!-- Hidden File Input for Custom Photo Upload -->
-        <input type="file" id="post-image-file-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)" />
-
-        <div class="composer-bottom-bar">
-          <div class="composer-tools">
-            <button class="composer-tool-btn" onclick="document.getElementById('post-image-file-input').click()" title="Fotoğraf Yükle">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--brand-turq);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              <span>Fotoğraf Yükle</span>
-            </button>
-
-            <!-- Örnek Teknokent Görsellerini Hızlı Ekleme -->
-            <button class="composer-tool-btn" onclick="selectSampleImage('office')" title="Ar-Ge Ofis Görseli">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--brand-red);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-              <span>Ar-Ge Lab Foto</span>
-            </button>
-            <button class="composer-tool-btn" onclick="selectSampleImage('team')" title="Startup Ekip / Lansman Görseli">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              <span>Lansman Foto</span>
-            </button>
+      <!-- Center Feed -->
+      <section class="feed-center-column">
+        <!-- Post Composer -->
+        <div class="composer-card">
+          <div class="composer-top-row">
+            <img id="composer-active-avatar" src="./assets/avatar_erdem.jpg" class="composer-avatar" alt="Kullanıcı Avatarı" />
+            <div class="composer-input-area">
+              <div class="post-as-bar">
+                <span>Paylaşım kimliği:</span>
+                <select id="post-as-select" class="post-as-select"></select>
+              </div>
+              <textarea id="post-composer-text" class="composer-textarea" placeholder="Teknokent ekosistemiyle yeni bir Ar-Ge gelişmesi, iş birliği veya duyuru paylaşın..."></textarea>
+            </div>
           </div>
 
-          <button class="btn-primary" onclick="submitNewPost()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            <span>Paylaş</span>
+          <div id="composer-preview-box" class="composer-img-preview-box">
+            <img id="composer-preview-img" src="" class="composer-img-preview" alt="Yüklenecek Görsel" />
+            <div class="remove-img-btn" onclick="removeComposerImage()" title="Görseli Kaldır">✕</div>
+          </div>
+
+          <div class="hashtag-chips">
+            <span class="hashtag-chip" onclick="addHashtagToComposer('YapayZeka')">+ #YapayZeka</span>
+            <span class="hashtag-chip" onclick="addHashtagToComposer('ArGe')">+ #ArGe</span>
+            <span class="hashtag-chip" onclick="addHashtagToComposer('Girişimcilik')">+ #Girişimcilik</span>
+            <span class="hashtag-chip" onclick="addHashtagToComposer('Yatırım')">+ #Yatırım</span>
+            <span class="hashtag-chip" onclick="addHashtagToComposer('AkıllıKampüs')">+ #AkıllıKampüs</span>
+          </div>
+
+          <input type="file" id="post-image-file-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)" />
+
+          <div class="composer-bottom-bar">
+            <div class="composer-tools">
+              <button class="composer-tool-btn" onclick="document.getElementById('post-image-file-input').click()" title="Fotoğraf Yükle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--brand-turq);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span>Fotoğraf Yükle</span>
+              </button>
+              <button class="composer-tool-btn" onclick="selectSampleImage('office')" title="Ar-Ge Lab Fotoğrafı">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--brand-red);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                <span>Ar-Ge Lab Foto</span>
+              </button>
+              <button class="composer-tool-btn" onclick="selectSampleImage('team')" title="Lansman Fotoğrafı">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Lansman Foto</span>
+              </button>
+            </div>
+
+            <button class="btn-primary" onclick="submitNewPost()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <span>Paylaş</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="feed-tabs-bar">
+          <button class="feed-tab active" data-cat="all" onclick="setFeedCategory('all')">🔥 Tümü</button>
+          <button class="feed-tab" data-cat="arge" onclick="setFeedCategory('arge')">🔬 Ar-Ge & İnovasyon</button>
+          <button class="feed-tab" data-cat="startup" onclick="setFeedCategory('startup')">🚀 Startuplar</button>
+          <button class="feed-tab" data-cat="etkinlik" onclick="setFeedCategory('etkinlik')">📢 Etkinlik & Buluşma</button>
+        </div>
+
+        <!-- Feed Posts Container -->
+        <div id="feed-posts-container"></div>
+      </section>
+
+      <!-- Right Sidebar -->
+      <aside class="right-sidebar">
+        <!-- Online Members Card -->
+        <div class="card-base test-accounts-panel">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
+              🟢 Çevrimiçi Üyeler
+            </span>
+            <span class="test-badge">Canlı Sync</span>
+          </div>
+          <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 0.75rem;">
+            Doğrudan mesaj atmak için üyeye tıklayın (Diğer sekmeden giriş yapıp canlı konuşabilirsiniz):
+          </p>
+          <div id="test-accounts-list"></div>
+        </div>
+
+        <!-- Teknokent Trends -->
+        <div class="card-base">
+          <div class="sidebar-section-header">
+            <span class="sidebar-section-title">Teknokent Gündemi</span>
+            <span style="font-size: 1rem;">🔥</span>
+          </div>
+          <div class="trend-item" onclick="addHashtagToComposer('ÇekmeköyAkıllıKampüs')">
+            <div class="trend-category">Kampüs İnovasyonu • Gündem</div>
+            <div class="trend-tag">#ÇekmeköyAkıllıKampüs</div>
+            <div class="trend-count">428 paylaşım</div>
+          </div>
+          <div class="trend-item" onclick="addHashtagToComposer('BridgeToBalkans')">
+            <div class="trend-category">Global Açılım • Program</div>
+            <div class="trend-tag">#BridgeToBalkans</div>
+            <div class="trend-count">314 paylaşım</div>
+          </div>
+          <div class="trend-item" onclick="addHashtagToComposer('TÜBİTAK1507')">
+            <div class="trend-category">Ar-Ge Teşvikleri • Destek</div>
+            <div class="trend-tag">#TÜBİTAK1507</div>
+            <div class="trend-count">192 paylaşım</div>
+          </div>
+        </div>
+
+        <!-- Companies List -->
+        <div class="card-base">
+          <div class="sidebar-section-header">
+            <span class="sidebar-section-title">Ekosistem Şirketleri</span>
+            <button style="font-size: 0.75rem; color: var(--brand-turq); font-weight:700;" onclick="openCompanyModal()">+ Ekle</button>
+          </div>
+          <div id="companies-list-container"></div>
+        </div>
+
+        <div style="padding: 0.5rem 1rem; text-align: center;">
+          <button onclick="resetDataToDefault()" style="font-size: 0.72rem; color: var(--text-muted); text-decoration: underline;">
+            🔄 Verileri & Oturumları Sıfırla
           </button>
         </div>
-      </div>
+      </aside>
 
-      <!-- Feed Kategori Filtre Butonları -->
-      <div class="feed-tabs-bar">
-        <button class="feed-tab active" data-cat="all" onclick="setFeedCategory('all')">🔥 Tümü</button>
-        <button class="feed-tab" data-cat="arge" onclick="setFeedCategory('arge')">🔬 Ar-Ge & İnovasyon</button>
-        <button class="feed-tab" data-cat="startup" onclick="setFeedCategory('startup')">🚀 Startuplar</button>
-        <button class="feed-tab" data-cat="etkinlik" onclick="setFeedCategory('etkinlik')">📢 Etkinlik & Buluşma</button>
-      </div>
+    </main>
 
-      <!-- Gönderi Akışı (JavaScript Render Alanı) -->
-      <div id="feed-posts-container">
-        <!-- Rendered by app.js -->
-      </div>
-    </section>
-
-    <!-- ==================== RIGHT SIDEBAR ==================== -->
-    <aside class="right-sidebar">
-      
-      <!-- TEST MODU: 3 Örnek Üyelik Hızlı Geçiş Paneli (Kullanıcının Özel İsteği) -->
-      <div class="card-base test-accounts-panel">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-          <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
-            ⚡ Hesap Değiştirici
+    <!-- ==========================================================================
+         LINKEDIN STYLE CHAT DOCK (BOTTOM-RIGHT)
+         ========================================================================== -->
+    <div id="linkedin-chat-dock" class="linkedin-chat-dock">
+      <div class="chat-dock-header" onclick="toggleChatDock()">
+        <div class="chat-dock-title">
+          <div class="chat-dock-avatar-stack">
+            <img src="./assets/avatar_erdem.jpg" alt="Erdem" />
+            <img src="./assets/avatar_ali.jpg" alt="Ali Nihat" />
+            <img src="./assets/avatar_batuhan.jpg" alt="Batuhan" />
+          </div>
+          <span>Canlı Mesajlaşma (🟢 Online)</span>
+        </div>
+        <div class="chat-dock-controls">
+          <span id="dock-toggle-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </span>
-          <span class="test-badge">3 Örnek Üyelik</span>
-        </div>
-        <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 0.75rem;">
-          Platformu farklı profillerden deneyin, gönderi atın ve birbirinizle LinkedIn tarzı sohbet edin:
-        </p>
-
-        <div id="test-accounts-list">
-          <!-- Populated by JS for Enes, Ali, Batuhan -->
         </div>
       </div>
 
-      <!-- Teknokent Gündemi / Trendler -->
-      <div class="card-base">
-        <div class="sidebar-section-header">
-          <span class="sidebar-section-title">Teknokent Gündemi</span>
-          <span style="font-size: 1rem;">🔥</span>
+      <div id="chat-dock-content" class="chat-dock-content">
+        <div class="chat-dock-search">
+          <input type="text" class="chat-dock-search-input" placeholder="Teknokent üyelerinde ara..." />
         </div>
-        
-        <div class="trend-item" onclick="addHashtagToComposer('ÇekmeköyAkıllıKampüs')">
-          <div class="trend-category">Kampüs İnovasyonu • Gündem</div>
-          <div class="trend-tag">#ÇekmeköyAkıllıKampüs</div>
-          <div class="trend-count">428 paylaşım</div>
-        </div>
+        <div id="chat-contacts-list" class="chat-contact-list"></div>
+      </div>
+    </div>
 
-        <div class="trend-item" onclick="addHashtagToComposer('BridgeToBalkans')">
-          <div class="trend-category">Global Açılım • Program</div>
-          <div class="trend-tag">#BridgeToBalkans</div>
-          <div class="trend-count">314 paylaşım</div>
+    <!-- Active Chat Popup Window -->
+    <div id="active-conversation-window" class="active-conversation-window" style="display: none;">
+      <div class="conversation-header">
+        <div class="conversation-target-info">
+          <img id="chat-target-avatar" src="" class="conversation-target-avatar" />
+          <div class="conversation-target-meta">
+            <span id="chat-target-name" class="target-name">Üye</span>
+            <span id="chat-target-status" class="target-status-text">🟢 Çevrimiçi</span>
+          </div>
         </div>
-
-        <div class="trend-item" onclick="addHashtagToComposer('TÜBİTAK1507')">
-          <div class="trend-category">Ar-Ge Teşvikleri • Destek</div>
-          <div class="trend-tag">#TÜBİTAK1507</div>
-          <div class="trend-count">192 paylaşım</div>
-        </div>
-
-        <div class="trend-item" onclick="addHashtagToComposer('YatırımTuru')">
-          <div class="trend-category">Girişim Finansmanı • Fon</div>
-          <div class="trend-tag">#YatırımTuru</div>
-          <div class="trend-count">146 paylaşım</div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button onclick="closeActiveChat()" style="color:var(--text-muted); font-size:1.1rem; line-height:1; padding:4px;" title="Kapat">✕</button>
         </div>
       </div>
 
-      <!-- Teknokent Şirketleri -->
-      <div class="card-base">
-        <div class="sidebar-section-header">
-          <span class="sidebar-section-title">Ekosistem Şirketleri</span>
-          <button style="font-size: 0.75rem; color: var(--brand-turq); font-weight:700;" onclick="openCompanyModal()">+ Ekle</button>
-        </div>
-        <div id="companies-list-container">
-          <!-- Populated by JS -->
-        </div>
+      <div id="chat-messages-body" class="conversation-body"></div>
+
+      <div class="quick-reply-suggestions">
+        <button class="quick-reply-chip" onclick="sendQuickReply('Harika, yarın Teknokent kafesinde buluşalım! ☕️')">Kahve içelim ☕️</button>
+        <button class="quick-reply-chip" onclick="sendQuickReply('Projeyi inceledim, çok iyi görünüyor! 🚀')">Çok iyi görünüyor 🚀</button>
+        <button class="quick-reply-chip" onclick="sendQuickReply('Toplantı saat 14:00\'te uygun mudur?')">Saat 14:00 uygun mu?</button>
       </div>
 
-      <!-- Data Reset & Info -->
-      <div style="padding: 0.5rem 1rem; text-align: center;">
-        <button onclick="resetDataToDefault()" style="font-size: 0.72rem; color: var(--text-muted); text-decoration: underline;">
-          🔄 Test Verilerini Sıfırla (Varsayılana Dön)
+      <div class="conversation-footer">
+        <input type="text" id="chat-message-input" class="chat-input-box" placeholder="Bir mesaj yazın..." autocomplete="off" />
+        <button class="chat-send-btn" onclick="sendChatMessage()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </button>
-        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.5rem;">
-          Dijitalpark Teknokent Connect © 2026. Tüm hakları saklıdır.
-        </div>
-      </div>
-    </aside>
-
-  </main>
-
-  <!-- ==========================================================================
-       LINKEDIN STYLE CHAT DOCK (BOTTOM-RIGHT)
-       ========================================================================== -->
-  <div id="linkedin-chat-dock" class="linkedin-chat-dock">
-    <div class="chat-dock-header" onclick="toggleChatDock()">
-      <div class="chat-dock-title">
-        <div class="chat-dock-avatar-stack">
-          <img src="./assets/avatar_enes.jpg" alt="Enes" />
-          <img src="./assets/avatar_ali.jpg" alt="Ali" />
-          <img src="./assets/avatar_batuhan.jpg" alt="Batuhan" />
-        </div>
-        <span>Mesajlaşma (Online)</span>
-      </div>
-      <div class="chat-dock-controls">
-        <span id="dock-toggle-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </span>
       </div>
     </div>
 
-    <div id="chat-dock-content" class="chat-dock-content">
-      <div class="chat-dock-search">
-        <input type="text" class="chat-dock-search-input" placeholder="Teknokent üyelerinde ara..." />
-      </div>
-      <div id="chat-contacts-list" class="chat-contact-list">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-  </div>
-
-  <!-- FLOATING CONVERSATION POPUP (LINKEDIN POPUP STYLE) -->
-  <div id="active-conversation-window" class="active-conversation-window" style="display: none;">
-    <div class="conversation-header">
-      <div class="conversation-target-info">
-        <img id="chat-target-avatar" src="" class="conversation-target-avatar" />
-        <div class="conversation-target-meta">
-          <span id="chat-target-name" class="target-name">Üye</span>
-          <span id="chat-target-status" class="target-status-text">Şu an aktif</span>
+    <!-- Modals -->
+    <div id="profile-edit-modal" class="modal-backdrop">
+      <div class="modal-container">
+        <div class="modal-header">
+          <div class="modal-title"><span>👤</span> Profil Bilgilerini Düzenle</div>
+          <button class="modal-close-btn" onclick="closeProfileModal()">✕</button>
         </div>
-      </div>
-      <div style="display:flex; align-items:center; gap:0.5rem;">
-        <button onclick="closeActiveChat()" style="color:var(--text-muted); font-size:1.1rem; line-height:1; padding:4px;" title="Kapat">✕</button>
-      </div>
-    </div>
-
-    <!-- Messages Body -->
-    <div id="chat-messages-body" class="conversation-body">
-      <!-- Populated by JS -->
-    </div>
-
-    <!-- Quick Reply Chips -->
-    <div class="quick-reply-suggestions">
-      <button class="quick-reply-chip" onclick="sendQuickReply('Harika, yarın Teknokent kafesinde buluşalım! ☕️')">Kahve içelim ☕️</button>
-      <button class="quick-reply-chip" onclick="sendQuickReply('Projeyi inceledim, çok iyi görünüyor! 🚀')">Çok iyi görünüyor 🚀</button>
-      <button class="quick-reply-chip" onclick="sendQuickReply('Toplantı saat 14:00\'te uygun mudur?')">Saat 14:00 uygun mu?</button>
-    </div>
-
-    <!-- Input Footer -->
-    <div class="conversation-footer">
-      <input type="text" id="chat-message-input" class="chat-input-box" placeholder="Bir mesaj yazın..." autocomplete="off" />
-      <button class="chat-send-btn" onclick="sendChatMessage()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       MODALS
-       ========================================================================== -->
-
-  <!-- Profil Düzenleme Modalı -->
-  <div id="profile-edit-modal" class="modal-backdrop">
-    <div class="modal-container">
-      <div class="modal-header">
-        <div class="modal-title">
-          <span>👤</span> Profil Bilgilerini Düzenle
-        </div>
-        <button class="modal-close-btn" onclick="closeProfileModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Ad Soyad</label>
-          <input type="text" id="edit-profile-name" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Unvan & Rol</label>
-          <input type="text" id="edit-profile-title" class="form-control" />
-        </div>
-        <div class="form-row">
+        <div class="modal-body">
           <div class="form-group">
-            <label class="form-label">Şirket / Startup</label>
-            <input type="text" id="edit-profile-company" class="form-control" />
+            <label class="form-label">Ad Soyad</label>
+            <input type="text" id="edit-profile-name" class="form-control" />
           </div>
           <div class="form-group">
-            <label class="form-label">Yerleşke</label>
-            <select id="edit-profile-campus" class="form-control">
-              <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
-              <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
-            </select>
+            <label class="form-label">Unvan & Rol</label>
+            <input type="text" id="edit-profile-title" class="form-control" />
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Biyografi & Ar-Ge Odak Alanları</label>
-          <textarea id="edit-profile-bio" class="form-control" rows="3"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeProfileModal()">İptal</button>
-        <button class="btn-primary" onclick="saveProfileEdits()">Değişiklikleri Kaydet</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Şirket Hesabı Açma Modalı -->
-  <div id="company-register-modal" class="modal-backdrop">
-    <div class="modal-container">
-      <div class="modal-header">
-        <div class="modal-title">
-          <span>🏢</span> Yeni Şirket / Startup Hesabı Aç
-        </div>
-        <button class="modal-close-btn" onclick="closeCompanyModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
-          Dijitalpark Teknokent TGB bünyesindeki Ar-Ge şirketinizi veya startupınızı ekosisteme tanıtın, açık pozisyonlar ve projelerinizi paylaşın.
-        </p>
-        <div class="form-group">
-          <label class="form-label">Şirket / Girişim Adı *</label>
-          <input type="text" id="new-comp-name" class="form-control" placeholder="Örn: QuantumBite Technologies" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Faaliyet Sektörü *</label>
-          <input type="text" id="new-comp-sector" class="form-control" placeholder="Örn: Yapay Zeka, Siber Güvenlik, Biyoteknoloji, FinTech..." />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Teknokent Yerleşkesi & Ofis No</label>
-            <input type="text" id="new-comp-campus" class="form-control" value="Çekmeköy - Ofis C204" />
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Şirket / Startup</label>
+              <input type="text" id="edit-profile-company" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Yerleşke</label>
+              <select id="edit-profile-campus" class="form-control">
+                <option value="Dijitalpark Çekmeköy Yerleşkesi">Dijitalpark Çekmeköy Yerleşkesi</option>
+                <option value="Dijitalpark Ataşehir Yerleşkesi">Dijitalpark Ataşehir Yerleşkesi</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Ekip Büyüklüğü</label>
-            <select id="new-comp-size" class="form-control">
-              <option value="1-5 Kişi">1-5 Kişi (Erken Aşama)</option>
-              <option value="5-15 Kişi">5-15 Kişi (Büyüme)</option>
-              <option value="15-50 Kişi">15-50 Kişi (Ölçeklenme)</option>
-              <option value="50+ Kişi">50+ Kişi (Büyük Ölçek)</option>
-            </select>
+            <label class="form-label">Biyografi & Ar-Ge Odak Alanları</label>
+            <textarea id="edit-profile-bio" class="form-control" rows="3"></textarea>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Şirket İkonu / Emoji</label>
-          <input type="text" id="new-comp-emoji" class="form-control" value="⚡" style="max-width: 80px; text-align: center; font-size: 1.2rem;" />
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="closeProfileModal()">İptal</button>
+          <button class="btn-primary" onclick="saveProfileEdits()">Kaydet</button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeCompanyModal()">İptal</button>
-        <button class="btn-primary" onclick="registerNewCompany()">Şirket Hesabını Kaydet</button>
+    </div>
+
+    <div id="company-register-modal" class="modal-backdrop">
+      <div class="modal-container">
+        <div class="modal-header">
+          <div class="modal-title"><span>🏢</span> Yeni Şirket Hesabı Aç</div>
+          <button class="modal-close-btn" onclick="closeCompanyModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Şirket / Girişim Adı *</label>
+            <input type="text" id="new-comp-name" class="form-control" placeholder="Örn: QuantumBite Technologies" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Faaliyet Sektörü *</label>
+            <input type="text" id="new-comp-sector" class="form-control" placeholder="Örn: Yapay Zeka, Siber Güvenlik, FinTech..." />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Yerleşke & Ofis No</label>
+              <input type="text" id="new-comp-campus" class="form-control" value="Çekmeköy - Ofis C204" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ekip Büyüklüğü</label>
+              <select id="new-comp-size" class="form-control">
+                <option value="1-5 Kişi">1-5 Kişi</option>
+                <option value="5-15 Kişi">5-15 Kişi</option>
+                <option value="15-50 Kişi">15-50 Kişi</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Şirket İkonu / Emoji</label>
+            <input type="text" id="new-comp-emoji" class="form-control" value="⚡" style="max-width: 80px; text-align: center; font-size: 1.2rem;" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="closeCompanyModal()">İptal</button>
+          <button class="btn-primary" onclick="registerNewCompany()">Şirketi Kaydet</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Görsel Lightbox Modalı -->
-  <div id="image-lightbox-modal" class="modal-backdrop" onclick="closeLightbox()">
-    <div style="max-width: 90vw; max-height: 90vh; position: relative;">
-      <img id="lightbox-full-img" src="" style="max-width: 100%; max-height: 90vh; border-radius: var(--radius-md); object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.8);" />
+    <div id="image-lightbox-modal" class="modal-backdrop" onclick="closeLightbox()">
+      <div style="max-width: 90vw; max-height: 90vh; position: relative;">
+        <img id="lightbox-full-img" src="" style="max-width: 100%; max-height: 90vh; border-radius: var(--radius-md); object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.8);" />
+      </div>
     </div>
+
   </div>
 
-  <!-- Application Logic -->
-  <script src="app.js"></script>
+  <script src="app.js?v=2.1"></script>
 </body>
 </html>
